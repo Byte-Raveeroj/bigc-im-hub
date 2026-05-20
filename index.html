@@ -775,6 +775,19 @@ const SectionOpenQ = () => {
 const STORAGE_KEY = "bigc_im_knowledge_updates";
 const CATEGORIES = ["Bug Found","Dev Answer","Decision","New Requirement","Question","Note","Blocker","TC Update","Other"];
 const PRIORITIES = ["🔴 High","🟡 Medium","🟢 Low"];
+const SECTION_REFS = [
+  "—  (General)",
+  "01 · Project Scope",
+  "02 · Approval Flow",
+  "03 · Routing Rules",
+  "04 · Roles & Access",
+  "05 · Glossary",
+  "06 · TC Dashboard",
+  "07 · Automation",
+  "08 · Key Files",
+  "09 · Open Questions",
+  "10 · Team Updates",
+];
 
 // Shared entries baked into HTML by Claude on each sync (visible to ALL visitors)
 const SHARED   = window.SHARED_UPDATES || [];
@@ -784,7 +797,7 @@ const SectionUpdates = () => {
   const [localEntries, setLocalEntries] = useState(() => {
     try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); } catch(e) { return []; }
   });
-  const [form, setForm]         = useState({ category:"Note", author:"", priority:"🟡 Medium", title:"", description:"", linkedTC:"" });
+  const [form, setForm]         = useState({ category:"Note", author:"", priority:"🟡 Medium", title:"", description:"", linkedTC:"", sectionRef:"—  (General)" });
   const [filterCat, setFilterCat] = useState("All");
   const [saved, setSaved]       = useState(false);
   const fileRef = useRef(null);
@@ -796,7 +809,7 @@ const SectionUpdates = () => {
     if(!form.title.trim()||!form.author.trim()) return;
     const entry = { ...form, id:Date.now(), ts:new Date().toISOString(), synced:false };
     persistLocal([entry, ...localEntries]);
-    setForm(f=>({...f, title:"", description:"", linkedTC:""}));
+    setForm(f=>({...f, title:"", description:"", linkedTC:"", sectionRef:"—  (General)"}));
     setSaved(true); setTimeout(()=>setSaved(false),2200);
   };
 
@@ -938,6 +951,13 @@ const SectionUpdates = () => {
               {e.description && <div className="entry-body" style={{ marginTop:6, whiteSpace:"pre-wrap" }}>{e.description}</div>}
               <div className="entry-meta">
                 <span className="meta-item">👤 {e.author}</span>
+                {e.sectionRef && e.sectionRef !== "—  (General)" && (
+                  <span className="meta-item" style={{
+                    background:"var(--primary-soft)", color:"var(--primary)",
+                    padding:"2px 8px", borderRadius:6, border:"1px solid var(--primary-soft)",
+                    fontWeight:700
+                  }}>📌 {e.sectionRef}</span>
+                )}
                 {e.linkedTC && <span className="meta-item">🔗 {e.linkedTC}</span>}
                 <span className="meta-item">🕐 {fmtDate(e.ts)}</span>
                 {e.syncedAt && (
@@ -985,10 +1005,16 @@ const SectionUpdates = () => {
               <input className="form-input" placeholder="ชื่อของคุณ..." value={form.author} onChange={e=>update("author",e.target.value)}/>
             </div>
           </div>
-          <div className="form-row cols-2">
+          <div className="form-row cols-3">
             <div className="form-group">
               <label>Title <span className="th-label">หัวข้อ *</span></label>
               <input className="form-input" placeholder="สรุปสั้นๆ ว่าเกิดอะไรขึ้น..." value={form.title} onChange={e=>update("title",e.target.value)}/>
+            </div>
+            <div className="form-group">
+              <label>Section Ref <span className="th-label">หัวข้อที่เกี่ยวข้อง</span></label>
+              <select className="form-select" value={form.sectionRef} onChange={e=>update("sectionRef",e.target.value)}>
+                {SECTION_REFS.map(s=><option key={s}>{s}</option>)}
+              </select>
             </div>
             <div className="form-group">
               <label>Linked TC / File <span className="th-label">อ้างอิง (optional)</span></label>
@@ -1027,6 +1053,13 @@ const SectionUpdates = () => {
                 {e.description && <div className="entry-body" style={{ marginTop:6, whiteSpace:"pre-wrap" }}>{e.description}</div>}
                 <div className="entry-meta">
                   <span className="meta-item">👤 {e.author}</span>
+                  {e.sectionRef && e.sectionRef !== "—  (General)" && (
+                    <span className="meta-item" style={{
+                      background:"var(--primary-soft)", color:"var(--primary)",
+                      padding:"2px 8px", borderRadius:6, border:"1px solid var(--primary-soft)",
+                      fontWeight:700
+                    }}>📌 {e.sectionRef}</span>
+                  )}
                   {e.linkedTC && <span className="meta-item">🔗 {e.linkedTC}</span>}
                   <span className="meta-item">🕐 {fmtDate(e.ts)}</span>
                 </div>
