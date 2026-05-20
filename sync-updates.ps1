@@ -105,13 +105,15 @@ if ($merged.Count -eq 1) { $sharedJson = "[$sharedJson]" }
 $syncMetaJson = "{`"syncedAt`":`"$NOW_ISO`",`"lastSyncedBy`":`"Claude Co-Work`",`"totalEntries`":$totalEntries,`"version`":$newVersion,`"nextScheduled`":`"Hourly 10:00-20:00`"}"
 
 # STEP 7 -- update index.html
+# Target only the <script> block -- use unique marker line as anchor
+# Pattern: matches "window.SHARED_UPDATES = [...];" on its own line inside <script>
 $html = [regex]::Replace($html,
-    'window\.SHARED_UPDATES\s*=\s*\[[\s\S]*?\];',
-    "window.SHARED_UPDATES = $sharedJson;")
+    '(?m)^(\s*)window\.SHARED_UPDATES\s*=\s*\[[\s\S]*?\];',
+    "`${1}window.SHARED_UPDATES = $sharedJson;")
 
 $html = [regex]::Replace($html,
-    'window\.SYNC_META\s*=\s*\{[\s\S]*?\};',
-    "window.SYNC_META = $syncMetaJson;")
+    '(?m)^(\s*)window\.SYNC_META\s*=\s*\{[\s\S]*?\};',
+    "`${1}window.SYNC_META = $syncMetaJson;")
 
 # (footer date update skipped -- Thai chars not safe in PS5.1 string literals)
 
