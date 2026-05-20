@@ -1,0 +1,42 @@
+{
+  "exportedAt": "2026-05-20T09:18:39.644Z",
+  "project": "BigC Supplier Portal IM",
+  "entries": [
+    {
+      "category": "Question",
+      "author": "Pluster",
+      "priority": "🟢 Low",
+      "title": "NPD - Qutestion-002",
+      "description": "Work Flow ไม่อัพเดตตาม BRD ล่าสุดครับ (ฉบับ 24-04-2026)",
+      "linkedTC": "",
+      "sectionRef": "02 · Approval Flow",
+      "id": 1779268668251,
+      "ts": "2026-05-20T09:17:48.251Z",
+      "synced": false
+    },
+    {
+      "category": "Question",
+      "author": "Pluster",
+      "priority": "🔴 High",
+      "title": "NPD - Qutestion-001",
+      "description": "Work Flow ไม่อัพเดตตาม BRD ล่าสุดครับ",
+      "linkedTC": "",
+      "sectionRef": "01 · Project Scope",
+      "id": 1779263054412,
+      "ts": "2026-05-20T07:44:14.412Z",
+      "synced": false
+    },
+    {
+      "category": "Bug Found",
+      "author": "Pluster",
+      "priority": "🔴 High",
+      "title": "NPD - BUG001",
+      "description": "Test Kub",
+      "linkedTC": "",
+      "sectionRef": "02 · Approval Flow",
+      "id": 1779262169323,
+      "ts": "2026-05-20T07:29:29.323Z",
+      "synced": false
+    }
+  ]
+}
