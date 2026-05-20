@@ -493,11 +493,11 @@ const SectionRoles = () => {
       <h3>Fields per Role</h3>
       <div className="cov-row">
         {[
-          ["Hard Line","228 shown",228,340],
-          ["Home Line","229 shown",229,340],
-          ["Soft Line","237 shown",237,340],
-          ["Dry Food","246 shown",246,340],
-          ["Fresh Food","222 shown",222,340],
+          ["Hard Line","228 / 340 fields",228,340],
+          ["Home Line","229 / 340 fields",229,340],
+          ["Soft Line","237 / 340 fields",237,340],
+          ["Dry Food","246 / 340 fields",246,340],
+          ["Fresh Food","222 / 340 fields",222,340],
           ["SCM Role","79 fields",79,340],
           ["DC Income Role","106 fields",106,340],
           ["SRD Role","1 field (Display Cat)",1,340],
@@ -718,9 +718,6 @@ const SectionFiles = () => {
           </tbody>
         </table>
       </div>
-      <Callout kind="danger">
-        🚫 <strong>NEVER read</strong> <code className="inline">Docs/excel/Prod_Product_Information_Master_Data/</code> without asking user permission 2–3 รอบก่อน — ไฟล์ใหญ่มาก เปลือง tokens
-      </Callout>
     </Section>
   );
 };
@@ -728,18 +725,17 @@ const SectionFiles = () => {
 // ── SECTION 09: Open Questions ──
 const SectionOpenQ = () => {
   const questions = [
-    { id:"W1-Q3", priority:"high", cat:"TC", q:"Section count per division — D8 drift", th:"จำนวน section ต่อ Division ใน wizard ยังไม่ verify ครบ", status:"pending" },
-    { id:"W1-Q6", priority:"high", cat:"TC", q:"D11 drift — TC content to verify", th:"Drift D11 รอ verify Wave 1 Q6", status:"pending" },
-    { id:"Donjai", priority:"high", cat:"PO", q:"Donjai routing split — criteria ยังไม่ confirm", th:"Buyer LV1 แยกระหว่าง Buyer บ้านใหญ่/Donjai — routing criteria คืออะไร", status:"pending" },
-    { id:"K-Q2", priority:"high", cat:"Dev", q:"Kafka portal-side TC-338 — implementation status", th:"TC-338/339/340 blocked รอ Kafka spec", status:"blocked" },
-    { id:"K-Q3", priority:"high", cat:"Dev", q:"Kafka TC-339 trigger condition", th:"—", status:"blocked" },
-    { id:"K-Q4", priority:"high", cat:"Dev", q:"Kafka TC-340 error handling", th:"—", status:"blocked" },
-    { id:"OI-02", priority:"med", cat:"Dev", q:"POGR access — which roles? (commercial/buyer confirm)", th:"ยืนยัน role ที่เข้าถึง POGR ได้", status:"pending" },
-    { id:"OI-09", priority:"med", cat:"Dev", q:"No-GR seed data in db:seed", th:"ต้องการ seed data สำหรับ No-GR + open PO", status:"pending" },
-    { id:"OI-10", priority:"low", cat:"Dev", q:"Identical UI for supplier/IT-admin — intended Phase 1?", th:"UI เหมือนกันระหว่าง supplier กับ IT-admin — ตั้งใจไหม", status:"pending" },
-    { id:"RA-001", priority:"med", cat:"BRD", q:"RA role routing trigger condition", th:"เงื่อนไขที่ trigger RA role ยังไม่ได้ confirm", status:"blocked" },
-    { id:"G-Q1", priority:"low", cat:"GOLD", q:"GOLD V6 (OCI SAAS) timeline — 2-3 months?", th:"GOLD V6 มาเมื่อไหร่ กระทบ TC-034..039 ไหม", status:"pending" },
-    { id:"Delegate", priority:"low", cat:"BRD", q:"Self-service delegate feature spec", th:"BRD Q-02 — Delegate feature ยังไม่มี UI spec", status:"pending" },
+    { id:"W1-Q3", priority:"high", cat:"TC", q:"Section count per division — D8 drift", th:"Wizard มีกี่ section ต่อ Division? ตัวเลขยังไม่ยืนยันครบทุก Division — รอ verify กับ Dev", status:"pending" },
+    { id:"W1-Q6", priority:"high", cat:"TC", q:"D11 drift — Buyer fills Forecast+Attribute fields", th:"Buyer กรอก Forecast และ Attribute เอง — Supplier ไม่เห็น section นี้เลย ต้องยืนยันก่อนแก้ TC", status:"pending" },
+    { id:"Donjai", priority:"high", cat:"PO", q:"Donjai routing — เงื่อนไขแยก Buyer บ้านใหญ่ / Donjai ยังไม่ confirm", th:"Item ประเภทไหน ส่งให้ Buyer บ้านใหญ่? ประเภทไหนส่งให้ Donjai? — routing logic ยังไม่ได้รับจาก PO", status:"pending" },
+    { id:"K-Q2", priority:"high", cat:"Dev", q:"Kafka portal-side TC-338 — implementation status", th:"TC-338/339/340 เกี่ยวกับ Kafka ทั้งหมด blocked รอ Dev ยืนยัน spec ว่า implement แล้วหรือยัง", status:"blocked" },
+    { id:"K-Q3", priority:"high", cat:"Dev", q:"Kafka TC-339 — trigger condition", th:"เมื่อไหร่ระบบจะส่ง Kafka message? เงื่อนไข (event ไหน?) ยังไม่ได้กำหนด", status:"blocked" },
+    { id:"K-Q4", priority:"high", cat:"Dev", q:"Kafka TC-340 — error handling", th:"ถ้า Kafka ล่มหรือส่ง message ไม่สำเร็จ ระบบจัดการยังไง? ยังไม่ได้ spec", status:"blocked" },
+    { id:"OI-02", priority:"med", cat:"Dev", q:"POGR access — role ไหนเข้าได้บ้าง?", th:"Commercial? Buyer? หรือแค่ Finance? — ต้องยืนยันกับ Dev ก่อนเขียน TC POGR", status:"pending" },
+    { id:"OI-09", priority:"med", cat:"Dev", q:"No-GR seed data ใน db:seed", th:"ยังไม่มีตัวอย่าง PO แบบ No-GR ใน database seed — ทำให้ test กรณีนี้ไม่ได้", status:"pending" },
+    { id:"OI-10", priority:"low", cat:"Dev", q:"Supplier กับ IT-admin เห็น UI เหมือนกัน — ตั้งใจไหม?", th:"ทั้งสอง role หน้าตา Invoice เหมือนกันทุกอย่าง — ตั้งใจให้เป็นแบบนี้ใน Phase 1 ไหม", status:"pending" },
+    { id:"RA-001", priority:"med", cat:"BRD", q:"RA role — เงื่อนไขที่จะเข้ามาใน approval flow", th:"RA role ถูก assign เข้า flow เมื่อไหร่? ขึ้นกับ attribute ไหนของ item? ยังไม่ได้ระบุใน BRD", status:"blocked" },
+    { id:"Delegate", priority:"low", cat:"BRD", q:"Delegate feature — ยังไม่มี UI spec", th:"ฟีเจอร์มอบหมายงานแทน (delegate) มีแค่ concept — ยังไม่มี wireframe หรือ flow จาก PO", status:"pending" },
   ];
   const priorityColor = p => p==="high"?"var(--red)":p==="med"?"var(--amber)":"var(--muted)";
   const statusPill = s => s==="blocked"?<span className="pill red">Blocked</span>:<span className="pill amber">Pending</span>;
@@ -1101,7 +1097,7 @@ const SectionUpdates = () => {
     <Section id="updates" eyebrow="10 · Team Updates" eyebrowKind="accent"
       title="Team Updates Feed"
       subtitle={<>ข้อมูลที่ sync แล้วจะ <strong>ปรากฏให้ทุกคนเห็น</strong> — Claude Co-Work sync ข้อมูลใหม่เข้า Hub ทุก <strong>09:00 น.</strong></>}
-      thai={<>น้องๆ กรอก Draft → Export JSON → Claude อ่านแล้ว embed เข้า HTML → Vercel deploy อัตโนมัติ → ทุกคนเห็น</>}>
+      thai={<>กรอกข้อมูลอัพเดทหรือแก้ไขข้อมูลที่ถูกต้อง แล้วบันทึกเป็น Draft ไว้ — ระบบจะ sync และแสดงให้ทุกคนเห็นอัตโนมัติในวันถัดไป <em style={{opacity:.45,fontSize:"0.88em"}}>* ผ่าน Co-Work agent ทุก 09:00 น.</em></>}>
 
       {/* ── Sync Status Banner ── */}
       <div style={{
