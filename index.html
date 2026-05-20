@@ -61,7 +61,7 @@ kbd{font-family:var(--font-mono);font-size:11px;background:var(--surface);border
   </style>
   <!-- ══════════════════════════════════════════════════════════════════
        SHARED UPDATES — baked in by Claude Co-Work on each daily sync.
-       DO NOT edit this block manually — Claude regenerates it at 09:00.
+       DO NOT edit this block manually — Claude regenerates it at 09:00/12:00/15:00/18:00/21:00.
        Format: window.SHARED_UPDATES = [ { id, ts, author, category,
                priority, title, description, linkedTC, syncedAt,
                syncBatch } ]
@@ -73,7 +73,7 @@ kbd{font-family:var(--font-mono);font-size:11px;background:var(--surface);border
     lastSyncedBy:  "—",
     totalEntries:  0,
     version:       0,
-    nextScheduled: "09:00 น. ทุกวัน"
+    nextScheduled: "09:00 / 12:00 / 15:00 / 18:00 / 21:00 น."
   };
   </script>
 
@@ -237,7 +237,7 @@ const SectionWelcome = () => (
       <div className="hero-meta-divider"></div>
       <div className="hero-meta-item"><div className="label">TC Count</div><div className="value">340 TCs</div></div>
       <div className="hero-meta-divider"></div>
-      <div className="hero-meta-item"><div className="label">Automation</div><div className="value">126 ✅ / 44 ⏸</div></div>
+      <div className="hero-meta-item" title="126 tests passing · 44 tests marked fixme (waiting for feature/data)"><div className="label">Auto Tests</div><div className="value">126 pass · 44 fixme</div></div>
       <div className="hero-meta-divider"></div>
       <div className="hero-meta-item"><div className="label">Stack</div><div className="value">Next.js 16 + NestJS</div></div>
       <div className="hero-meta-divider"></div>
@@ -1027,7 +1027,7 @@ const SECTION_REFS = [
 
 // Shared entries baked into HTML by Claude on each sync (visible to ALL visitors)
 const SHARED   = window.SHARED_UPDATES || [];
-const SYNCMETA = window.SYNC_META      || { syncedAt:null, lastSyncedBy:"—", totalEntries:0, nextScheduled:"09:00 น. ทุกวัน" };
+const SYNCMETA = window.SYNC_META      || { syncedAt:null, lastSyncedBy:"—", totalEntries:0, nextScheduled:"09:00 / 12:00 / 15:00 / 18:00 / 21:00 น." };
 
 const SectionUpdates = () => {
   const [localEntries, setLocalEntries] = useState(() => {
@@ -1096,8 +1096,8 @@ const SectionUpdates = () => {
   return (
     <Section id="updates" eyebrow="10 · Team Updates" eyebrowKind="accent"
       title="Team Updates Feed"
-      subtitle={<>ข้อมูลที่ sync แล้วจะ <strong>ปรากฏให้ทุกคนเห็น</strong> — Claude Co-Work sync ข้อมูลใหม่เข้า Hub ทุก <strong>09:00 น.</strong></>}
-      thai={<>กรอกข้อมูลอัพเดทหรือแก้ไขข้อมูลที่ถูกต้อง แล้วบันทึกเป็น Draft ไว้ — ระบบจะ sync และแสดงให้ทุกคนเห็นอัตโนมัติในวันถัดไป <em style={{opacity:.45,fontSize:"0.88em"}}>* ผ่าน Co-Work agent ทุก 09:00 น.</em></>}>
+      subtitle={<>ข้อมูลที่ sync แล้วจะ <strong>ปรากฏให้ทุกคนเห็น</strong> — Co-Work sync อัตโนมัติทุก <strong>3 ชั่วโมง</strong> ในช่วง working hours</>}
+      thai={<>กรอกข้อมูลอัพเดทหรือแก้ไขข้อมูลที่ถูกต้อง แล้วบันทึกเป็น Draft ไว้ — ระบบจะ sync และแสดงให้ทุกคนเห็นอัตโนมัติภายใน 3 ชั่วโมง <em style={{opacity:.45,fontSize:"0.88em"}}>* 09:00 / 12:00 / 15:00 / 18:00 / 21:00 น.</em></>}>
 
       {/* ── Sync Status Banner ── */}
       <div style={{
@@ -1317,7 +1317,7 @@ const SectionUpdates = () => {
           </span>
           <button className="export-btn dl" onClick={exportJSON}
             disabled={localEntries.length===0} style={{ opacity:localEntries.length===0?0.45:1 }}
-            title="Export drafts → วางใน QA/updates/ → Claude sync ที่ 09:00">
+            title="Export drafts → วางใน QA/updates/ → Claude sync อัตโนมัติทุก 3 ชั่วโมง (09:00/12:00/15:00/18:00/21:00)">
             ⬇ Export Drafts (EOD)
           </button>
           <button className="export-btn imp" onClick={()=>fileRef.current?.click()}>⬆ Import JSON</button>
@@ -1353,8 +1353,8 @@ const SectionUpdates = () => {
           <div className="step">
             <div className="step-num" style={{ fontSize:14, background:"var(--green)" }}>3</div>
             <div className="step-body">
-              <h4>Claude Co-Work sync ที่ 09:00 น. <span style={{ fontSize:12, color:"var(--green)", fontWeight:700 }}>อัตโนมัติ</span></h4>
-              <p style={{ margin:0, fontSize:13 }}>Co-Work agent อ่าน JSON → embed เข้า <code className="inline">SHARED_UPDATES</code> ใน HTML → push GitHub → Vercel deploy → <strong style={{ color:"var(--green)" }}>ทุกคนเห็น URL เดิม เนื้อหาใหม่</strong></p>
+              <h4>Claude Co-Work sync อัตโนมัติทุก 3 ชั่วโมง <span style={{ fontSize:12, color:"var(--green)", fontWeight:700 }}>09:00 / 12:00 / 15:00 / 18:00 / 21:00</span></h4>
+              <p style={{ margin:0, fontSize:13 }}>ระบบตรวจสอบ Draft ที่ export ไว้ → merge เข้า Hub → <strong style={{ color:"var(--green)" }}>ทุกคนเห็นข้อมูลใหม่โดยอัตโนมัติ</strong></p>
             </div>
           </div>
         </div>
@@ -1370,8 +1370,8 @@ const SectionUpdates = () => {
       <FAQItem q="ถ้าหลายคน Export ในวันเดียวกัน จะ conflict ไหม?" qTh="Multi-user export handling">
         <p>ไม่ conflict — Claude ใช้ <code className="inline">entry.id</code> (timestamp milliseconds) เป็น dedup key ตอน merge ก่อน embed. วางไฟล์หลายคนพร้อมกันใน <code className="inline">QA/updates/</code> ได้เลย</p>
       </FAQItem>
-      <FAQItem q="ถ้าไม่ export ก่อน 09:00 ทันไหม?" qTh="Deadline ของแต่ละวัน">
-        <p>Job รันที่ 09:00 — ถ้า export เสร็จก่อน 09:00 จะถูก sync วันนั้น ถ้าสายกว่านั้นจะรอรอบ 09:00 วันถัดไป. สามารถ trigger sync manual ได้โดยบอก Claude ว่า <code className="inline">"sync updates manual"</code></p>
+      <FAQItem q="Export แล้วจะเห็นเมื่อไหร่?" qTh="รอบ sync ถัดไป">
+        <p>ระบบ sync ทุก 3 ชั่วโมงในช่วง working hours — <strong>09:00 / 12:00 / 15:00 / 18:00 / 21:00 น.</strong> Export ก่อนรอบไหนก็เห็นภายใน 3 ชั่วโมง. สามารถ trigger sync ทันทีได้โดยบอก Claude ว่า <code className="inline">"sync updates manual"</code></p>
       </FAQItem>
       <FAQItem q="Note 'added on' กับ 'วันที่กรอก' ต่างกันยังไง?" qTh="ความแตกต่างของ timestamp">
         <p><code className="inline">🕐 วันที่กรอก</code> = เวลาที่คุณกด "บันทึก Draft" ใน browser · <code className="inline">📅 added on</code> = เวลาที่ Claude embed เข้า Hub (เวลา sync). สองอย่างนี้ต่างกันได้ไม่เกิน ~1 วัน</p>
