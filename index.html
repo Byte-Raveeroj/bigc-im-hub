@@ -1027,7 +1027,7 @@ const SECTION_REFS = [
 
 // Shared entries baked into HTML by Claude on each sync (visible to ALL visitors)
 const SHARED   = window.SHARED_UPDATES || [];
-const SYNCMETA = window.SYNC_META      || { syncedAt:null, lastSyncedBy:"—", totalEntries:0, nextScheduled:"09:00 / 12:00 / 15:00 / 18:00 / 21:00 น." };
+const SYNCMETA = window.SYNC_META      || { syncedAt:null, lastSyncedBy:"—", totalEntries:0, nextScheduled:"ทุกชั่วโมง 10:00–20:00 น." };
 
 const SectionUpdates = () => {
   const [localEntries, setLocalEntries] = useState(() => {
@@ -1036,6 +1036,8 @@ const SectionUpdates = () => {
   const [form, setForm]         = useState({ category:"Note", author:"", priority:"🟡 Medium", title:"", description:"", linkedTC:"", sectionRef:"—  (General)" });
   const [filterCat, setFilterCat] = useState("All");
   const [saved, setSaved]       = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null); // null | "ok" | "err"
   const fileRef = useRef(null);
 
   const persistLocal = (list) => { setLocalEntries(list); localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); };
@@ -1081,6 +1083,33 @@ const SectionUpdates = () => {
       persistLocal([]);
   };
 
+  const submitToHub = async () => {
+    if(localEntries.length === 0) return;
+    setSubmitting(true); setSubmitStatus(null);
+    try {
+      const res = await fetch("/api/submit-update", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          exportedAt: new Date().toISOString(),
+          project: "BigC Supplier Portal IM",
+          entries: localEntries
+        })
+      });
+      if(!res.ok) throw new Error((await res.json()).error || res.statusText);
+      setSubmitStatus("ok");
+      // mark all local entries as synced
+      persistLocal(localEntries.map(e=>({...e, synced:true})));
+      setTimeout(()=>setSubmitStatus(null), 5000);
+    } catch(err) {
+      console.error("submitToHub error:", err);
+      setSubmitStatus("err");
+      setTimeout(()=>setSubmitStatus(null), 6000);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const catColor = c => ({"Bug Found":"red","Dev Answer":"green","Decision":"blue","Blocker":"red","New Requirement":"blue","Question":"amber","TC Update":"green"})[c]||"gray";
 
   const fmtDate = ts => {
@@ -1096,8 +1125,8 @@ const SectionUpdates = () => {
   return (
     <Section id="updates" eyebrow="10 · Team Updates" eyebrowKind="accent"
       title="Team Updates Feed"
-      subtitle={<>ข้อมูลที่ sync แล้วจะ <strong>ปรากฏให้ทุกคนเห็น</strong> — Co-Work sync อัตโนมัติทุก <strong>3 ชั่วโมง</strong> ในช่วง working hours</>}
-      thai={<>กรอกข้อมูลอัพเดทหรือแก้ไขข้อมูลที่ถูกต้อง แล้วบันทึกเป็น Draft ไว้ — ระบบจะ sync และแสดงให้ทุกคนเห็นอัตโนมัติภายใน 3 ชั่วโมง <em style={{opacity:.45,fontSize:"0.88em"}}>* 09:00 / 12:00 / 15:00 / 18:00 / 21:00 น.</em></>}>
+      subtitle={<>ข้อมูลที่ sync แล้วจะ <strong>ปรากฏให้ทุกคนเห็น</strong> — Co-Work sync อัตโนมัติ <strong>ทุกชั่วโมง</strong> ช่วง 10:00–20:00 น.</>}
+      thai={<>กรอกข้อมูลอัพเดทหรือแก้ไขข้อมูลที่ถูกต้อง แล้วกด "ส่ง Update ให้ทีม" — ข้อมูลจะปรากฏให้ทุกคนเห็นภายใน 1 ชั่วโมง <em style={{opacity:.45,fontSize:"0.88em"}}>* sync ทุกชั่วโมง 10:00–20:00 น.</em></>}>
 
       {/* ── Sync Status Banner ── */}
       <div style={{
@@ -1310,25 +1339,44 @@ const SectionUpdates = () => {
           </div>
         )}
 
-        {/* Export/Import Bar */}
-        <div className="export-bar" style={{ marginTop:18 }}>
+        {/* Submit/Export Bar */}
+        <div className="export-bar" style={{ marginTop:18, flexWrap:"wrap", gap:8 }}>
           <span style={{ fontSize:13, fontWeight:700, color:"var(--ink-2)" }}>
-            📦 {localEntries.length} drafts รอ sync
+            📦 {localEntries.length} drafts รอส่ง
           </span>
+
+          {/* PRIMARY: Submit to Hub */}
+          <button
+            onClick={submitToHub}
+            disabled={localEntries.length===0 || submitting}
+            style={{
+              padding:"8px 18px", borderRadius:"var(--radius)", border:"none", cursor:"pointer",
+              background: submitStatus==="ok" ? "var(--green)" : submitStatus==="err" ? "#c0392b" : "var(--primary)",
+              color:"#fff", fontWeight:700, fontSize:13,
+              opacity: (localEntries.length===0 || submitting) ? 0.5 : 1,
+              transition:"background .3s"
+            }}
+            title="ส่ง drafts ขึ้น Hub โดยตรง — ทุกคนเห็นใน sync รอบถัดไป (ภายใน 1 ชม.)">
+            {submitting ? "⏳ กำลังส่ง…" : submitStatus==="ok" ? "✅ ส่งแล้ว!" : submitStatus==="err" ? "❌ ส่งไม่ได้ ลองใหม่" : "📤 ส่ง Update ให้ทีม"}
+          </button>
+
+          {/* SECONDARY: local export backup */}
           <button className="export-btn dl" onClick={exportJSON}
             disabled={localEntries.length===0} style={{ opacity:localEntries.length===0?0.45:1 }}
-            title="Export drafts → วางใน QA/updates/ → Claude sync อัตโนมัติทุก 3 ชั่วโมง (09:00/12:00/15:00/18:00/21:00)">
-            ⬇ Export Drafts (EOD)
+            title="สำรองไฟล์ JSON ไว้เครื่องตัวเอง (backup เท่านั้น)">
+            ⬇ บันทึก JSON (backup)
           </button>
           <button className="export-btn imp" onClick={()=>fileRef.current?.click()}>⬆ Import JSON</button>
           <input ref={fileRef} type="file" accept=".json" style={{ display:"none" }} onChange={importJSON}/>
           <button className="export-btn clr" onClick={clearLocal}
             disabled={localEntries.length===0} style={{ opacity:localEntries.length===0?0.45:1 }}>
-            🗑 Clear Drafts
+            🗑 Clear
           </button>
-          <span style={{ fontSize:12, color:"var(--muted)", fontFamily:"var(--font-thai)", marginLeft:"auto" }}>
-            Drafts อยู่ใน browser นี้เท่านั้น — Export แล้ววางใน QA/updates/
-          </span>
+          {submitStatus==="err" && (
+            <span style={{ fontSize:12, color:"#c0392b", fontFamily:"var(--font-thai)", marginLeft:4 }}>
+              ส่งไม่ได้ — ตรวจ network หรือลอง backup JSON แทน
+            </span>
+          )}
         </div>
       </div>
 
@@ -1339,22 +1387,22 @@ const SectionUpdates = () => {
           <div className="step">
             <div className="step-num" style={{ fontSize:14 }}>1</div>
             <div className="step-body">
-              <h4>เพิ่ม Draft ระหว่างวัน</h4>
-              <p style={{ margin:0, fontSize:13 }}>กรอกฟอร์มด้านบน → "บันทึก Draft" — เก็บใน browser ของคุณ คนอื่นยังไม่เห็น</p>
+              <h4>กรอก Draft</h4>
+              <p style={{ margin:0, fontSize:13 }}>กรอกฟอร์มด้านบน → "บันทึก Draft" — เก็บใน browser ของคุณก่อน คนอื่นยังไม่เห็น</p>
             </div>
           </div>
           <div className="step">
             <div className="step-num accent" style={{ fontSize:14 }}>2</div>
             <div className="step-body">
-              <h4>Export ก่อนเลิกงาน</h4>
-              <p style={{ margin:0, fontSize:13 }}>คลิก "Export Drafts (EOD)" → ได้ไฟล์ <code className="inline">bigc-im-updates-YYYY-MM-DD.json</code> → วางใน <code className="inline">QA/updates/</code></p>
+              <h4>กด "📤 ส่ง Update ให้ทีม"</h4>
+              <p style={{ margin:0, fontSize:13 }}>คลิกปุ่มสีเขียว — ระบบส่ง drafts ขึ้น Hub โดยตรงทันที ไม่ต้องส่งไฟล์ให้ใคร</p>
             </div>
           </div>
           <div className="step">
             <div className="step-num" style={{ fontSize:14, background:"var(--green)" }}>3</div>
             <div className="step-body">
-              <h4>Claude Co-Work sync อัตโนมัติทุก 3 ชั่วโมง <span style={{ fontSize:12, color:"var(--green)", fontWeight:700 }}>09:00 / 12:00 / 15:00 / 18:00 / 21:00</span></h4>
-              <p style={{ margin:0, fontSize:13 }}>ระบบตรวจสอบ Draft ที่ export ไว้ → merge เข้า Hub → <strong style={{ color:"var(--green)" }}>ทุกคนเห็นข้อมูลใหม่โดยอัตโนมัติ</strong></p>
+              <h4>Auto sync <span style={{ fontSize:12, color:"var(--green)", fontWeight:700 }}>ทุกชั่วโมง 10:00–20:00 น.</span></h4>
+              <p style={{ margin:0, fontSize:13 }}>Co-Work รับ draft → merge เข้า Hub → <strong style={{ color:"var(--green)" }}>ทุกคนเห็นข้อมูลใหม่ภายใน 1 ชั่วโมง</strong></p>
             </div>
           </div>
         </div>
@@ -1365,16 +1413,16 @@ const SectionUpdates = () => {
 
       <h3 style={{ marginTop:28 }}>FAQ</h3>
       <FAQItem q="คนอื่นเห็น Draft ที่ฉันกรอกเลยไหม?" qTh="Draft ใคร ใครเห็น">
-        <p><strong>ไม่</strong> — Draft อยู่ใน localStorage ของ browser คุณ คนอื่นจะเห็นก็ต่อเมื่อ Export แล้ว Claude sync เข้า <code className="inline">SHARED_UPDATES</code> และ deploy ขึ้น Vercel แล้ว</p>
+        <p><strong>ยังไม่เห็น</strong> — Draft อยู่ใน browser คุณก่อน. กด <strong>"📤 ส่ง Update ให้ทีม"</strong> แล้ว Co-Work จะ pick up ใน sync รอบถัดไป (ภายใน 1 ชั่วโมง) → ทุกคนเห็น</p>
       </FAQItem>
-      <FAQItem q="ถ้าหลายคน Export ในวันเดียวกัน จะ conflict ไหม?" qTh="Multi-user export handling">
-        <p>ไม่ conflict — Claude ใช้ <code className="inline">entry.id</code> (timestamp milliseconds) เป็น dedup key ตอน merge ก่อน embed. วางไฟล์หลายคนพร้อมกันใน <code className="inline">QA/updates/</code> ได้เลย</p>
+      <FAQItem q="ถ้าหลายคนส่งพร้อมกัน จะ conflict ไหม?" qTh="Multi-user submit handling">
+        <p>ไม่ conflict — แต่ละคนส่งเป็น file แยกกันใน Hub. Claude ใช้ <code className="inline">entry.id</code> (timestamp) เป็น dedup key ตอน merge ก่อน deploy.</p>
       </FAQItem>
-      <FAQItem q="Export แล้วจะเห็นเมื่อไหร่?" qTh="รอบ sync ถัดไป">
-        <p>ระบบ sync ทุก 3 ชั่วโมงในช่วง working hours — <strong>09:00 / 12:00 / 15:00 / 18:00 / 21:00 น.</strong> Export ก่อนรอบไหนก็เห็นภายใน 3 ชั่วโมง. สามารถ trigger sync ทันทีได้โดยบอก Claude ว่า <code className="inline">"sync updates manual"</code></p>
+      <FAQItem q="กดส่งแล้วจะเห็นเมื่อไหร่?" qTh="รอบ sync ถัดไป">
+        <p>Co-Work sync <strong>ทุกชั่วโมง ช่วง 10:00–20:00 น.</strong> — ส่งตอนไหนก็เห็นใน sync รอบถัดไป ไม่เกิน 1 ชั่วโมง. สามารถ trigger ทันทีได้โดยบอก Claude ว่า <code className="inline">"sync updates manual"</code></p>
       </FAQItem>
       <FAQItem q="Note 'added on' กับ 'วันที่กรอก' ต่างกันยังไง?" qTh="ความแตกต่างของ timestamp">
-        <p><code className="inline">🕐 วันที่กรอก</code> = เวลาที่คุณกด "บันทึก Draft" ใน browser · <code className="inline">📅 added on</code> = เวลาที่ Claude embed เข้า Hub (เวลา sync). สองอย่างนี้ต่างกันได้ไม่เกิน ~1 วัน</p>
+        <p><code className="inline">🕐 วันที่กรอก</code> = เวลาที่กด "บันทึก Draft" ใน browser · <code className="inline">📅 added on</code> = เวลาที่ Co-Work embed เข้า Hub (เวลา sync). ต่างกันได้ไม่เกิน ~1 ชั่วโมง</p>
       </FAQItem>
     </Section>
   );
