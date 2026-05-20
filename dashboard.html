@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BigC Portal IM — QA Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+:root {
+  --bg:      #0d0f1a;
+  --panel:   #131625;
+  --card:    rgba(255,255,255,.04);
+  --card-b:  rgba(255,255,255,.08);
+  --border:  rgba(255,255,255,.07);
+  --text:    #c8d0f0;
+  --bright:  #eef0fb;
+  --muted:   #626a9a;
+  --hover:   rgba(255,255,255,.05);
+
+  --blue:    #4f8ef7;  --blue2:   #7ab3ff;
+  --green:   #00d68f;  --green2:  #5fffc4;
+  --purple:  #9b59f5;  --purple2: #c890ff;
+  --orange:  #ff8c42;  --orange2: #ffb87a;
+  --red:     #f03e6b;  --red2:    #ff7097;
+  --yellow:  #f5c518;  --yellow2: #ffe066;
+  --cyan:    #00c8e0;
+  --pink:    #f059b8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ── SIDEBAR ── */
+.sb{
+  width:200px;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;
+  transition:width .25s cubic-bezier(.4,0,.2,1);
+  overflow:hidden;
+}
+.sb.collapsed{width:48px}
+
+/* logo row */
+.sb-logo{
+  padding:14px 10px 12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+  min-height:54px;flex-shrink:0;position:relative;
+}
+.sb-logo-text{flex:1;min-width:0;overflow:hidden;transition:opacity .2s}
+.sb.collapsed .sb-logo-text{opacity:0;pointer-events:none}
+.sb-logo .ln{font-size:.85rem;font-weight:800;color:var(--bright);letter-spacing:-.3px;white-space:nowrap}
+.sb-logo .ln em{font-style:normal;color:var(--blue)}
+.sb-logo .ls{font-size:.6rem;color:var(--muted);margin-top:2px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap}
+
+/* toggle button */
+.sb-toggle{
+  width:24px;height:24px;border-radius:6px;flex-shrink:0;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--muted);font-size:.7rem;transition:all .15s;
+  margin-left:auto;
+}
+.sb-toggle:hover{background:rgba(255,255,255,.12);color:var(--bright)}
+.sb.collapsed .sb-toggle{margin-left:0}
+
+.sb-sec{padding:10px 6px 4px;overflow:hidden}
+.sb-lbl{
+  font-size:.58rem;text-transform:uppercase;letter-spacing:.8px;
+  color:var(--muted);padding:0 8px 6px;
+  white-space:nowrap;overflow:hidden;
+  transition:opacity .2s;
+}
+.sb.collapsed .sb-lbl{opacity:0}
+.sb-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;border-radius:7px;font-size:.75rem;
+  cursor:pointer;color:var(--text);transition:all .15s;
+  border:1px solid transparent;position:relative;
+  white-space:nowrap;
+}
+.sb.collapsed .sb-item{padding:7px;justify-content:center}
+.sb-item-text{overflow:hidden;transition:opacity .2s,max-width .25s;max-width:140px}
+.sb.collapsed .sb-item-text{opacity:0;max-width:0;pointer-events:none}
+.sb-item:hover{background:var(--hover)}
+.sb-item.active{
+  background:linear-gradient(135deg,rgba(79,142,247,.15),rgba(155,89,245,.1));
+  border-color:rgba(79,142,247,.25);color:var(--blue2);
+}
+.sb-item.active::before{
+  content:'';position:absolute;left:0;top:20%;bottom:20%;
+  width:3px;background:linear-gradient(180deg,var(--blue),var(--purple));
+  border-radius:0 2px 2px 0;
+}
+.sb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sb-badge{
+  margin-left:auto;font-size:.6rem;font-weight:700;
+  background:rgba(255,255,255,.07);padding:2px 6px;
+  border-radius:99px;color:var(--muted);
+  transition:opacity .2s;
+}
+.sb.collapsed .sb-badge{opacity:0;pointer-events:none}
+.sb-item.active .sb-badge{background:rgba(79,142,247,.2);color:var(--blue2)}
+.sb-div{height:1px;background:var(--border);margin:6px 10px;transition:margin .25s}
+.sb.collapsed .sb-div{margin:6px 6px}
+.sb-bot{margin-top:auto;padding:10px 6px;border-top:1px solid var(--border)}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{
+  display:flex;align-items:center;padding:0 20px;height:50px;
+  border-bottom:1px solid var(--border);gap:10px;flex-shrink:0;
+  background:rgba(255,255,255,.02);
+}
+.topbar-title{font-size:.9rem;font-weight:700;color:var(--bright);flex:1}
+.topbar-meta{font-size:.68rem;color:var(--muted)}
+.btn{
+  padding:5px 14px;border-radius:7px;font-size:.72rem;
+  cursor:pointer;border:none;font-weight:600;transition:all .15s;
+}
+.btn:hover{opacity:.8;transform:translateY(-1px)}
+.btn-ghost{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--border)}
+
+.content{flex:1;overflow-y:auto}
+
+/* ── BOARD TABLE ── */
+.board-wrap{padding:16px 20px 0}
+.g-hdr{
+  display:flex;align-items:center;gap:8px;padding:6px 8px;
+  cursor:pointer;border-radius:5px;user-select:none;
+}
+.g-hdr:hover{background:var(--hover)}
+.g-arr{font-size:.55rem;color:var(--muted);transition:transform .2s;width:12px;text-align:center}
+.g-arr.open{transform:rotate(90deg)}
+.g-bar{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+.g-name{font-size:.78rem;font-weight:700;color:var(--bright)}
+.g-cnt{font-size:.65rem;color:var(--muted);background:rgba(255,255,255,.06);padding:1px 6px;border-radius:99px}
+.bt{width:100%;border-collapse:collapse}
+.bt th{
+  font-size:.62rem;text-transform:uppercase;letter-spacing:.4px;
+  color:var(--muted);padding:6px 10px;text-align:left;font-weight:600;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+.bt td{padding:0;border-bottom:1px solid var(--border);vertical-align:middle}
+.bt tbody tr{transition:background .1s}
+.bt tbody tr:hover{background:var(--hover)}
+.rm{display:flex;align-items:center;gap:10px;padding:9px 10px}
+.ra{width:3px;height:32px;border-radius:2px;flex-shrink:0}
+.rn{font-size:.8rem;color:var(--bright);font-weight:500}
+.rs{font-size:.63rem;color:var(--muted);margin-top:1px}
+.sc{padding:0 10px}
+.sp{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 9px;border-radius:4px;font-size:.67rem;font-weight:700;white-space:nowrap;
+}
+.sp .sd{width:5px;height:5px;border-radius:50%}
+.sa{background:rgba(0,214,143,.12);color:var(--green)}.sa .sd{background:var(--green)}
+.so{background:rgba(98,106,154,.12);color:var(--muted)}.so .sd{background:var(--muted)}
+.sb2{background:rgba(240,62,107,.12);color:var(--red)}.sb2 .sd{background:var(--red)}
+.nc{padding:0 10px;text-align:center}
+.nv{font-size:.84rem;font-weight:700;color:var(--bright)}
+.ns{font-size:.6rem;color:var(--muted)}
+.nz{color:var(--muted)}
+.pc{padding:0 12px;min-width:130px}
+.pr{display:flex;align-items:center;gap:8px}
+.bat{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}
+.bf{height:100%;border-radius:99px;transition:width 1.2s cubic-bezier(.34,1.56,.64,1)}
+.pp{font-size:.7rem;font-weight:700;min-width:28px;text-align:right}
+.tc2{padding:0 10px}
+.td2{display:flex;align-items:center;gap:4px}
+.tdg2{display:flex;align-items:center;gap:3px;font-size:.68rem}
+.tdot2{width:7px;height:7px;border-radius:50%}
+.ac{padding:0 12px;max-width:190px}
+.at{font-size:.67rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr td{background:rgba(255,255,255,.02);border-top:1px solid var(--border);border-bottom:none}
+
+/* ── AREA HERO (single-area view) ── */
+.area-hero{
+  margin:16px 20px 0;
+  background:var(--card);border:1px solid var(--card-b);
+  border-radius:14px;padding:18px 20px;
+  display:flex;align-items:center;gap:20px;
+  position:relative;overflow:hidden;
+}
+.area-hero::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.ah-left{flex:1}
+.ah-name{font-size:1.05rem;font-weight:800;color:var(--bright);letter-spacing:-.3px;margin-bottom:3px}
+.ah-sub{font-size:.7rem;color:var(--muted);margin-bottom:12px}
+.ah-bar{display:flex;align-items:center;gap:10px}
+.ah-track{flex:1;height:7px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.ah-fill{height:100%;border-radius:99px}
+.ah-pct{font-size:.9rem;font-weight:800;min-width:36px}
+.ah-right{display:flex;gap:16px;flex-shrink:0}
+.ah-stat{text-align:center}
+.ah-sv{font-size:1.4rem;font-weight:900;line-height:1;letter-spacing:-1px}
+.ah-sl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+.ah-nx{margin-top:10px;font-size:.65rem;color:var(--muted);display:flex;align-items:center;gap:5px}
+.ah-nx-tag{background:rgba(79,142,247,.12);color:var(--blue2);padding:2px 7px;border-radius:4px;font-size:.6rem;font-weight:700}
+
+/* ── SECTION DIVIDER ── */
+.sec-div{
+  display:flex;align-items:center;gap:10px;
+  padding:18px 20px 10px;
+}
+.sec-div-line{flex:1;height:1px;background:var(--border)}
+.sec-div-label{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+
+/* ── CHART AREA ── */
+.chart-wrap{padding:0 20px 32px}
+
+/* KPI row */
+.kpi-row{display:flex;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.kpi{
+  flex:1;min-width:100px;
+  background:var(--card);
+  border:1px solid var(--card-b);
+  border-radius:12px;padding:14px 16px;
+  position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s;
+}
+.kpi:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.14)}
+.kpi::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+}
+.kpi.kblue::before{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.kpi.kgreen::before{background:linear-gradient(90deg,var(--green),var(--green2))}
+.kpi.kpurple::before{background:linear-gradient(90deg,var(--purple),var(--pink))}
+.kpi.korange::before{background:linear-gradient(90deg,var(--orange),var(--yellow))}
+.kpi.kred::before{background:linear-gradient(90deg,var(--red),var(--orange))}
+.kpi-val{font-size:1.7rem;font-weight:900;line-height:1;margin-bottom:4px;letter-spacing:-1px}
+.kpi-label{font-size:.63rem;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.4px}
+.kpi-sub{font-size:.6rem;color:var(--muted);margin-top:2px}
+
+/* Chart grid */
+.cg{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-bottom:14px}
+.cg .c1{grid-column:span 4}
+.cg .c2{grid-column:span 5}
+.cg .c3{grid-column:span 3}
+.cg .c4{grid-column:span 4}
+.cg .c5{grid-column:span 5}
+.cg .c6{grid-column:span 6}
+.cg .c7{grid-column:span 7}
+.cg .c8{grid-column:span 8}
+.cg .c12{grid-column:span 12}
+@media(max-width:900px){.cg .c1,.cg .c2,.cg .c3,.cg .c4,.cg .c5,.cg .c6,.cg .c7,.cg .c8{grid-column:span 12}}
+
+/* Chart card */
+.cc{
+  background:var(--card);
+  border:1px solid var(--card-b);
+  border-radius:14px;padding:18px;
+  position:relative;overflow:hidden;
+  transition:border-color .2s;
+}
+.cc:hover{border-color:rgba(255,255,255,.12)}
+.cc-accent{position:absolute;top:0;left:0;right:0;height:1px}
+.cc-title{font-size:.75rem;font-weight:700;color:var(--bright);margin-bottom:2px;display:flex;align-items:center;gap:6px}
+.cc-sub{font-size:.6rem;color:var(--muted);margin-bottom:14px}
+.cw{position:relative}
+.dc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.dc-v{font-size:1.85rem;font-weight:900;color:var(--bright);line-height:1;letter-spacing:-1.5px}
+.dc-l{font-size:.58rem;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.4px}
+
+/* Legend */
+.leg{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.li{display:flex;align-items:center;gap:5px;font-size:.63rem;color:var(--muted)}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Phase timeline */
+.phases{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.phase-item{
+  flex:1;min-width:80px;
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:8px;padding:10px 10px 8px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.phase-item.done{border-color:rgba(0,214,143,.3);background:rgba(0,214,143,.06)}
+.phase-item.next{border-color:rgba(79,142,247,.4);background:rgba(79,142,247,.08)}
+.phase-item.blocked{border-color:rgba(240,62,107,.25);background:rgba(240,62,107,.04)}
+.phase-item.blocked{opacity:.6}
+.ph-num{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.ph-name{font-size:.62rem;color:var(--muted);margin-bottom:6px}
+.ph-tests{font-size:1rem;font-weight:800;color:var(--bright);line-height:1}
+.ph-label{font-size:.55rem;color:var(--muted);margin-top:2px}
+.ph-badge{
+  display:inline-block;margin-top:6px;
+  font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:99px;
+}
+.pb-done{background:rgba(0,214,143,.2);color:var(--green)}
+.pb-next{background:rgba(79,142,247,.2);color:var(--blue2)}
+.pb-blocked{background:rgba(98,106,154,.15);color:var(--muted)}
+
+/* OOS placeholder */
+.oos-placeholder{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 20px;text-align:center;gap:12px;
+}
+.oos-icon{font-size:2.5rem;opacity:.3}
+.oos-title{font-size:1rem;font-weight:700;color:var(--muted)}
+.oos-sub{font-size:.75rem;color:var(--muted);opacity:.7;max-width:300px}
+
+/* Footer */
+.fbar{height:26px;border-top:1px solid var(--border);display:flex;align-items:center;padding:0 18px;gap:14px;flex-shrink:0}
+.fi{font-size:.64rem;color:var(--muted);display:flex;align-items:center;gap:4px}
+.fd{width:5px;height:5px;border-radius:50%}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px}
+
+/* ══════════════════════════════════════════
+   ALL AREAS — new overview layout
+══════════════════════════════════════════ */
+
+/* ① Overall ring row — 3 columns */
+.ov-row{display:grid;grid-template-columns:300px 1fr 360px;gap:12px;padding:16px 20px 0;align-items:stretch}
+
+/* Overall Progress card */
+.ov-ring-card{
+  background:var(--card);border:1px solid var(--card-b);border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:24px 18px 20px;position:relative;overflow:hidden;gap:14px;
+}
+.ov-ring-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--green))}
+/* corner glow accents */
+.ov-ring-card::after{content:'';position:absolute;bottom:-60px;right:-60px;
+  width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(155,89,245,.08) 0%,transparent 70%)}
+.ov-ring-wrap{position:relative;width:210px;height:210px}
+.ov-ring-wrap canvas{width:210px!important;height:210px!important}
+.ov-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ov-ring-val{font-size:3.2rem;font-weight:900;line-height:1;letter-spacing:-2px}
+.ov-ring-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-top:5px}
+.ov-ring-title{font-size:.92rem;font-weight:800;color:var(--bright);text-align:center;letter-spacing:-.2px}
+.ov-ring-sub{font-size:.7rem;color:var(--muted);text-align:center}
+
+/* area donuts panel */
+.ov-donuts-card{
+  background:var(--card);border:1px solid var(--card-b);border-radius:16px;
+  padding:16px 10px 14px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+}
+.ov-donuts-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--blue),var(--purple),var(--green))}
+.ovd-title{font-size:.65rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.ovd-grid{display:flex;justify-content:center;gap:0px;flex:1;align-items:center}
+.ovd-item{display:flex;flex-direction:column;align-items:center;gap:8px;flex:1;padding:0 4px}
+.ovd-ring{position:relative;width:158px;height:158px}
+.ovd-ring canvas{width:158px!important;height:158px!important}
+.ovd-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ovd-val{font-size:1.7rem;font-weight:900;line-height:1;letter-spacing:-.5px}
+.ovd-lbl-row{text-align:center}
+.ovd-name{font-size:.82rem;font-weight:800;color:var(--bright);display:block;margin-bottom:2px}
+.ovd-sub{font-size:.63rem;color:var(--muted)}
+.ovd-sep{width:1px;background:var(--border);align-self:stretch;margin:8px 0;flex-shrink:0}
+.ovd-oos{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:10px;
+  border-top:1px solid var(--border);opacity:.4}
+.ovd-oos-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.ovd-oos-name{font-size:.66rem;font-weight:700;color:var(--muted)}
+.ovd-oos-sub{font-size:.58rem;color:var(--muted);flex:1}
+
+/* Defect panel (3rd column) */
+.ov-defect-card{
+  background:var(--card);border:1px solid var(--card-b);border-radius:16px;
+  padding:14px 16px 12px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.ov-defect-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--red),var(--orange2,#f59e0b))}
+.def-head{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.def-title{font-size:.84rem;font-weight:800;color:var(--bright);flex:1}
+.def-mock-badge{font-size:.58rem;color:var(--muted);background:rgba(255,255,255,.05);
+  border:1px solid var(--border);border-radius:4px;padding:2px 6px}
+.def-counts{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px}
+.def-count{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 6px;text-align:center}
+.def-cv{font-size:1.5rem;font-weight:900;line-height:1;margin-bottom:3px}
+.def-cl{font-size:.58rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.def-list{display:flex;flex-direction:column;gap:7px;flex:1}
+.def-item{display:flex;align-items:flex-start;gap:8px;padding:8px 10px;
+  background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:8px;
+  transition:border-color .2s}
+.def-item:hover{border-color:rgba(255,255,255,.12)}
+.def-sev{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.def-body{flex:1;min-width:0}
+.def-id{font-size:.66rem;font-weight:700;color:var(--blue2);font-family:monospace;
+  text-decoration:none;display:inline-block;margin-bottom:2px}
+.def-id:hover{text-decoration:underline}
+.def-txt{font-size:.72rem;color:var(--text);line-height:1.35;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.def-meta{font-size:.62rem;color:var(--muted);margin-top:2px}
+.def-pill{font-size:.56rem;font-weight:700;padding:2px 6px;border-radius:3px}
+.def-pill.open{background:rgba(240,62,107,.12);color:var(--red)}
+.def-pill.prog{background:rgba(79,142,247,.12);color:var(--blue2)}
+.def-pill.res{background:rgba(0,214,143,.12);color:var(--green)}
+.def-footer{font-size:.63rem;color:var(--muted);text-align:center;margin-top:8px;
+  padding-top:8px;border-top:1px solid var(--border)}
+
+/* ② TC Progress — 2 module cards */
+.tc-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 20px 0}
+.tc-mod-card{
+  background:var(--card);border:1px solid var(--card-b);border-radius:14px;padding:16px 18px;
+  position:relative;overflow:hidden;
+}
+.tc-mod-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.tc-mod-card.tcm-npd::before{background:linear-gradient(90deg,var(--blue),var(--cyan))}
+.tc-mod-card.tcm-inv::before{background:linear-gradient(90deg,var(--purple),var(--pink))}
+.tcm-head{display:flex;align-items:center;gap:7px;margin-bottom:12px}
+.tcm-icon{font-size:1rem}
+.tcm-name{font-size:.85rem;font-weight:800;color:var(--bright);flex:1}
+.tcm-pill{font-size:1.05rem;font-weight:900;padding:4px 14px;border-radius:99px;letter-spacing:-.5px}
+.tcm-pill.g{background:rgba(0,214,143,.12);color:var(--green)}
+.tcm-pill.y{background:rgba(245,197,24,.12);color:var(--yellow)}
+.tcm-pill.r{background:rgba(240,62,107,.12);color:var(--red)}
+.tcm-sub{font-size:.6rem;color:var(--muted);margin-bottom:14px}
+.tcm-stats{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px}
+.tcm-stat{flex:1;padding:9px 8px;text-align:center;border-right:1px solid var(--border)}
+.tcm-stat:last-child{border-right:none}
+.tcm-sv{display:block;font-size:1rem;font-weight:900;color:var(--bright);line-height:1;margin-bottom:3px}
+.tcm-sv.g{color:var(--green)}.tcm-sv.y{color:var(--yellow)}.tcm-sv.r{color:var(--red)}.tcm-sv.b{color:var(--blue2)}.tcm-sv.p{color:var(--purple2)}
+.tcm-sl{font-size:.52rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.tcm-bar-wrap{display:flex;align-items:center;gap:8px}
+.tcm-bar{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.tcm-fill{height:100%;border-radius:99px}
+.tcm-bpct{font-size:.7rem;font-weight:800;min-width:32px;text-align:right}
+.tcm-nx{font-size:.6rem;color:var(--muted);border-top:1px solid var(--border);padding-top:9px;margin-top:12px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tcm-nx-tag{display:inline-block;background:rgba(79,142,247,.12);color:var(--blue2);
+  padding:1px 6px;border-radius:4px;font-size:.56rem;font-weight:700;margin-right:5px}
+
+/* ③ Automation row — results + coverage side by side */
+.auto-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:14px 20px 0}
+.auto-card{
+  background:var(--card);border:1px solid var(--card-b);border-radius:14px;
+  padding:16px 18px;position:relative;overflow:hidden;
+}
+.auto-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--green),var(--cyan))}
+.auc-head{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.auc-title{font-size:.85rem;font-weight:800;color:var(--bright);flex:1}
+.auc-sub{font-size:.6rem;color:var(--muted);margin-bottom:14px}
+.auc-result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.auc-rg{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:9px;padding:10px 8px;text-align:center}
+.auc-rv{font-size:1.4rem;font-weight:900;line-height:1;margin-bottom:3px}
+.auc-rl{font-size:.55rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.auc-rate-row{display:flex;align-items:center;gap:8px}
+.auc-rate-bar{flex:1;height:6px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.auc-rate-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--green),var(--cyan))}
+.auc-rate-pct{font-size:.75rem;font-weight:800;color:var(--green);min-width:36px;text-align:right}
+/* coverage card */
+.auc-cov-wrap{display:flex;gap:14px;margin-bottom:14px;align-items:center}
+.auc-cov-ring{position:relative;width:84px;height:84px;flex-shrink:0}
+.auc-cov-ring canvas{width:84px!important;height:84px!important}
+.auc-cov-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.auc-cov-pct{font-size:1.1rem;font-weight:900;letter-spacing:-1px;color:var(--green)}
+.auc-cov-lbl{font-size:.48rem;color:var(--muted);text-transform:uppercase}
+.auc-cov-stats{flex:1;display:flex;flex-direction:column;gap:8px}
+.auc-cov-row{display:flex;justify-content:space-between;align-items:center}
+.auc-cov-k{font-size:.65rem;color:var(--muted)}
+.auc-cov-v{font-size:.75rem;font-weight:800;color:var(--bright)}
+.auc-phases{display:flex;flex-wrap:wrap;gap:5px;margin-top:2px}
+.auc-phase{font-size:.58rem;padding:2px 7px;border-radius:4px;border:1px solid}
+.auc-phase.done{background:rgba(0,214,143,.08);border-color:rgba(0,214,143,.25);color:var(--green)}
+.auc-phase.next{background:rgba(245,197,24,.08);border-color:rgba(245,197,24,.3);color:var(--yellow)}
+.auc-phase.wait{background:rgba(98,106,154,.08);border-color:rgba(98,106,154,.25);color:var(--muted)}
+
+/* ④ OOS + blockers footer strip */
+.ov-footer{display:flex;gap:10px;padding:14px 20px 0;flex-wrap:wrap}
+.ov-oos{
+  background:rgba(255,255,255,.02);border:1px dashed var(--border);
+  border-radius:10px;padding:9px 14px;
+  display:flex;align-items:center;gap:9px;opacity:.5;flex:1;
+}
+.ov-blocker{
+  background:rgba(245,197,24,.04);border:1px solid rgba(245,197,24,.15);
+  border-radius:10px;padding:9px 14px;
+  display:flex;align-items:center;gap:8px;
+}
+.ov-blocker-label{font-size:.65rem;font-weight:700;color:var(--yellow)}
+.ov-blocker-items{font-size:.6rem;color:var(--muted)}
+
+/* Error */
+.err{margin:20px;background:rgba(240,62,107,.1);border:1px solid var(--red);border-radius:10px;padding:16px;font-size:.75rem;color:var(--red)}
+.err code{display:block;margin-top:8px;background:var(--panel);padding:6px 10px;border-radius:6px;color:var(--text);font-family:monospace;font-size:.7rem}
+
+/* Animate in */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.anim{animation:fadeUp .35s ease both}
+.anim-d1{animation-delay:.05s}.anim-d2{animation-delay:.1s}.anim-d3{animation-delay:.15s}.anim-d4{animation-delay:.2s}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sb" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-text">
+      <div class="ln">BigC <em>Portal IM</em></div>
+      <div class="ls">QA Dashboard</div>
+    </div>
+    <button class="sb-toggle" id="sb-toggle-btn" onclick="toggleSidebar()" title="Toggle sidebar">◀</button>
+  </div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Overview</div>
+    <div class="sb-item active" onclick="nav(this,'all')">
+      <span class="sb-dot" style="background:linear-gradient(135deg,var(--blue),var(--purple))"></span>
+      <span class="sb-item-text">All Areas</span>
+    </div>
+  </div>
+  <div class="sb-div"></div>
+  <div class="sb-sec">
+    <div class="sb-lbl">Areas</div>
+    <div class="sb-item" onclick="nav(this,'npd')">
+      <span class="sb-dot" style="background:var(--blue)"></span>
+      <span class="sb-item-text">IM NPD</span>
+      <span class="sb-badge" id="b-npd">—</span>
+    </div>
+    <div class="sb-item" onclick="nav(this,'inv')">
+      <span class="sb-dot" style="background:var(--purple)"></span>
+      <span class="sb-item-text">Invoice</span>
+      <span class="sb-badge" id="b-inv">—</span>
+    </div>
+    <div class="sb-item" onclick="nav(this,'auto')">
+      <span class="sb-dot" style="background:var(--green)"></span>
+      <span class="sb-item-text">Automate</span>
+      <span class="sb-badge" id="b-auto">—</span>
+    </div>
+    <div class="sb-item" onclick="nav(this,'maint')" style="opacity:.45">
+      <span class="sb-dot" style="background:var(--muted)"></span>
+      <span class="sb-item-text">IM Maintain</span>
+      <span class="sb-badge">P2</span>
+    </div>
+  </div>
+  <div class="sb-bot">
+    <div class="sb-item" onclick="load()">
+      <span>⟳</span>
+      <span class="sb-item-text">Refresh</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="t-title">QA Board — All Areas</div>
+    <div class="topbar-meta" id="t-meta">—</div>
+    <button class="btn btn-ghost" onclick="load()">⟳ Refresh</button>
+  </div>
+  <div class="content" id="main-content">
+    <div style="padding:40px;color:var(--muted)">กำลังโหลด...</div>
+  </div>
+  <div class="fbar" id="fbar"></div>
+</div>
+
+<script>
+Chart.defaults.color='#626a9a';
+Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.animation=false;
+
+const MD='memory/project_status.md';
+let DATA=null, FILTER='all', CHARTS=[];
+
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const btn=document.getElementById('sb-toggle-btn');
+  sb.classList.toggle('collapsed');
+  btn.textContent=sb.classList.contains('collapsed')?'▶':'◀';
+}
+
+/* ── LOAD ── */
+async function load(){
+  let raw;
+  try{
+    const r=await fetch(MD+'?t='+Date.now());
+    if(!r.ok)throw new Error('HTTP '+r.status);
+    raw=await r.text();
+  }catch(e){
+    document.getElementById('main-content').innerHTML=
+      `<div class="err">❌ ${e.message}<br>รัน server ก่อน:<code>cd D:\\Big_C\\Portal_IM &amp;&amp; python -m http.server 8888</code></div>`;
+    return;
+  }
+  DATA=parse(raw);
+  if(!DATA){
+    document.getElementById('main-content').innerHTML='<div class="err">❌ ไม่พบ DASHBOARD DATA section</div>';
+    return;
+  }
+  updateBadges();
+  render();
+  renderFooter();
+  document.getElementById('t-meta').textContent='อัพเดท '+DATA.lu;
+}
+
+function parse(raw){
+  const s0=raw.indexOf('## 📊 DASHBOARD DATA');
+  if(s0===-1)return null;
+  const e0=raw.indexOf('\n---\n',s0);
+  const blk=e0===-1?raw.slice(s0):raw.slice(s0,e0);
+  const luM=blk.match(/last_updated:\s*(.+)/);
+  const secs={};
+  const re=/\[(\w+)\]\n([\s\S]*?)(?=\n\[|\n---|\n## |$)/g;
+  let m;
+  while((m=re.exec(blk))!==null){
+    const obj={};
+    for(const l of m[2].trim().split('\n')){const kv=l.match(/^(\w+):\s*(.+)/);if(kv)obj[kv[1]]=kv[2].trim();}
+    secs[m[1]]=obj;
+  }
+  return{lu:luM?luM[1].trim():'—',s:secs};
+}
+
+const n=s=>parseInt(s)||0;
+const p=s=>parseFloat(s)||0;
+
+function grad(ctx,c1,c2,h=200){
+  const g=ctx.createLinearGradient(0,0,0,h);
+  g.addColorStop(0,c1);g.addColorStop(1,c2);return g;
+}
+function gradH(ctx,c1,c2,w=400){
+  const g=ctx.createLinearGradient(0,0,w,0);
+  g.addColorStop(0,c1);g.addColorStop(1,c2);return g;
+}
+
+/* ── NAV ── */
+function nav(el,f){
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  FILTER=f;
+  const titles={all:'QA Board — All Areas',npd:'IM NPD',inv:'Invoice Matching',auto:'Automate Script',maint:'IM Maintain'};
+  document.getElementById('t-title').textContent=titles[f];
+  if(DATA) render();
+}
+
+function updateBadges(){
+  const s=DATA.s;
+  document.getElementById('b-npd').textContent=n(s.IM_NPD?.tc_total)||'—';
+  document.getElementById('b-inv').textContent=n(s.INVOICE?.tc_total)||'—';
+  document.getElementById('b-auto').textContent=n(s.AUTOMATE?.test_total)||'—';
+}
+
+/* ── MASTER RENDER ── */
+function render(){
+  destroyCharts();
+  if(FILTER==='all')  renderAll();
+  else if(FILTER==='npd')  renderNPD();
+  else if(FILTER==='inv')  renderInv();
+  else if(FILTER==='auto') renderAuto();
+  else renderMaint();
+  // scroll to top
+  document.getElementById('main-content').scrollTop=0;
+}
+
+/* ── BOARD HELPERS ── */
+const SM={ACTIVE:['sa','Active'],OUT_OF_SCOPE_PHASE1:['so','Out of Scope'],BLOCKED:['sb2','Blocked']};
+function spill(st){const[c,l]=SM[st]||['so',st||'—'];return`<span class="sp ${c}"><span class="sd"></span>${l}</span>`;}
+function bat(pct,c1,c2){
+  const col=pct>=70?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+  return`<div class="pr"><div class="bat"><div class="bf" style="width:${pct}%;background:linear-gradient(90deg,${c1},${c2})"></div></div><span class="pp" style="color:${col}">${pct}%</span></div>`;
+}
+function tdots(pass,fail,fixme){
+  return`<div class="td2">
+    <span class="tdg2"><span class="tdot2" style="background:var(--green)"></span>${pass}</span>
+    ${fail>0?`<span class="tdg2"><span class="tdot2" style="background:var(--red)"></span>${fail}</span>`:''}
+    ${fixme>0?`<span class="tdg2"><span class="tdot2" style="background:var(--yellow)"></span>${fixme}</span>`:''}
+  </div>`;
+}
+function getRows(s){
+  return[
+    {k:'npd',  ac:'var(--blue)',   nm:'IM NPD',          sb:'New Product Development',  st:s.IM_NPD?.status,
+     tc:n(s.IM_NPD?.tc_total),ts:`${n(s.IM_NPD?.tc_ready)} ready`,
+     tt:n(s.IM_NPD?.auto_total),ps:n(s.IM_NPD?.auto_passing),fl:n(s.IM_NPD?.auto_failed),fx:n(s.IM_NPD?.auto_fixme),
+     pg:p(s.IM_NPD?.progress_pct),c1:'var(--blue)',c2:'var(--cyan)',nx:s.IM_NPD?.next_action},
+    {k:'inv',  ac:'var(--purple)', nm:'Invoice Matching', sb:'OCR · PO/GR · ACC · SG',   st:s.INVOICE?.status,
+     tc:n(s.INVOICE?.tc_total),ts:`${n(s.INVOICE?.tc_ready)} ready`,
+     tt:0,ps:0,fl:0,fx:0,pg:p(s.INVOICE?.progress_pct),c1:'var(--purple)',c2:'var(--pink)',nx:s.INVOICE?.next_action},
+    {k:'auto', ac:'var(--green)',  nm:'Automate Script',  sb:`Phase ${s.AUTOMATE?.phase_done||'?'} done`,st:s.AUTOMATE?.status,
+     tc:null,ts:null,tt:n(s.AUTOMATE?.test_total),ps:n(s.AUTOMATE?.test_passing),fl:n(s.AUTOMATE?.test_failed),fx:n(s.AUTOMATE?.test_fixme),
+     pg:p(s.AUTOMATE?.progress_pct),c1:'var(--green)',c2:'var(--cyan)',nx:s.AUTOMATE?.next_action},
+    {k:'maint',ac:'var(--muted)',  nm:'IM Maintain',      sb:'Change Request — Phase 2',  st:s.IM_MAINTAIN?.status,
+     tc:0,ts:'out of scope',tt:0,ps:0,fl:0,fx:0,pg:0,c1:'var(--muted)',c2:'var(--muted)',nx:s.IM_MAINTAIN?.next_action||'รอ Phase 2 kickoff'},
+  ];
+}
+const TH=`<thead><tr>
+  <th style="min-width:190px">Task</th><th style="min-width:100px">Status</th>
+  <th style="min-width:70px;text-align:center">TC</th><th style="min-width:90px">Tests</th>
+  <th style="min-width:140px">Progress</th><th>Next Action</th>
+</tr></thead>`;
+function rowHtml(r){
+  return`<tr>
+    <td><div class="rm">
+      <div class="ra" style="background:linear-gradient(180deg,${r.c1},${r.c2})"></div>
+      <div><div class="rn">${r.nm}</div><div class="rs">${r.sb}</div></div>
+    </div></td>
+    <td class="sc">${spill(r.st)}</td>
+    <td class="nc">${r.tc!==null?`<div class="nv">${r.tc}</div><div class="ns">${r.ts||''}</div>`:'<span class="nz">—</span>'}</td>
+    <td class="tc2">${r.tt>0?tdots(r.ps,r.fl,r.fx):'<span class="nz" style="font-size:.72rem">—</span>'}</td>
+    <td class="pc">${bat(r.pg,r.c1,r.c2)}</td>
+    <td class="ac"><div class="at" title="${r.nx||''}">${r.nx||'—'}</div></td>
+  </tr>`;
+}
+function tg(hdr){
+  const a=hdr.querySelector('.g-arr');
+  const b=hdr.nextElementSibling;
+  b.style.display=a.classList.toggle('open')?'':'none';
+}
+function boardHtml(filter){
+  const all=getRows(DATA.s);
+  const act=all.filter(r=>r.k!=='maint');
+  const oos=all.filter(r=>r.k==='maint');
+  const fa=filter==='all'?act:act.filter(r=>r.k===filter);
+  const fo=filter==='all'?oos:oos.filter(r=>r.k===filter);
+  const totTC=act.reduce((a,r)=>a+(r.tc||0),0);
+  const totPs=act.reduce((a,r)=>a+r.ps,0);
+  const totFx=act.reduce((a,r)=>a+r.fx,0);
+  let h='';
+  if(fa.length) h+=`<div class="group">
+    <div class="g-hdr" onclick="tg(this)"><span class="g-arr open">▶</span>
+    <div class="g-bar" style="background:linear-gradient(135deg,var(--blue),var(--purple))"></div>
+    <span class="g-name">Active</span><span class="g-cnt">${fa.length}</span></div>
+    <div class="gb"><table class="bt">${TH}<tbody>${fa.map(rowHtml).join('')}
+    ${filter==='all'?`<tr class="sr"><td><div class="rm" style="padding-left:23px"><span style="font-size:.67rem;color:var(--muted)">Summary</span></div></td><td></td>
+    <td class="nc"><div class="nv">${totTC}</div><div class="ns">total TCs</div></td>
+    <td class="tc2">${tdots(totPs,0,totFx)}</td><td></td><td></td></tr>`:''}
+    </tbody></table></div></div>`;
+  if(fo.length) h+=`<div class="group" style="margin-top:8px">
+    <div class="g-hdr" onclick="tg(this)"><span class="g-arr open">▶</span>
+    <div class="g-bar" style="background:var(--muted)"></div>
+    <span class="g-name">Out of Scope</span><span class="g-cnt">${fo.length}</span></div>
+    <div class="gb"><table class="bt">${TH}<tbody>${fo.map(rowHtml).join('')}</tbody></table></div></div>`;
+  return h||'<div style="padding:32px;color:var(--muted);font-size:.82rem">ไม่มีข้อมูล</div>';
+}
+
+/* ── CHART HELPERS ── */
+function destroyCharts(){CHARTS.forEach(c=>c.destroy());CHARTS=[];}
+function mkC(id,cfg){
+  const cv=document.getElementById(id);if(!cv)return;
+  const c=new Chart(cv,cfg);CHARTS.push(c);return c;
+}
+const GRID='rgba(255,255,255,.05)';
+const TICK='#626a9a';
+const baseOpts={responsive:true,plugins:{legend:{display:false}}};
+function kpi(val,label,sub,cls){
+  return`<div class="kpi ${cls} anim">
+    <div class="kpi-val">${val}</div>
+    <div class="kpi-label">${label}</div>
+    ${sub?`<div class="kpi-sub">${sub}</div>`:''}
+  </div>`;
+}
+function donutConfig(data,labels,colors,extra={}){
+  return{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderColor:'transparent',hoverOffset:8}]},
+    options:{...baseOpts,cutout:'72%',...extra,plugins:{...baseOpts.plugins,tooltip:{callbacks:{label:c=>` ${c.label}: ${c.raw}`}}}}};
+}
+function secDiv(label){
+  return`<div class="sec-div"><div class="sec-div-line"></div><span class="sec-div-label">${label}</span><div class="sec-div-line"></div></div>`;
+}
+function phaseCards(phases){
+  return phases.map(ph=>`
+    <div class="phase-item ${ph.st}">
+      <div class="ph-num" style="color:${ph.st==='done'?'var(--green)':ph.st==='next'?'var(--blue2)':'var(--muted)'}">${ph.num}</div>
+      <div class="ph-name">${ph.name}</div>
+      <div class="ph-tests">${ph.tests}</div>
+      <div class="ph-label">tests</div>
+      <div><span class="ph-badge ${ph.st==='done'?'pb-done':ph.st==='next'?'pb-next':'pb-blocked'}">${ph.st==='done'?'✓ Done':ph.st==='next'?'→ Next':'⏸ Blocked'}</span></div>
+    </div>`).join('');
+}
+
+/* ════════════════════════════════════════
+   ALL AREAS
+════════════════════════════════════════ */
+function renderAll(){
+  const s=DATA.s;
+  const npd=s.IM_NPD||{},inv=s.INVOICE||{},auto=s.AUTOMATE||{};
+
+  // overall progress = avg of active areas
+  const overall=Math.round((p(npd.progress_pct)+p(inv.progress_pct)+p(auto.progress_pct))/3);
+  const overallCol=overall>=70?'var(--green)':overall>=40?'var(--orange)':'var(--red)';
+
+  // TC breakdown per module
+  const npdTot=n(npd.tc_total), npdRdy=n(npd.tc_ready);
+  const npdTbd=n(npd.tc_pending_rewrite), npdBlk=n(npd.tc_blocked);
+  const invTot=n(inv.tc_total), invRdy=n(inv.tc_ready);
+  const invTbd=n(inv.tc_behavior_tbd)+n(inv.tc_testdata_tbd), invBlk=n(inv.tc_blocked);
+
+  // Automation
+  const totalTests=n(auto.test_total), passing=n(auto.test_passing), fixme=n(auto.test_fixme), failed=n(auto.test_failed);
+  const passRate=totalTests?Math.round(passing/totalTests*100):0;
+  const autoTotal=n(auto.tc_automatable)||270;   // total automatable TCs
+  const autoDone=totalTests;
+  const autoRem=Math.max(autoTotal-autoDone,0);
+  const autoCovPct=autoTotal?Math.round(autoDone/autoTotal*100):0;
+
+  // phases
+  const phDone=['Phase 1','Phase 2','Phase 3','Phase 4A','Phase 4B'];
+  const phNext=['Phase 4C'];
+  const phWait=['Phase 5','Phase 6','Phase 7','Phase 8'];
+
+  function tcmod(cls,icon,name,sub,c1,c2,tot,rdy,tbd,blk,pct,nx,st){
+    const pc=pct>=70?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+    const pillCls=pct>=70?'g':pct>=40?'y':'r';
+    return`<div class="tc-mod-card tcm-${cls} anim">
+      <div class="tcm-head">
+        <span class="tcm-icon">${icon}</span>
+        <span class="tcm-name">${name}</span>
+        <span class="tcm-pill ${pillCls}">${pct}%</span>
+      </div>
+      <div class="tcm-sub">${sub}</div>
+      <div class="tcm-stats">
+        <div class="tcm-stat"><span class="tcm-sv b">${tot}</span><span class="tcm-sl">Total</span></div>
+        <div class="tcm-stat"><span class="tcm-sv g">${rdy}</span><span class="tcm-sl">Ready</span></div>
+        <div class="tcm-stat"><span class="tcm-sv y">${tbd}</span><span class="tcm-sl">TBD</span></div>
+        <div class="tcm-stat"><span class="tcm-sv r">${blk}</span><span class="tcm-sl">Blocked</span></div>
+      </div>
+      <div class="tcm-bar-wrap">
+        <div class="tcm-bar"><div class="tcm-fill" style="width:${pct}%;background:linear-gradient(90deg,${c1},${c2})"></div></div>
+        <span class="tcm-bpct" style="color:${pc}">${pct}%</span>
+      </div>
+      <div class="tcm-nx"><span class="tcm-nx-tag">Next</span>${nx||'—'}</div>
+    </div>`;
+  }
+
+  document.getElementById('main-content').innerHTML=`
+
+    <!-- ① Overall progress ring + area donuts -->
+    <div class="ov-row anim">
+      <div class="ov-ring-card">
+        <div class="ov-ring-wrap">
+          <canvas id="c-ov-ring"></canvas>
+          <div class="ov-ring-center">
+            <div class="ov-ring-val" style="color:${overallCol}">${overall}%</div>
+            <div class="ov-ring-lbl">Overall</div>
+          </div>
+        </div>
+        <div class="ov-ring-title">Overall Progress</div>
+        <div class="ov-ring-sub">avg of 3 active areas</div>
+      </div>
+      <div class="ov-donuts-card">
+        <div class="ovd-title">Progress by Area</div>
+        <div class="ovd-grid">
+          <div class="ovd-item">
+            <div class="ovd-ring">
+              <canvas id="c-ov-npd"></canvas>
+              <div class="ovd-ring-center">
+                <div class="ovd-val" style="color:${p(npd.progress_pct)>=70?'var(--green)':'var(--orange)'}">${p(npd.progress_pct)}%</div>
+              </div>
+            </div>
+            <div class="ovd-lbl-row">
+              <span class="ovd-name">🧪 IM NPD</span>
+              <span class="ovd-sub">New Product Dev</span>
+            </div>
+          </div>
+          <div class="ovd-sep"></div>
+          <div class="ovd-item">
+            <div class="ovd-ring">
+              <canvas id="c-ov-inv"></canvas>
+              <div class="ovd-ring-center">
+                <div class="ovd-val" style="color:${p(inv.progress_pct)>=70?'var(--green)':'var(--orange)'}">${p(inv.progress_pct)}%</div>
+              </div>
+            </div>
+            <div class="ovd-lbl-row">
+              <span class="ovd-name">📋 Invoice</span>
+              <span class="ovd-sub">OCR · PO/GR · ACC · SG</span>
+            </div>
+          </div>
+          <div class="ovd-sep"></div>
+          <div class="ovd-item">
+            <div class="ovd-ring">
+              <canvas id="c-ov-auto"></canvas>
+              <div class="ovd-ring-center">
+                <div class="ovd-val" style="color:${p(auto.progress_pct)>=70?'var(--green)':'var(--orange)'}">${p(auto.progress_pct)}%</div>
+              </div>
+            </div>
+            <div class="ovd-lbl-row">
+              <span class="ovd-name">🤖 Automate</span>
+              <span class="ovd-sub">Playwright TypeScript</span>
+            </div>
+          </div>
+          <div class="ovd-sep"></div>
+          <div class="ovd-item" style="opacity:.4">
+            <div class="ovd-ring">
+              <canvas id="c-ov-maint"></canvas>
+              <div class="ovd-ring-center">
+                <div class="ovd-val" style="color:var(--muted)">0%</div>
+              </div>
+            </div>
+            <div class="ovd-lbl-row">
+              <span class="ovd-name">🔧 IM Maintain</span>
+              <span class="ovd-sub" style="color:var(--muted)">Phase 2 — Mockup</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ③ Defect Tracker (mock) -->
+      <div class="ov-defect-card">
+        <div class="def-head">
+          <span style="font-size:.9rem">🐛</span>
+          <span class="def-title">Defect Tracker</span>
+          <span class="def-mock-badge">* Mock Data</span>
+        </div>
+        <div class="def-counts">
+          <div class="def-count">
+            <div class="def-cv" style="color:var(--red)">3</div>
+            <div class="def-cl">Open</div>
+          </div>
+          <div class="def-count">
+            <div class="def-cv" style="color:var(--blue2)">2</div>
+            <div class="def-cl">In Progress</div>
+          </div>
+          <div class="def-count">
+            <div class="def-cv" style="color:var(--green)">12</div>
+            <div class="def-cl">Resolved</div>
+          </div>
+        </div>
+        <div class="def-list">
+          <div class="def-item">
+            <span class="def-sev" style="background:var(--red)"></span>
+            <div class="def-body">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <a class="def-id" href="https://jira.bigc.co.th/browse/IM-1042" target="_blank">IM-1042</a>
+                <span class="def-pill open">Open</span>
+                <span style="font-size:.5rem;color:var(--red);font-weight:700">Critical</span>
+              </div>
+              <div class="def-txt">307/309 Classes unmapped — NPD routing พัง 99%</div>
+              <div class="def-meta">NPD · assigned: Dev · 2026-05-17</div>
+            </div>
+          </div>
+          <div class="def-item">
+            <span class="def-sev" style="background:var(--orange2,#f59e0b)"></span>
+            <div class="def-body">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <a class="def-id" href="https://jira.bigc.co.th/browse/IM-1038" target="_blank">IM-1038</a>
+                <span class="def-pill prog">In Progress</span>
+                <span style="font-size:.5rem;color:var(--yellow);font-weight:700">High</span>
+              </div>
+              <div class="def-txt">Wizard submit gate ไม่ block เมื่อ section ไม่ครบ</div>
+              <div class="def-meta">Automate · assigned: QA · 2026-05-16</div>
+            </div>
+          </div>
+          <div class="def-item">
+            <span class="def-sev" style="background:var(--orange2,#f59e0b)"></span>
+            <div class="def-body">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <a class="def-id" href="https://jira.bigc.co.th/browse/IM-1031" target="_blank">IM-1031</a>
+                <span class="def-pill prog">In Progress</span>
+                <span style="font-size:.5rem;color:var(--yellow);font-weight:700">High</span>
+              </div>
+              <div class="def-txt">Confidence gate ไม่ block Confirm เมื่อ score &lt; 70%</div>
+              <div class="def-meta">Invoice OCR · assigned: Dev · 2026-05-15</div>
+            </div>
+          </div>
+          <div class="def-item">
+            <span class="def-sev" style="background:var(--yellow)"></span>
+            <div class="def-body">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <a class="def-id" href="https://jira.bigc.co.th/browse/IM-1024" target="_blank">IM-1024</a>
+                <span class="def-pill open">Open</span>
+                <span style="font-size:.5rem;color:var(--muted);font-weight:700">Medium</span>
+              </div>
+              <div class="def-txt">TC-NPD-003 buyer field เป็น editable แทน auto-fill</div>
+              <div class="def-meta">NPD · assigned: PO · 2026-05-18</div>
+            </div>
+          </div>
+          <div class="def-item">
+            <span class="def-sev" style="background:var(--yellow)"></span>
+            <div class="def-body">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <a class="def-id" href="https://jira.bigc.co.th/browse/IM-1019" target="_blank">IM-1019</a>
+                <span class="def-pill open">Open</span>
+                <span style="font-size:.5rem;color:var(--muted);font-weight:700">Medium</span>
+              </div>
+              <div class="def-txt">Supplier Groups ทุกกลุ่มแสดงสถานะ "draft"</div>
+              <div class="def-meta">Invoice · assigned: Dev · 2026-05-17</div>
+            </div>
+          </div>
+        </div>
+        <div class="def-footer">* ข้อมูลจำลอง — ยังไม่ได้เชื่อมต่อ Jira จริง · <a href="https://jira.bigc.co.th/projects/IM" target="_blank" style="color:var(--blue2)">ดูทั้งหมดใน Jira →</a></div>
+      </div>
+    </div>
+
+    <!-- ② TC Progress: NPD + Invoice -->
+    ${secDiv('🧪 Test Case Progress')}
+    <div class="tc-row anim anim-d1">
+      ${tcmod('npd','🧪','IM NPD','New Product Development',
+        'var(--blue)','var(--cyan)',npdTot,npdRdy,npdTbd,npdBlk,p(npd.progress_pct),npd.next_action)}
+      ${tcmod('inv','📋','Invoice Matching','OCR · PO/GR · ACC · SG',
+        'var(--purple)','var(--pink)',invTot,invRdy,invTbd,invBlk,p(inv.progress_pct),inv.next_action)}
+    </div>
+
+    <!-- ③ Automation: run results + coverage -->
+    ${secDiv('🤖 Automation Script')}
+    <div class="auto-row anim anim-d2">
+
+      <!-- run results -->
+      <div class="auto-card">
+        <div class="auc-head">
+          <span style="font-size:1rem">▶</span>
+          <span class="auc-title">Run Results</span>
+          <span class="tcm-pill g">0 Failed</span>
+        </div>
+        <div class="auc-sub">Playwright TypeScript · dev_16_May · latest run</div>
+        <div class="auc-result-grid">
+          <div class="auc-rg">
+            <div class="auc-rv" style="color:var(--green)">${passing}</div>
+            <div class="auc-rl">Passing ✓</div>
+          </div>
+          <div class="auc-rg">
+            <div class="auc-rv" style="color:var(--yellow)">${fixme}</div>
+            <div class="auc-rl">Fixme ⏸</div>
+          </div>
+          <div class="auc-rg">
+            <div class="auc-rv" style="color:${failed>0?'var(--red)':'var(--muted)'}">${failed}</div>
+            <div class="auc-rl">Failed ✗</div>
+          </div>
+        </div>
+        <div class="auc-rate-row">
+          <span style="font-size:.6rem;color:var(--muted);min-width:60px">Pass Rate</span>
+          <div class="auc-rate-bar"><div class="auc-rate-fill" style="width:${passRate}%"></div></div>
+          <span class="auc-rate-pct">${passRate}%</span>
+        </div>
+        <div style="margin-top:11px;border-top:1px solid var(--border);padding-top:9px;font-size:.6rem;color:var(--muted)">
+          <span class="tcm-nx-tag">Next</span>${auto.next_action||'—'}
+        </div>
+      </div>
+
+      <!-- coverage -->
+      <div class="auto-card">
+        <div class="auc-head">
+          <span style="font-size:1rem">📐</span>
+          <span class="auc-title">Coverage</span>
+          <span class="tcm-pill ${autoCovPct>=70?'g':autoCovPct>=40?'y':'r'}">${autoCovPct}%</span>
+        </div>
+        <div class="auc-sub">Implemented vs total automatable TCs</div>
+        <div class="auc-cov-wrap">
+          <div class="auc-cov-ring">
+            <canvas id="c-auto-cov"></canvas>
+            <div class="auc-cov-center">
+              <span class="auc-cov-pct">${autoCovPct}%</span>
+              <span class="auc-cov-lbl">done</span>
+            </div>
+          </div>
+          <div class="auc-cov-stats">
+            <div class="auc-cov-row"><span class="auc-cov-k">Implemented now</span><span class="auc-cov-v" style="color:var(--green)">${autoDone} tests</span></div>
+            <div class="auc-cov-row"><span class="auc-cov-k">Remaining to write</span><span class="auc-cov-v" style="color:var(--yellow)">${autoRem} tests</span></div>
+            <div class="auc-cov-row"><span class="auc-cov-k">Total automatable</span><span class="auc-cov-v">${autoTotal} tests</span></div>
+          </div>
+        </div>
+        <div style="font-size:.6rem;color:var(--muted);margin-bottom:6px">Phase status</div>
+        <div class="auc-phases">
+          ${phDone.map(p=>`<span class="auc-phase done">✓ ${p}</span>`).join('')}
+          ${phNext.map(p=>`<span class="auc-phase next">→ ${p}</span>`).join('')}
+          ${phWait.map(p=>`<span class="auc-phase wait">${p}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- ④ Footer -->
+    <div class="ov-footer anim anim-d3">
+      <div class="ov-oos">
+        <span style="font-size:.7rem">🔧</span>
+        <span style="font-size:.7rem;font-weight:700;color:var(--muted)">IM Maintain</span>
+        <span style="font-size:.62rem;color:var(--muted);flex:1">Change Request — Phase 2 · 0 TCs written</span>
+        ${spill('OUT_OF_SCOPE_PHASE1')}
+      </div>
+      <div class="ov-blocker">
+        <span style="font-size:.8rem">⚠</span>
+        <span class="ov-blocker-label">Blockers</span>
+        <span class="ov-blocker-items">Q4.1/Q4.5 pending · RA Role TBD · GOLD V6 TBD · Phase 5+ needs mock data</span>
+      </div>
+    </div>`;
+
+  // Overall ring donut
+  mkC('c-ov-ring',donutConfig(
+    [overall, 100-overall],['Done','Remaining'],
+    [overall>=70?'rgba(0,214,143,.9)':overall>=40?'rgba(245,158,11,.9)':'rgba(240,62,107,.9)','rgba(255,255,255,.05)'],
+    {cutout:'72%'}
+  ));
+
+  // Area donuts
+  const npdPct=p(npd.progress_pct), invPct=p(inv.progress_pct), autPct=p(auto.progress_pct);
+  const areaDonutColors=pct=>pct>=70?'rgba(0,214,143,.9)':'rgba(245,158,11,.85)';
+  mkC('c-ov-npd',donutConfig([npdPct,100-npdPct],['NPD','—'],
+    [areaDonutColors(npdPct),'rgba(255,255,255,.05)'],{cutout:'68%'}));
+  mkC('c-ov-inv',donutConfig([invPct,100-invPct],['Invoice','—'],
+    [areaDonutColors(invPct),'rgba(255,255,255,.05)'],{cutout:'68%'}));
+  mkC('c-ov-auto',donutConfig([autPct,100-autPct],['Auto','—'],
+    [areaDonutColors(autPct),'rgba(255,255,255,.05)'],{cutout:'68%'}));
+  mkC('c-ov-maint',donutConfig([0,100],['IM Maintain','—'],
+    ['rgba(98,106,154,.4)','rgba(255,255,255,.04)'],{cutout:'68%'}));
+
+  // Automation coverage ring
+  mkC('c-auto-cov',donutConfig(
+    [autoDone, autoRem],['Implemented','Remaining'],
+    ['rgba(0,214,143,.85)','rgba(255,255,255,.05)']
+  ));
+}
+
+/* ════════════════════════════════════════
+   IM NPD — hero  +  charts
+════════════════════════════════════════ */
+function renderNPD(){
+  const d=DATA.s.IM_NPD||{};
+  const pct=p(d.progress_pct);
+  const pctCol=pct>=70?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="area-hero anim" style="--ac:var(--blue)">
+      <div style="background:linear-gradient(90deg,var(--blue),var(--cyan))" class="cc-accent" style="position:absolute;top:0;left:0;right:0;height:2px;border-radius:14px 14px 0 0"></div>
+      <div class="ah-left">
+        <div class="ah-name">🧪 IM NPD</div>
+        <div class="ah-sub">New Product Development · ${n(d.auto_spec_files)||14} spec files</div>
+        <div class="ah-bar">
+          <div class="ah-track"><div class="ah-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--blue),var(--cyan))"></div></div>
+          <div class="ah-pct" style="color:${pctCol}">${pct}%</div>
+        </div>
+        <div class="ah-nx">${spill(d.status)}<span class="ah-nx-tag">Next</span><span style="font-size:.65rem;color:var(--muted)">${d.next_action||'—'}</span></div>
+      </div>
+      <div class="ah-right">
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--blue)">${n(d.tc_total)}</div><div class="ah-sl">Total TCs</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--green)">${n(d.tc_ready)}</div><div class="ah-sl">TC Ready</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--green)">${n(d.auto_passing)}</div><div class="ah-sl">Passing</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--yellow)">${n(d.auto_fixme)}</div><div class="ah-sl">Fixme</div></div>
+      </div>
+    </div>
+
+    ${secDiv('📊 Charts & Analytics')}
+
+    <div class="chart-wrap">
+      <div class="cg anim anim-d1">
+        <div class="cc c5">
+          <div style="background:linear-gradient(90deg,var(--blue),var(--cyan))" class="cc-accent"></div>
+          <div class="cc-title">🧪 TC Breakdown</div>
+          <div class="cc-sub">${n(d.tc_total)} TCs ทั้งหมด</div>
+          <div class="cw" style="height:220px;display:flex;align-items:center;justify-content:center;position:relative">
+            <canvas id="c-npd-tc" style="max-height:220px"></canvas>
+            <div class="dc"><div class="dc-v" style="color:var(--blue)">${n(d.tc_total)}</div><div class="dc-l">Total TCs</div></div>
+          </div>
+          <div class="leg">
+            <div class="li"><span class="ld" style="background:var(--green)"></span>Ready (${n(d.tc_ready)})</div>
+            <div class="li"><span class="ld" style="background:var(--yellow)"></span>Pending (${n(d.tc_pending_rewrite)})</div>
+            <div class="li"><span class="ld" style="background:var(--red)"></span>Blocked (${n(d.tc_blocked)})</div>
+            <div class="li"><span class="ld" style="background:var(--muted)"></span>Obsolete (${n(d.tc_obsolete)})</div>
+          </div>
+        </div>
+        <div class="cc c7">
+          <div style="background:linear-gradient(90deg,var(--cyan),var(--blue))" class="cc-accent"></div>
+          <div class="cc-title">🤖 Automation Results</div>
+          <div class="cc-sub">Pass / Fixme / Failed</div>
+          <div class="cw"><canvas id="c-npd-auto" height="90"></canvas></div>
+        </div>
+      </div>
+      <div class="cg anim anim-d2">
+        <div class="cc c12">
+          <div style="background:linear-gradient(90deg,var(--purple),var(--blue))" class="cc-accent"></div>
+          <div class="cc-title">🚀 Automation Phase Roadmap</div>
+          <div class="cc-sub">8 phases — Phase 4B done · Phase 4C next</div>
+          <div class="phases" id="phases-npd"></div>
+        </div>
+      </div>
+    </div>`;
+
+  mkC('c-npd-tc',donutConfig(
+    [n(d.tc_ready),n(d.tc_pending_rewrite),n(d.tc_blocked),n(d.tc_obsolete)],
+    ['Ready','Pending','Blocked','Obsolete'],
+    ['rgba(0,214,143,.9)','rgba(245,197,24,.85)','rgba(240,62,107,.85)','rgba(98,106,154,.5)']));
+
+  const pass=n(d.auto_passing),fixme=n(d.auto_fixme),fail=n(d.auto_failed);
+  mkC('c-npd-auto',{type:'bar',data:{
+    labels:['Passing','Fixme','Failed'],
+    datasets:[{data:[pass,fixme,fail],
+      backgroundColor:['rgba(0,214,143,.8)','rgba(245,197,24,.8)','rgba(240,62,107,.8)'],
+      borderRadius:6,borderSkipped:false,barThickness:22}]},
+    options:{...baseOpts,indexAxis:'y',scales:{
+      x:{grid:{color:GRID},ticks:{color:TICK},border:{display:false}},
+      y:{grid:{display:false},ticks:{color:TICK,font:{weight:'600'}}}
+    },plugins:{...baseOpts.plugins,tooltip:{callbacks:{label:c=>` ${c.raw} tests`}}}}});
+
+  document.getElementById('phases-npd').innerHTML=phaseCards([
+    {num:'P1',name:'UI Foundation',tests:42,st:'done'},
+    {num:'P2',name:'Wizard Sections',tests:23,st:'done'},
+    {num:'P3',name:'Validation',tests:20,st:'done'},
+    {num:'P4A',name:'Completion',tests:4,st:'done'},
+    {num:'P4B',name:'Filter UI',tests:16,st:'done'},
+    {num:'P4C',name:'Role Smoke',tests:'~10',st:'next'},
+    {num:'P5-6',name:'API Mock',tests:'~40',st:'blocked'},
+    {num:'P7-8',name:'Full E2E',tests:'~40',st:'blocked'},
+  ]);
+}
+
+/* ════════════════════════════════════════
+   INVOICE — hero  +  charts
+════════════════════════════════════════ */
+function renderInv(){
+  const d=DATA.s.INVOICE||{};
+  const pct=p(d.progress_pct);
+  const pctCol=pct>=70?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+  const ocr=n(d.sheet_ocr),pogr=n(d.sheet_pogr),acc=n(d.sheet_acc),sg=n(d.sheet_sg);
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="area-hero anim">
+      <div style="background:linear-gradient(90deg,var(--purple),var(--pink));position:absolute;top:0;left:0;right:0;height:2px"></div>
+      <div class="ah-left">
+        <div class="ah-name">📋 Invoice Matching</div>
+        <div class="ah-sub">OCR · PO/GR · Account Management · Supplier Groups</div>
+        <div class="ah-bar">
+          <div class="ah-track"><div class="ah-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--purple),var(--pink))"></div></div>
+          <div class="ah-pct" style="color:${pctCol}">${pct}%</div>
+        </div>
+        <div class="ah-nx">${spill(d.status)}<span class="ah-nx-tag">Next</span><span style="font-size:.65rem;color:var(--muted)">${d.next_action||'—'}</span></div>
+      </div>
+      <div class="ah-right">
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--purple)">${n(d.tc_total)}</div><div class="ah-sl">Total TCs</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--green)">${n(d.tc_ready)}</div><div class="ah-sl">TC Ready</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--yellow)">${n(d.tc_behavior_tbd)+n(d.tc_testdata_tbd)}</div><div class="ah-sl">TBD</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--red)">${n(d.tc_blocked)}</div><div class="ah-sl">Blocked</div></div>
+      </div>
+    </div>
+
+    ${secDiv('📊 Charts & Analytics')}
+
+    <div class="chart-wrap">
+      <div class="cg anim anim-d1">
+        <div class="cc c5">
+          <div style="background:linear-gradient(90deg,var(--purple),var(--pink))" class="cc-accent"></div>
+          <div class="cc-title">📊 TC Status</div>
+          <div class="cc-sub">${n(d.tc_total)} TCs ทั้งหมด</div>
+          <div class="cw" style="height:220px;display:flex;align-items:center;justify-content:center;position:relative">
+            <canvas id="c-inv-tc" style="max-height:220px"></canvas>
+            <div class="dc"><div class="dc-v" style="color:var(--purple)">${n(d.tc_total)}</div><div class="dc-l">Total TCs</div></div>
+          </div>
+          <div class="leg">
+            <div class="li"><span class="ld" style="background:var(--green)"></span>Ready (${n(d.tc_ready)})</div>
+            <div class="li"><span class="ld" style="background:var(--yellow)"></span>Behavior TBD (${n(d.tc_behavior_tbd)})</div>
+            <div class="li"><span class="ld" style="background:var(--orange)"></span>Test Data TBD (${n(d.tc_testdata_tbd)})</div>
+            <div class="li"><span class="ld" style="background:var(--red)"></span>Blocked (${n(d.tc_blocked)})</div>
+            <div class="li"><span class="ld" style="background:var(--muted)"></span>Obsolete (${n(d.tc_obsolete)})</div>
+          </div>
+        </div>
+        <div class="cc c7">
+          <div style="background:linear-gradient(90deg,var(--pink),var(--purple))" class="cc-accent"></div>
+          <div class="cc-title">📋 TCs by Sheet</div>
+          <div class="cc-sub">INV-OCR · INV-POGR · ACC · SG</div>
+          <div class="cw"><canvas id="c-inv-sheet" height="110"></canvas></div>
+          <div class="leg">
+            <div class="li"><span class="ld" style="background:var(--purple)"></span>INV-OCR (${ocr})</div>
+            <div class="li"><span class="ld" style="background:var(--pink)"></span>INV-POGR (${pogr})</div>
+            <div class="li"><span class="ld" style="background:var(--blue)"></span>ACC (${acc})</div>
+            <div class="li"><span class="ld" style="background:var(--cyan)"></span>SG (${sg})</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  mkC('c-inv-tc',donutConfig(
+    [n(d.tc_ready),n(d.tc_behavior_tbd),n(d.tc_testdata_tbd),n(d.tc_blocked),n(d.tc_obsolete)],
+    ['Ready','Behavior TBD','Test Data TBD','Blocked','Obsolete'],
+    ['rgba(0,214,143,.85)','rgba(245,197,24,.85)','rgba(255,140,66,.85)','rgba(240,62,107,.85)','rgba(98,106,154,.5)']));
+
+  mkC('c-inv-sheet',{type:'bar',data:{
+    labels:['INV-OCR','INV-POGR','Account Mgmt','Supplier Groups'],
+    datasets:[{data:[ocr,pogr,acc,sg],
+      backgroundColor(ctx){
+        const cols=[['rgba(155,89,245,.9)','rgba(240,89,184,.6)'],['rgba(240,89,184,.9)','rgba(155,89,245,.6)'],
+                    ['rgba(79,142,247,.9)','rgba(0,200,224,.6)'],['rgba(0,200,224,.9)','rgba(79,142,247,.6)']];
+        return gradH(ctx.chart.ctx,cols[ctx.dataIndex][0],cols[ctx.dataIndex][1],200);
+      },
+      borderRadius:6,borderSkipped:false,barThickness:20}]},
+    options:{...baseOpts,indexAxis:'y',scales:{
+      x:{grid:{color:GRID},ticks:{color:TICK},border:{display:false}},
+      y:{grid:{display:false},ticks:{color:TICK,font:{weight:'600'}}}},
+    plugins:{...baseOpts.plugins,tooltip:{callbacks:{label:c=>` ${c.raw} TCs`}}}}});
+}
+
+/* ════════════════════════════════════════
+   AUTOMATE — hero  +  charts
+════════════════════════════════════════ */
+function renderAuto(){
+  const d=DATA.s.AUTOMATE||{};
+  const pass=n(d.test_passing),fixme=n(d.test_fixme),fail=n(d.test_failed),total=n(d.test_total);
+  const passRate=total?Math.round(pass/total*100):0;
+  const pct=p(d.progress_pct);
+  const pctCol=pct>=70?'var(--green)':pct>=40?'var(--orange)':'var(--red)';
+
+  document.getElementById('main-content').innerHTML=`
+    <div class="area-hero anim">
+      <div style="background:linear-gradient(90deg,var(--green),var(--cyan));position:absolute;top:0;left:0;right:0;height:2px"></div>
+      <div class="ah-left">
+        <div class="ah-name">🤖 Automate Script</div>
+        <div class="ah-sub">Playwright TypeScript · ${n(d.spec_files)||14} spec files · Phase 1–4B done</div>
+        <div class="ah-bar">
+          <div class="ah-track"><div class="ah-fill" style="width:${pct}%;background:linear-gradient(90deg,var(--green),var(--cyan))"></div></div>
+          <div class="ah-pct" style="color:${pctCol}">${pct}%</div>
+        </div>
+        <div class="ah-nx">${spill(d.status)}<span class="ah-nx-tag">Next</span><span style="font-size:.65rem;color:var(--muted)">${d.next_action||'—'}</span></div>
+      </div>
+      <div class="ah-right">
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--bright)">${total}</div><div class="ah-sl">Total Tests</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--green)">${pass}</div><div class="ah-sl">Passing</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--yellow)">${fixme}</div><div class="ah-sl">Fixme</div></div>
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--green)">${passRate}%</div><div class="ah-sl">Pass Rate</div></div>
+      </div>
+    </div>
+
+    ${secDiv('📊 Charts & Analytics')}
+
+    <div class="chart-wrap">
+      <div class="cg anim anim-d1">
+        <div class="cc c5">
+          <div style="background:linear-gradient(90deg,var(--green),var(--cyan))" class="cc-accent"></div>
+          <div class="cc-title">✅ Test Results</div>
+          <div class="cc-sub">Phase 1–4B · ${total} tests</div>
+          <div class="cw" style="height:220px;display:flex;align-items:center;justify-content:center;position:relative">
+            <canvas id="c-auto-res" style="max-height:220px"></canvas>
+            <div class="dc"><div class="dc-v" style="color:var(--green)">${passRate}%</div><div class="dc-l">pass rate</div></div>
+          </div>
+          <div class="leg">
+            <div class="li"><span class="ld" style="background:var(--green)"></span>Passing (${pass})</div>
+            <div class="li"><span class="ld" style="background:var(--yellow)"></span>Fixme (${fixme})</div>
+            <div class="li"><span class="ld" style="background:var(--red)"></span>Failed (${fail})</div>
+          </div>
+        </div>
+        <div class="cc c7">
+          <div style="background:linear-gradient(90deg,var(--cyan),var(--green))" class="cc-accent"></div>
+          <div class="cc-title">📦 Tests per Phase</div>
+          <div class="cc-sub">Phase breakdown — done vs pending</div>
+          <div class="cw"><canvas id="c-auto-phase" height="155"></canvas></div>
+        </div>
+      </div>
+      <div class="cg anim anim-d2">
+        <div class="cc c12">
+          <div style="background:linear-gradient(90deg,var(--blue),var(--green))" class="cc-accent"></div>
+          <div class="cc-title">🗺 Phase Roadmap</div>
+          <div class="cc-sub">8 phases — สถานะปัจจุบัน</div>
+          <div class="phases" id="phases-auto"></div>
+        </div>
+      </div>
+    </div>`;
+
+  mkC('c-auto-res',donutConfig(
+    [pass,fixme,Math.max(fail,.01)],['Passing','Fixme','Failed'],
+    ['rgba(0,214,143,.9)','rgba(245,197,24,.85)','rgba(240,62,107,.8)']));
+
+  const pLabels=['P1','P2','P3','P4A','P4B','P4C','P5-6','P7-8'];
+  const pData=[n(d.p1_tests),n(d.p2_tests),n(d.p3_tests),n(d.p4a_tests),n(d.p4b_tests),n(d.p4c_tests)||0,0,0];
+  const pColors=pData.map((_,i)=>i<5?'rgba(0,214,143,.8)':i===5?'rgba(79,142,247,.8)':'rgba(98,106,154,.3)');
+  mkC('c-auto-phase',{type:'bar',data:{
+    labels:pLabels,
+    datasets:[{data:pData,backgroundColor:pColors,borderRadius:6,borderSkipped:false,barThickness:18}]},
+    options:{...baseOpts,indexAxis:'y',scales:{
+      x:{grid:{color:GRID},ticks:{color:TICK},border:{display:false}},
+      y:{grid:{display:false},ticks:{color:TICK,font:{weight:'600'}}}},
+    plugins:{...baseOpts.plugins,tooltip:{callbacks:{label:c=>` ${c.raw} tests`}}}}});
+
+  document.getElementById('phases-auto').innerHTML=phaseCards([
+    {num:'P1',name:'UI + Auth',tests:42,st:'done'},{num:'P2',name:'Wizard Sections',tests:23,st:'done'},
+    {num:'P3',name:'Validation',tests:20,st:'done'},{num:'P4A',name:'Completion',tests:4,st:'done'},
+    {num:'P4B',name:'Filter UI',tests:16,st:'done'},{num:'P4C',name:'Role Smoke',tests:'~10',st:'next'},
+    {num:'P5-6',name:'API Mock',tests:'~40',st:'blocked'},{num:'P7-8',name:'Full E2E',tests:'~40',st:'blocked'},
+  ]);
+}
+
+/* ════════════════════════════════════════
+   IM MAINTAIN — OOS
+════════════════════════════════════════ */
+function renderMaint(){
+  document.getElementById('main-content').innerHTML=`
+    <div class="area-hero anim">
+      <div style="background:var(--muted);position:absolute;top:0;left:0;right:0;height:2px"></div>
+      <div class="ah-left">
+        <div class="ah-name" style="color:var(--muted)">🔧 IM Maintain</div>
+        <div class="ah-sub">Change Request — Phase 2</div>
+        <div class="ah-bar">
+          <div class="ah-track"><div class="ah-fill" style="width:0%;background:var(--muted)"></div></div>
+          <div class="ah-pct" style="color:var(--muted)">0%</div>
+        </div>
+        <div class="ah-nx">${spill('OUT_OF_SCOPE_PHASE1')}<span style="font-size:.65rem;color:var(--muted)">รอ Phase 2 kickoff</span></div>
+      </div>
+      <div class="ah-right">
+        <div class="ah-stat"><div class="ah-sv" style="color:var(--muted)">0</div><div class="ah-sl">Total TCs</div></div>
+      </div>
+    </div>
+    <div class="oos-placeholder anim anim-d1">
+      <div class="oos-icon">🔧</div>
+      <div class="oos-title">Out of Scope — Phase 1</div>
+      <div class="oos-sub">Change Request และ Recipe items ไม่อยู่ใน scope ของ Phase 1<br>จะเริ่มต้นใน Phase 2 ของโปรเจกต์</div>
+    </div>`;
+}
+
+/* ── FOOTER ── */
+function renderFooter(){
+  const s=DATA.s;
+  document.getElementById('fbar').innerHTML=`
+    <div class="fi"><span class="fd" style="background:var(--green)"></span>${n(s.IM_NPD?.auto_passing)} passing</div>
+    <div class="fi"><span class="fd" style="background:var(--blue)"></span>${n(s.IM_NPD?.tc_total)+n(s.INVOICE?.tc_total)} TCs</div>
+    <div class="fi"><span class="fd" style="background:var(--yellow)"></span>${n(s.IM_NPD?.auto_fixme)} fixme</div>
+    <div class="fi" style="margin-left:auto">${new Date().toLocaleString('th-TH',{hour:'2-digit',minute:'2-digit'})}</div>`;
+}
+
+load();
+</script>
+</body>
+</html>

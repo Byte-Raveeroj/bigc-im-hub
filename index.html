@@ -216,13 +216,16 @@ window.NAV.push(
   { id:"files",      num:"08", label:"Key Files",      labelTh:"ไฟล์สำคัญ",          group:"Files" },
   { id:"openq",      num:"09", label:"Open Questions", labelTh:"คำถามค้าง",          group:"Live" },
   { id:"updates",    num:"10", label:"Team Updates",   labelTh:"อัพเดทจากทีม",       group:"Live" },
+  { id:"qa-dashboard",  num:"11", label:"QA Dashboard",    labelTh:"QA Board ภาพรวม",    group:"QA+" },
+  { id:"test-strategy", num:"12", label:"Test Strategy",   labelTh:"กลยุทธ์การทดสอบ",   group:"QA+" },
+  { id:"test-history",  num:"13", label:"Test Run History",labelTh:"ประวัติผลรัน",        group:"QA+" },
 );
 
 // ── SECTION 00: Welcome ──
 const SectionWelcome = () => (
   <section id="welcome" className="hero" style={{ paddingTop:8 }}>
     <span className="eyebrow accent">BigC Supplier Portal · IM</span>
-    <h1>Knowledge Hub — <span className="accent-word">ศูนย์รวมความรู้</span></h1>
+    <h1>QA Knowledge Hub — <span className="accent-word">ศูนย์รวมความรู้</span></h1>
     <p className="lead">
       Single source of truth for the <strong>Item Management (NPD)</strong> project — approval flows, roles, TC coverage, automation status, and team updates in one place.
     </p>
@@ -771,6 +774,243 @@ const SectionOpenQ = () => {
   );
 };
 
+// ── SECTION 11: QA Dashboard ──
+const SectionQADashboard = () => (
+  <Section id="qa-dashboard" eyebrow="11 · QA Dashboard" eyebrowKind=""
+    title="QA Board — All Areas"
+    subtitle={<>Live metrics: TC coverage · automation baseline · role matrix · sprint progress</>}
+    thai={<>เปิด Full Screen เพื่อดูกราฟ Chart.js และใช้ filter ได้ครบถ้วน</>}>
+    <div style={{ background:"var(--ink)", borderRadius:"var(--radius-lg)", overflow:"hidden",
+                  border:"2px solid var(--border-strong)", marginTop:8 }}>
+      <iframe src="./dashboard.html"
+        style={{ width:"100%", height:720, border:"none", display:"block" }}
+        title="BigC IM QA Dashboard" loading="lazy"/>
+    </div>
+    <div style={{ display:"flex", justifyContent:"center", marginTop:10 }}>
+      <a href="./dashboard.html" target="_blank" style={{
+        fontSize:13, color:"var(--muted)", display:"inline-flex", alignItems:"center", gap:6,
+        background:"var(--surface-2)", border:"1px solid var(--border)", borderRadius:"var(--radius-sm)",
+        padding:"6px 14px", textDecoration:"none", borderBottom:"none"
+      }}>↗ เปิด Full Screen</a>
+    </div>
+  </Section>
+);
+
+// ── SECTION 12: Test Strategy ──
+const SectionTestStrategy = () => {
+  const [tab, setTab] = useState("types");
+  const tabStyle = (t) => ({
+    padding:"8px 18px", borderRadius:999, border:"none", cursor:"pointer", fontFamily:"inherit",
+    fontSize:13, fontWeight:700, transition:"all .15s ease",
+    background: tab===t ? "var(--primary)" : "var(--surface-2)",
+    color: tab===t ? "#fff" : "var(--muted)"
+  });
+  return (
+    <Section id="test-strategy" eyebrow="12 · Test Strategy" eyebrowKind="green"
+      title="Test Strategy & New Build Workflow"
+      subtitle={<>ความแตกต่าง <strong>Smoke / Regression / Dry Run</strong> + ขั้นตอนเมื่อ Build ใหม่มาถึง</>}
+      thai={<>ใช้เป็น reference เมื่อทีมได้รับ build จาก Dev — เช็ค checklist ก่อน run ทุกครั้ง</>}>
+      <div style={{ display:"flex", gap:8, marginBottom:22, flexWrap:"wrap" }}>
+        <button style={tabStyle("types")} onClick={()=>setTab("types")}>📋 Test Types</button>
+        <button style={tabStyle("workflow")} onClick={()=>setTab("workflow")}>🔄 New Build Workflow</button>
+        <button style={tabStyle("cowork")} onClick={()=>setTab("cowork")}>🤖 Co-Work Templates</button>
+      </div>
+
+      {tab==="types" && (
+        <div className="grid grid-3">
+          {[
+            { emoji:"💨", name:"Smoke Test", th:"ทดสอบเบื้องต้น", color:"var(--amber)", colorSoft:"var(--amber-soft)",
+              tests:"~79 tests", files:"11 spec files", time:"~2.5 นาที", coverage:"75% functional areas",
+              when:"ทุกครั้งที่ได้ Build ใหม่", cmd:"npm run test:e2e:smoke",
+              desc:"ทดสอบ critical path — login, dashboard, wizard, filter. ถ้า fail = build มีปัญหาหลัก ไม่ต้องรัน regression" },
+            { emoji:"🔁", name:"Regression", th:"ทดสอบครบชุด", color:"var(--primary)", colorSoft:"var(--primary-soft)",
+              tests:"170 tests (125 pass · 45 fixme)", files:"23 spec files", time:"~10-15 นาที", coverage:"100% mockup specs",
+              when:"หลัง Smoke ผ่าน + ก่อน UAT", cmd:"npm run test:e2e:mockup",
+              desc:"รัน test ทั้งหมด ตรวจว่า regression ไม่เกิดจาก code เปลี่ยน. Baseline: 0 failed" },
+            { emoji:"📋", name:"Dry Run", th:"นับ test ไม่รัน", color:"var(--green)", colorSoft:"var(--green-soft)",
+              tests:"list only, 0 executed", files:"all", time:"< 10 วินาที", coverage:"infra check",
+              when:"ตรวจ filter/config ก่อน run จริง", cmd:"npx playwright test --list",
+              desc:"ไม่รัน test จริง — นับว่ามี test กี่ตัว, filter ถูกไหม, testid ครบไหม" },
+          ].map(t=>(
+            <div key={t.name} className="card" style={{ borderTop:`3px solid ${t.color}` }}>
+              <div style={{ fontSize:32, marginBottom:10 }}>{t.emoji}</div>
+              <div style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:18 }}>{t.name}</div>
+              <div style={{ fontFamily:"var(--font-thai)", fontSize:13, color:"var(--muted)", marginBottom:12 }}>{t.th}</div>
+              {[["Tests",t.tests],["Files",t.files],["Time",t.time],["Coverage",t.coverage]].map(([k,v])=>(
+                <div key={k} style={{ display:"flex", justifyContent:"space-between", fontSize:13, marginBottom:4 }}>
+                  <span style={{ color:"var(--muted)" }}>{k}</span>
+                  <span style={{ fontFamily:"var(--font-mono)", fontWeight:600 }}>{v}</span>
+                </div>
+              ))}
+              <div style={{ background:t.colorSoft, borderRadius:"var(--radius-sm)", padding:"8px 12px",
+                            fontSize:13, color:"var(--ink-2)", margin:"12px 0" }}>{t.desc}</div>
+              <code className="inline" style={{ fontSize:12 }}>{t.cmd}</code>
+              <div style={{ marginTop:8, fontSize:12, color:"var(--muted)" }}>⏰ {t.when}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {tab==="workflow" && (
+        <div>
+          <div className="callout warn" style={{ marginBottom:20 }}>
+            <span className="callout-icon">⏱️</span>
+            <div className="callout-body">
+              <strong>เวลาประมาณ:</strong> Best case ~50 นาที · มี selector fix ~90 นาที · wizard เปลี่ยนมาก 2-4 ชม.
+            </div>
+          </div>
+          <div className="steps">
+            {[
+              { n:0, col:"var(--muted)", title:"ตรวจ Server Status",
+                items:["Docker Desktop: running?","Port 3100/3200: ว่างไหม?","Kill process เก่าก่อนถ้ายังค้างอยู่"] },
+              { n:1, col:"var(--primary)", title:"Setup Environment",
+                items:["Copy .env จาก version ก่อนหน้า","npm install + npx prisma generate (⚠️ ทำก่อน start FE)","npm run db:seed — ตรวจว่า seed สำเร็จ","Start BE stack + FE ที่ port 3100"] },
+              { n:2, col:"var(--accent)", title:"Diff Analysis",
+                items:["เปรียบ dev_NN_May vs dev_(NN-1)_May","จด: selector เปลี่ยนไหม, route ใหม่ไหม, i18n key ใหม่ไหม","อัพเดท POM ถ้า selector เปลี่ยน"] },
+              { n:3, col:"var(--amber)", title:"Smoke Gate 🚨",
+                items:["npm run test:e2e:smoke","ถ้า fail → วิเคราะห์ก่อน ไม่ต้องรัน full regression","Gate: ต้องผ่าน 0 failed"] },
+              { n:4, col:"var(--green)", title:"Full Regression",
+                items:["npm run test:e2e:mockup (workers:4)","เปรียบกับ baseline: 125 pass · 0 failed · 45 fixme","จด diff จาก baseline"] },
+              { n:5, col:"var(--primary)", title:"อัพเดท CLAUDE.md + Hub",
+                items:["อัพเดท test count ใน CLAUDE.md","Export JSON → QA/updates/ → Hub sync 09:03","Commit + push"] },
+            ].map(s=>(
+              <div key={s.n} className="step">
+                <div className="step-num" style={{ background:s.col }}>{s.n}</div>
+                <div className="step-body">
+                  <h4 style={{ margin:"0 0 8px" }}>Step {s.n}: {s.title}</h4>
+                  <ul style={{ paddingLeft:16, margin:0, fontSize:13, color:"var(--ink-2)", lineHeight:1.7 }}>
+                    {s.items.map((it,i)=><li key={i}>{it}</li>)}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {tab==="cowork" && (
+        <div>
+          <p style={{ fontFamily:"var(--font-thai)", color:"var(--ink-2)", marginBottom:18 }}>
+            Copy prompt ด้านล่างไปใส่ใน Claude Code chat เพื่อให้ Co-Work agent ทำงานแทน
+          </p>
+          {[
+            { title:"Full Workflow — Build ใหม่ครบกระบวนการ", col:"var(--primary)",
+              prompt:`Co-Work: new build received (dev_NN_May)\n1. Stop servers, setup env + db:seed\n2. Start full stack at localhost:3100\n3. Run smoke: npm run test:e2e:smoke\n4. Run regression: npm run test:e2e:mockup\n5. Diff vs previous build — summarize changes\n6. Update CLAUDE.md + export results to QA/updates/` },
+            { title:"Smoke Only — Quick gate check", col:"var(--amber)",
+              prompt:`Co-Work: smoke gate check\nServer: already running at localhost:3100\nRun: npm run test:e2e:smoke\nReport: passed/failed/skipped + any failures` },
+            { title:"Diff Only — Build comparison", col:"var(--green)",
+              prompt:`Co-Work: diff analysis\nCompare dev_NN_May vs dev_(NN-1)_May\nFocus: apps/fe/app/, components/, lib/\nReport: new routes, selector changes, i18n, wizard sections` },
+          ].map(t=>(
+            <div key={t.title} className="card" style={{ marginBottom:14, borderLeft:`4px solid ${t.col}` }}>
+              <div style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:15, marginBottom:10 }}>{t.title}</div>
+              <pre style={{ background:"var(--bg-2)", border:"1px solid var(--border)", borderRadius:"var(--radius-sm)",
+                           padding:"12px 14px", fontSize:12, fontFamily:"var(--font-mono)", lineHeight:1.7,
+                           whiteSpace:"pre-wrap", margin:0, color:"var(--ink-2)" }}>{t.prompt}</pre>
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+};
+
+// ── SECTION 13: Test Run History ──
+const SectionTestHistory = () => (
+  <Section id="test-history" eyebrow="13 · Test Run History" eyebrowKind=""
+    title="Test Run History"
+    subtitle={<>ประวัติผลรัน Playwright — baseline · flaky patterns · fixme breakdown</>}
+    thai={<>อัพเดทโดย Co-Work agent หลังรัน test แต่ละครั้ง</>}>
+
+    <div className="callout tip" style={{ marginBottom:22 }}>
+      <span className="callout-icon">✅</span>
+      <div className="callout-body">
+        <strong>Current Baseline (dev_18_May · 2026-05-20):</strong> Full suite: <strong>125 passed · 0 failed · 45 fixme</strong> (170 total) ·
+        Smoke: <strong>79 passed · 0 failed · 21 skipped</strong> (11 files · ~2.5 min)
+      </div>
+    </div>
+
+    <h3>Run History — dev_18_May (5 Runs)</h3>
+    <div style={{ overflowX:"auto", marginBottom:24 }}>
+      <table className="data-table">
+        <thead>
+          <tr><th>Run</th><th>Passed</th><th>Failed</th><th>Fixme</th><th>Exit</th><th>Condition</th><th>หมายเหตุ</th></tr>
+        </thead>
+        <tbody>
+          {[
+            [1,"127","0","43","0","Fresh container (warmed)","Route warmup fix applied — clean server state"],
+            [2,"126","0","44","0","Run after Run 1","Normal — TC-686 promoted to fixme"],
+            [3,"122","0","44","0","Server warming up","4 flaky resolved by retry mechanism"],
+            [4,"118","0","44","0","Server under load","Autosave + login concurrency pressure"],
+            [5,"112","0","44","0","2 workers (test)","Worse than 4 workers — reverted; '2 did not run' appeared"],
+          ].map(([n,p,f,fx,ex,cond,note])=>(
+            <tr key={n}>
+              <td style={{ fontFamily:"var(--font-mono)", fontWeight:700 }}>Run {n}</td>
+              <td><span className="pill green">{p}</span></td>
+              <td><span className={`pill ${f==="0"?"gray":"red"}`}>{f}</span></td>
+              <td><span className="pill amber">{fx}</span></td>
+              <td><span className="pill green">exit {ex}</span></td>
+              <td style={{ fontSize:13 }}>{cond}</td>
+              <td style={{ fontSize:12, color:"var(--muted)" }}>{note}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Flaky Test Patterns</h3>
+    <div className="grid grid-3" style={{ marginBottom:24 }}>
+      {[
+        { title:"Autosave Timing", col:"var(--amber)", count:2,
+          tests:["TC-NPD-037 — DB mutation isolation","TC-NPD-013 — debounce 1.2s race"],
+          cause:"Autosave test overwrites ITEM_HL fields used by other tests running in parallel" },
+        { title:"Login Parallelization", col:"var(--accent)", count:6,
+          tests:["wizard-happy-path: 4 tests","wizard-sections: 2 tests"],
+          cause:"4 concurrent workers calling /th/login simultaneously → dev server queue overload" },
+        { title:"API Race Conditions", col:"var(--primary)", count:3,
+          tests:["inbox: 2 tests (empty state)","filter-ui TC-686 (barcode timing)"],
+          cause:"Turbopack lazy compile delay ~12s on first route access after container restart" },
+      ].map(f=>(
+        <div key={f.title} className="card" style={{ borderLeft:`3px solid ${f.col}` }}>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
+            <span style={{ fontFamily:"var(--font-display)", fontWeight:700 }}>{f.title}</span>
+            <span className="pill amber">{f.count} tests</span>
+          </div>
+          <ul style={{ paddingLeft:16, fontSize:13, color:"var(--ink-2)", lineHeight:1.65, margin:"0 0 10px" }}>
+            {f.tests.map((t,i)=><li key={i}>{t}</li>)}
+          </ul>
+          <div style={{ fontSize:12, color:"var(--muted)", fontStyle:"italic" }}>{f.cause}</div>
+        </div>
+      ))}
+    </div>
+
+    <h3>Fixme Breakdown (45 tests)</h3>
+    <div style={{ overflowX:"auto" }}>
+      <table className="data-table">
+        <thead><tr><th>สาเหตุ</th><th>จำนวน</th><th>Spec Files</th></tr></thead>
+        <tbody>
+          {[
+            ["Fill Demo button ถูกลบออกใน dev version ใหม่","~17","wizard-happy-path, new-item-setup"],
+            ["Validation UI ยังไม่ implement ใน portal","~10","wizard-validation"],
+            ["Wizard conditional sections ไม่มีใน mockup","~6","wizard-sections (DC/Online/SRD)"],
+            ["Inbox empty — getInboxItems() returns []","~4","inbox"],
+            ["Feature branch only (Variants section)","~2","wizard-happy-path-variants"],
+            ["Filter/Pagination ไม่ implement","~2","filter-ui (TC-691/692)"],
+            ["Catalog data gap — SubClass seed ไม่ครบ","~2","new-item-setup"],
+            ["Dashboard navigation edge case","~1","dashboard"],
+            ["TC-NPD-686 flaky under concurrent load","1","filter-ui"],
+          ].map(([cause,n,specs])=>(
+            <tr key={cause}>
+              <td>{cause}</td>
+              <td><span className="pill amber">{n}</span></td>
+              <td style={{ fontSize:12, color:"var(--muted)", fontFamily:"var(--font-mono)" }}>{specs}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+);
+
 // ── SECTION 10: Team Updates ──
 const STORAGE_KEY = "bigc_im_knowledge_updates";
 const CATEGORIES = ["Bug Found","Dev Answer","Decision","New Requirement","Question","Note","Blocker","TC Update","Other"];
@@ -1157,6 +1397,9 @@ const Page = () => (
     <SectionAutomation/>
     <SectionFiles/>
     <SectionOpenQ/>
+    <SectionQADashboard/>
+    <SectionTestStrategy/>
+    <SectionTestHistory/>
     <SectionUpdates/>
     <div style={{ marginTop:60, padding:"30px 0", borderTop:"1px dashed var(--border-strong)", textAlign:"center", color:"var(--muted)", fontSize:13 }}>
       <div style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:18, color:"var(--ink)", marginBottom:6 }}>BigC Supplier Portal IM · Knowledge Hub</div>
