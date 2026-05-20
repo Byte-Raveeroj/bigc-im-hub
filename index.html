@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BigC Supplier Portal IM · Knowledge Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+:root{--bg:#FBF6EE;--bg-2:#F4ECDA;--surface:#FFFFFF;--surface-2:#FBF7EE;--ink:#1F1B16;--ink-2:#4A4036;--muted:#8A7A65;--border:#E8DDC9;--border-strong:#D9C9AC;--primary:#4B47D8;--primary-2:#6F6CE6;--primary-soft:#ECEBFB;--accent:#E07856;--accent-soft:#FBE6DC;--green:#3D9970;--green-soft:#DFF1E6;--red:#C7493A;--red-soft:#F8E0DA;--amber:#D78A1E;--amber-soft:#FBEDD2;--shadow-sm:0 1px 2px rgba(31,27,22,.05),0 1px 1px rgba(31,27,22,.03);--shadow-md:0 8px 24px -8px rgba(31,27,22,.12),0 2px 6px rgba(31,27,22,.05);--shadow-lg:0 24px 60px -20px rgba(31,27,22,.18),0 4px 12px rgba(31,27,22,.06);--radius-sm:8px;--radius:14px;--radius-lg:22px;--radius-xl:32px;--sidebar-w:280px;--font-display:"Bricolage Grotesque","IBM Plex Sans Thai",system-ui,sans-serif;--font-body:"Plus Jakarta Sans","IBM Plex Sans Thai",system-ui,sans-serif;--font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;--font-thai:"IBM Plex Sans Thai","Plus Jakarta Sans",system-ui,sans-serif}
+*{box-sizing:border-box}html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}body{min-height:100vh}
+.app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--bg-2);border-right:1px solid var(--border);padding:28px 22px;display:flex;flex-direction:column;gap:18px}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding-bottom:8px}.sidebar-brand .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--primary) 0%,var(--accent) 100%);display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:800;font-size:17px;box-shadow:var(--shadow-sm)}.sidebar-brand .title{font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.1}.sidebar-brand .sub{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+.nav-section{margin-top:8px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 8px 6px;font-weight:600}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:14px;color:var(--ink-2);cursor:pointer;text-decoration:none;font-weight:500;transition:background .15s ease,color .15s ease;border:none;background:transparent;text-align:left;width:100%;font-family:inherit}.nav-link:hover{background:rgba(31,27,22,.05);color:var(--ink)}.nav-link.active{background:var(--surface);color:var(--primary);box-shadow:var(--shadow-sm)}.nav-link .num{width:22px;height:22px;border-radius:6px;background:rgba(31,27,22,.06);display:grid;place-items:center;font-size:11px;font-weight:700;font-family:var(--font-mono);color:var(--ink-2);flex-shrink:0}.nav-link.active .num{background:var(--primary);color:#fff}
+.sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.4}
+.main{padding:56px 64px 120px;max-width:1080px;width:100%;margin-left:auto;margin-right:auto}
+section{padding:36px 0 24px;scroll-margin-top:24px}section+section{border-top:1px dashed var(--border-strong)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);background:var(--primary-soft);padding:6px 12px;border-radius:999px;margin-bottom:16px}.eyebrow.accent{color:var(--accent);background:var(--accent-soft)}.eyebrow.green{color:var(--green);background:var(--green-soft)}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(36px,4vw,56px);line-height:1.05;letter-spacing:-.02em;margin:0 0 12px;color:var(--ink)}h1 .accent-word{font-style:italic;color:var(--accent);font-weight:600}
+h2{font-family:var(--font-display);font-weight:700;font-size:clamp(28px,3vw,38px);line-height:1.1;letter-spacing:-.015em;margin:0 0 8px;color:var(--ink)}
+h3{font-family:var(--font-display);font-weight:600;font-size:22px;line-height:1.25;margin:24px 0 8px;color:var(--ink)}
+h4{font-family:var(--font-body);font-weight:600;font-size:16px;margin:16px 0 6px;color:var(--ink)}
+p{margin:0 0 14px;color:var(--ink-2)}p strong{color:var(--ink);font-weight:600}
+a{color:var(--primary);text-decoration:none;border-bottom:1px solid var(--primary-soft)}a:hover{border-bottom-color:var(--primary)}
+.lead{font-size:19px;line-height:1.55;color:var(--ink-2);max-width:70ch}
+.thai{font-family:var(--font-thai);color:var(--muted);font-size:.92em;line-height:1.65;font-weight:400}.thai-lead{font-family:var(--font-thai);color:var(--ink-2);font-size:16px;line-height:1.7;padding:12px 16px;background:var(--surface-2);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;margin:14px 0 22px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-sm)}.card.soft{background:var(--surface-2)}.card.accent-left{border-left:4px solid var(--accent)}
+.grid{display:grid;gap:18px}.grid-2{grid-template-columns:repeat(2,1fr)}.grid-3{grid-template-columns:repeat(3,1fr)}.grid-4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+.callout{display:flex;gap:14px;padding:18px 20px;border-radius:var(--radius);background:var(--primary-soft);border-left:4px solid var(--primary);margin:18px 0}.callout.warn{background:var(--amber-soft);border-left-color:var(--amber)}.callout.tip{background:var(--green-soft);border-left-color:var(--green)}.callout.danger{background:var(--red-soft);border-left-color:var(--red)}.callout-icon{font-family:var(--font-display);font-size:22px;flex-shrink:0}.callout-body{font-size:14px;line-height:1.55;color:var(--ink-2)}.callout-body strong{color:var(--ink)}
+.code-wrap{position:relative;margin:14px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:#1B1815;max-width:100%}.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;background:#14110F;border-bottom:1px solid #2A2520;font-family:var(--font-mono);font-size:11px;color:#B6A893;letter-spacing:.05em}.code-header .label{display:flex;align-items:center;gap:8px;text-transform:uppercase;font-weight:600}.code-header .label .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}.code-copy{font-family:var(--font-body);font-size:11px;font-weight:600;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#F4ECDA;padding:4px 10px;border-radius:6px;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:background .15s ease}.code-copy:hover{background:rgba(255,255,255,.16)}.code-copy.copied{background:var(--green);border-color:var(--green);color:#fff}pre.code{margin:0;padding:16px 18px;font-family:var(--font-mono);font-size:13px;line-height:1.65;color:#F4ECDA;overflow-x:auto;white-space:pre;tab-size:2}code.inline{font-family:var(--font-mono);font-size:.88em;background:var(--bg-2);border:1px solid var(--border);padding:1px 7px;border-radius:6px;color:var(--ink)}
+.steps{display:flex;flex-direction:column;gap:18px;margin:18px 0}.step{display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:flex-start}.step-num{width:44px;height:44px;border-radius:12px;background:var(--primary);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:18px}.step-num.accent{background:var(--accent)}.step-body{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;min-width:0}.step-body h4{margin-top:0}
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}.faq-q{width:100%;text-align:left;background:transparent;border:none;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:14px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink)}.faq-q .chev{width:22px;height:22px;border-radius:50%;background:var(--bg-2);display:grid;place-items:center;font-size:11px;flex-shrink:0;transition:transform .2s ease;color:var(--ink-2)}.faq-item.open .chev{transform:rotate(180deg);background:var(--primary);color:#fff}.faq-a{padding:0 20px 16px;font-size:14px;color:var(--ink-2);line-height:1.6}
+.hero{padding-top:24px;padding-bottom:30px}.hero-meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;padding:18px 22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}.hero-meta-item .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:4px}.hero-meta-item .value{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--ink)}.hero-meta-divider{width:1px;background:var(--border);align-self:stretch}
+.feature-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:22px 0}@media(max-width:800px){.feature-strip{grid-template-columns:1fr}}.feature{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden}.feature .icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px;font-size:22px}.feature .icon.blue{background:var(--primary-soft)}.feature .icon.coral{background:var(--accent-soft)}.feature .icon.green{background:var(--green-soft)}.feature h3{margin:0 0 8px;font-size:19px}.feature p{margin:0;font-size:14px;color:var(--ink-2)}.feature .th{font-family:var(--font-thai);font-size:13px;color:var(--muted);margin-top:6px}
+kbd{font-family:var(--font-mono);font-size:11px;background:var(--surface);border:1px solid var(--border-strong);border-bottom-width:2px;padding:2px 7px;border-radius:5px;color:var(--ink)}
+/* ── Custom tables ── */
+.data-table{width:100%;border-collapse:collapse;font-size:14px}.data-table th{text-align:left;padding:10px 14px;background:var(--bg-2);border-bottom:2px solid var(--border-strong);font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--ink);white-space:nowrap}.data-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--ink-2);vertical-align:top}.data-table tr:last-child td{border-bottom:none}.data-table tr:hover td{background:var(--surface-2)}
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;font-family:var(--font-mono)}.pill.green{background:var(--green-soft);color:var(--green)}.pill.red{background:var(--red-soft);color:var(--red)}.pill.amber{background:var(--amber-soft);color:var(--amber)}.pill.blue{background:var(--primary-soft);color:var(--primary)}.pill.gray{background:var(--bg-2);color:var(--muted)}
+/* ── Stats bar ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}@media(max-width:800px){.stat-row{grid-template-columns:repeat(2,1fr)}}.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;text-align:center}.stat-card .num{font-family:var(--font-display);font-weight:800;font-size:32px;line-height:1;margin-bottom:4px}.stat-card .lbl{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}.stat-card .sub-lbl{font-family:var(--font-thai);font-size:12px;color:var(--muted);margin-top:2px}
+/* ── Flow diagram ── */
+.flow-box{display:flex;flex-direction:column;align-items:center;gap:6px}.flow-node{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:10px 16px;font-size:13px;font-weight:600;text-align:center;position:relative;min-width:140px}.flow-node.primary{background:var(--primary-soft);border-color:var(--primary);color:var(--primary)}.flow-node.accent{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}.flow-node.green{background:var(--green-soft);border-color:var(--green);color:var(--green)}.flow-node.gold{background:#FFFBEB;border-color:#D97706;color:#92400E}.flow-arrow{color:var(--muted);font-size:18px;line-height:1}.flow-parallel{display:flex;gap:12px;align-items:stretch;flex-wrap:wrap;justify-content:center}.flow-lane{background:var(--surface-2);border:1px dashed var(--border-strong);border-radius:var(--radius);padding:12px 14px;font-size:12px;text-align:center;min-width:110px}.flow-sla{font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:4px}
+/* ── Update form ── */
+.update-form{background:var(--surface);border:1.5px solid var(--primary-soft);border-radius:var(--radius-lg);padding:28px;margin:18px 0;box-shadow:var(--shadow-md)}.update-form h3{margin-top:0;color:var(--primary)}.form-row{display:grid;gap:14px;margin-bottom:14px}.form-row.cols-2{grid-template-columns:1fr 1fr}.form-row.cols-3{grid-template-columns:1fr 1fr 1fr}.form-group label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px}.form-group .th-label{font-family:var(--font-thai);font-size:11px;color:var(--muted);font-weight:400;margin-left:4px;text-transform:none;letter-spacing:0}.form-input,.form-select,.form-textarea{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);font-family:var(--font-body);font-size:14px;color:var(--ink);transition:border-color .15s ease}.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--primary);background:#fff}.form-textarea{resize:vertical;min-height:90px;line-height:1.5}.form-select{cursor:pointer}.submit-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius);font-family:var(--font-body);font-size:15px;font-weight:700;cursor:pointer;transition:background .15s ease}.submit-btn:hover{background:var(--primary-2)}.submit-btn:disabled{background:var(--border-strong);cursor:not-allowed}
+/* ── Feed entries ── */
+.feed{display:flex;flex-direction:column;gap:12px;margin-top:18px}.feed-empty{text-align:center;padding:48px 24px;background:var(--surface-2);border-radius:var(--radius-lg);border:2px dashed var(--border-strong);color:var(--muted)}.feed-entry{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px 18px;position:relative}.feed-entry:hover{box-shadow:var(--shadow-sm)}.feed-entry .entry-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px}.feed-entry .entry-title{font-weight:700;font-size:15px;color:var(--ink)}.feed-entry .entry-body{font-size:14px;color:var(--ink-2);line-height:1.55}.feed-entry .entry-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}.feed-entry .entry-meta .meta-item{font-family:var(--font-mono);font-size:11px;color:var(--muted)}.entry-delete{background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:2px 6px;border-radius:4px;line-height:1}.entry-delete:hover{color:var(--red);background:var(--red-soft)}
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.filter-btn{padding:6px 14px;border-radius:999px;background:var(--bg);border:1.5px solid var(--border);font-family:inherit;font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;transition:all .15s ease}.filter-btn:hover{background:var(--bg-2)}.filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.export-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 18px;background:var(--surface-2);border-radius:var(--radius);border:1px solid var(--border);margin-top:18px}.export-bar .export-btn{padding:8px 16px;border-radius:var(--radius-sm);font-family:var(--font-body);font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid;transition:all .15s ease}.export-btn.dl{background:var(--green);border-color:var(--green);color:#fff}.export-btn.dl:hover{background:#2e7a57}.export-btn.imp{background:var(--surface);border-color:var(--border);color:var(--ink-2)}.export-btn.imp:hover{background:var(--bg-2)}.export-btn.clr{background:var(--surface);border-color:var(--red-soft);color:var(--red)}.export-btn.clr:hover{background:var(--red-soft)}
+/* ── Coverage bar ── */
+.cov-row{display:flex;flex-direction:column;gap:10px;margin:14px 0}.cov-item{display:grid;grid-template-columns:180px 1fr 60px;gap:12px;align-items:center;font-size:13px}.cov-label{font-weight:600;color:var(--ink-2)}.cov-bar-wrap{background:var(--bg-2);border-radius:999px;height:10px;overflow:hidden}.cov-bar-fill{height:100%;border-radius:999px;transition:width .6s ease}.cov-val{font-family:var(--font-mono);font-size:12px;color:var(--muted);text-align:right}
+/* ── Role matrix ── */
+.role-matrix{overflow-x:auto}.role-matrix table{border-collapse:collapse;font-size:13px;min-width:600px}.role-matrix th,.role-matrix td{padding:9px 13px;border:1px solid var(--border);text-align:center}.role-matrix th{background:var(--bg-2);font-weight:700;font-family:var(--font-display)}.role-matrix th:first-child,.role-matrix td:first-child{text-align:left;font-weight:600}.role-matrix .ck{color:var(--green);font-size:16px}.role-matrix .dash{color:var(--border-strong)}
+@media print{.sidebar,.update-form,.export-bar,.filter-bar,.entry-delete,.submit-btn{display:none!important}.app{grid-template-columns:1fr}.main{padding:20px;max-width:none}body{background:#fff;font-size:11pt}section{page-break-inside:avoid;padding:16px 0}}
+@media(max-width:1000px){.app{grid-template-columns:1fr}.sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;max-height:75vh;z-index:50;border-top:1px solid var(--border);border-right:none;transform:translateY(calc(100% - 68px));transition:transform .25s ease;overflow-y:auto;box-shadow:0 -10px 28px rgba(31,27,22,.10)}.sidebar.open{transform:translateY(0)}.sidebar-brand{cursor:pointer;position:sticky;top:0;background:var(--surface);z-index:2;border-bottom:1px solid var(--border);padding-right:44px}.sidebar-brand .drawer-handle{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px;transition:transform .25s ease;line-height:1}.sidebar.open .sidebar-brand .drawer-handle{transform:translateY(-50%) rotate(180deg)}.main{padding:28px 22px 96px}}
+@media(min-width:1001px){.sidebar-brand .drawer-handle{display:none}}
+@media(max-width:700px){html,body{max-width:100vw;overflow-x:hidden}body{font-size:15px}.main{padding:22px 16px 96px}h1{font-size:clamp(28px,8vw,38px)!important}h2{font-size:clamp(22px,6vw,30px)!important}.lead{font-size:16px!important}.cov-item{grid-template-columns:120px 1fr 50px}}
+  </style>
+  <!-- ══════════════════════════════════════════════════════════════════
+       SHARED UPDATES — baked in by Claude Co-Work on each daily sync.
+       DO NOT edit this block manually — Claude regenerates it at 09:00.
+       Format: window.SHARED_UPDATES = [ { id, ts, author, category,
+               priority, title, description, linkedTC, syncedAt,
+               syncBatch } ]
+       ══════════════════════════════════════════════════════════════════ -->
+  <script>
+  window.SHARED_UPDATES = [];
+  window.SYNC_META = {
+    syncedAt:      null,
+    lastSyncedBy:  "—",
+    totalEntries:  0,
+    version:       0,
+    nextScheduled: "09:00 น. ทุกวัน"
+  };
+  </script>
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ── Shared Components ── -->
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+function Section({ id, eyebrow, eyebrowKind="", title, subtitle, thai, children }) {
+  return (
+    <section id={id}>
+      {eyebrow && <span className={`eyebrow ${eyebrowKind}`}>{eyebrow}</span>}
+      <h2>{title}</h2>
+      {subtitle && <p className="lead" style={{ marginTop:4 }}>{subtitle}</p>}
+      {thai && <div className="thai-lead">{thai}</div>}
+      {children}
+    </section>
+  );
+}
+function Callout({ kind="info", icon, children }) {
+  const ic = icon||(kind==="warn"?"⚠":kind==="tip"?"★":kind==="danger"?"✕":"i");
+  return (
+    <div className={`callout ${kind==="info"?"":kind}`}>
+      <div className="callout-icon">{ic}</div>
+      <div className="callout-body">{children}</div>
+    </div>
+  );
+}
+function CodeBlock({ label="shell", children }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => { navigator.clipboard.writeText(typeof children==="string"?children:""); setCopied(true); setTimeout(()=>setCopied(false),1400); };
+  return (
+    <div className="code-wrap">
+      <div className="code-header"><span className="label"><span className="dot"></span>{label}</span><button className={`code-copy ${copied?"copied":""}`} onClick={copy}>{copied?"Copied ✓":"Copy"}</button></div>
+      <pre className="code">{children}</pre>
+    </div>
+  );
+}
+function FAQItem({ q, qTh, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`faq-item ${open?"open":""}`}>
+      <button className="faq-q" onClick={()=>setOpen(!open)} aria-expanded={open}>
+        <span>{q}{qTh&&<div style={{fontFamily:"var(--font-thai)",fontSize:13,color:"var(--muted)",fontWeight:400,marginTop:2}}>{qTh}</div>}</span>
+        <span className="chev">▾</span>
+      </button>
+      {open&&<div className="faq-a">{children}</div>}
+    </div>
+  );
+}
+
+/* ── App Shell ── */
+const NAV = [];
+const Sidebar = ({ active, onJump, open, onToggle }) => {
+  const groups = NAV.reduce((acc,item)=>{ (acc[item.group]=acc[item.group]||[]).push(item); return acc; },{});
+  return (
+    <aside className={`sidebar ${open?"open":""}`}>
+      <div className="sidebar-brand" onClick={()=>onToggle&&onToggle(!open)} role="button" aria-expanded={open}>
+        <div className="logo">B·C</div>
+        <div><div className="title">BigC · Supplier IM</div><div className="sub">Knowledge Hub</div></div>
+        <span className="drawer-handle" aria-hidden="true">▴</span>
+      </div>
+      {Object.entries(groups).map(([group,items])=>(
+        <div key={group}>
+          <div className="nav-section">{group}</div>
+          {items.map(item=>(
+            <button key={item.id} className={`nav-link ${active===item.id?"active":""}`} onClick={()=>{ onJump(item.id); onToggle&&onToggle(false); }}>
+              <span className="num">{item.num}</span>
+              <span style={{display:"flex",flexDirection:"column",gap:0,alignItems:"flex-start"}}>
+                <span>{item.label}</span>
+                <span style={{fontFamily:"var(--font-thai)",fontSize:11,color:"var(--muted)",fontWeight:400,lineHeight:1.2}}>{item.labelTh}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      ))}
+      <div className="sidebar-footer">
+        <div style={{fontWeight:600,color:"var(--ink-2)",marginBottom:4}}>📄 Print / PDF</div>
+        <div>กด <kbd>Ctrl</kbd> <kbd>P</kbd> เพื่อพิมพ์</div>
+        <div style={{marginTop:8,fontSize:11,color:"var(--muted)",fontFamily:"var(--font-thai)"}}>อัพเดทล่าสุด: 2026-05-20</div>
+      </div>
+    </aside>
+  );
+};
+const App = ({ children }) => {
+  const [active, setActive] = useState(NAV[0]?.id||"");
+  const [open, setOpen] = useState(false);
+  const jump = (id) => {
+    const el = document.getElementById(id);
+    if(el){ window.scrollTo({ top: el.getBoundingClientRect().top+window.scrollY-16, behavior:"smooth" }); }
+    setActive(id);
+  };
+  useEffect(()=>{
+    if(!NAV.length) return;
+    let raf=0;
+    const compute = () => {
+      const y=window.scrollY,vh=window.innerHeight,docMax=document.documentElement.scrollHeight-vh;
+      if(y<80){setActive(NAV[0].id);return;}
+      if(docMax-y<80){setActive(NAV[NAV.length-1].id);return;}
+      const line=vh*0.3; let best=NAV[0].id;
+      for(const n of NAV){ const el=document.getElementById(n.id); if(!el) continue; if(el.getBoundingClientRect().top<=line) best=n.id; else break; }
+      setActive(best);
+    };
+    const onScroll=()=>{ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0; compute(); }); };
+    window.addEventListener("scroll",onScroll,{passive:true});
+    window.addEventListener("resize",onScroll);
+    compute();
+    return()=>{ window.removeEventListener("scroll",onScroll); window.removeEventListener("resize",onScroll); if(raf) cancelAnimationFrame(raf); };
+  },[]);
+  return (
+    <div className="app">
+      <Sidebar active={active} onJump={jump} open={open} onToggle={setOpen}/>
+      <main className="main">{children}</main>
+    </div>
+  );
+};
+Object.assign(window,{ Section,Callout,CodeBlock,FAQItem,NAV,App });
+</script>
+
+<!-- ── Page Sections ── -->
+<script type="text/babel">
+/* eslint-disable */
+
+// ── NAV ──
+window.NAV.push(
+  { id:"welcome",    num:"00", label:"Hub Home",       labelTh:"หน้าหลัก",          group:"Overview" },
+  { id:"scope",      num:"01", label:"Project Scope",  labelTh:"ขอบเขตโครงการ",     group:"Overview" },
+  { id:"flow",       num:"02", label:"Approval Flow",  labelTh:"กระบวนการอนุมัติ",  group:"Flow" },
+  { id:"routing",    num:"03", label:"Routing Rules",  labelTh:"กฎการ routing",      group:"Flow" },
+  { id:"roles",      num:"04", label:"Roles & Access", labelTh:"บทบาทและสิทธิ์",    group:"Team" },
+  { id:"glossary",   num:"05", label:"Glossary",       labelTh:"อภิธานศัพท์",        group:"Team" },
+  { id:"tc-dash",    num:"06", label:"TC Dashboard",   labelTh:"สถานะ Test Case",    group:"QA" },
+  { id:"automation", num:"07", label:"Automation",     labelTh:"สถานะ Automation",   group:"QA" },
+  { id:"files",      num:"08", label:"Key Files",      labelTh:"ไฟล์สำคัญ",          group:"Files" },
+  { id:"openq",      num:"09", label:"Open Questions", labelTh:"คำถามค้าง",          group:"Live" },
+  { id:"updates",    num:"10", label:"Team Updates",   labelTh:"อัพเดทจากทีม",       group:"Live" },
+);
+
+// ── SECTION 00: Welcome ──
+const SectionWelcome = () => (
+  <section id="welcome" className="hero" style={{ paddingTop:8 }}>
+    <span className="eyebrow accent">BigC Supplier Portal · IM</span>
+    <h1>Knowledge Hub — <span className="accent-word">ศูนย์รวมความรู้</span></h1>
+    <p className="lead">
+      Single source of truth for the <strong>Item Management (NPD)</strong> project — approval flows, roles, TC coverage, automation status, and team updates in one place.
+    </p>
+    <div className="thai-lead">
+      รวมทุกอย่างที่ทีม QA, Dev, Buyer, และ PO ต้องรู้เกี่ยวกับระบบ <strong>Item Management</strong> ใหม่ — กระบวนการอนุมัติ, บทบาท, สถานะ Test Case, และช่องอัพเดทแบบ real-time
+    </div>
+    <div className="hero-meta">
+      <div className="hero-meta-item"><div className="label">Phase</div><div className="value">1 — NPD</div></div>
+      <div className="hero-meta-divider"></div>
+      <div className="hero-meta-item"><div className="label">TC Count</div><div className="value">340 TCs</div></div>
+      <div className="hero-meta-divider"></div>
+      <div className="hero-meta-item"><div className="label">Automation</div><div className="value">126 ✅ / 44 ⏸</div></div>
+      <div className="hero-meta-divider"></div>
+      <div className="hero-meta-item"><div className="label">Stack</div><div className="value">Next.js 16 + NestJS</div></div>
+      <div className="hero-meta-divider"></div>
+      <div className="hero-meta-item"><div className="label">Updated</div><div className="value">2026-05-20</div></div>
+    </div>
+    <div className="feature-strip" style={{ marginTop:24 }}>
+      <div className="feature">
+        <div className="icon blue">📋</div>
+        <h3>340 Test Cases</h3>
+        <p>v2.8.2 — 335 active + 5 OBSOLETE ครอบ NPD lifecycle ตั้งแต่ submission ถึง GOLD</p>
+        <div className="th">ครอบคลุม Approval Flow, Routing, Validation, Integration</div>
+      </div>
+      <div className="feature">
+        <div className="icon coral">🤖</div>
+        <h3>126 Tests Passing</h3>
+        <p>Playwright automation — 0 failed, 44 fixme (awaiting backend). Phase 4C complete.</p>
+        <div className="th">รัน: <code className="inline">npm run test:e2e:fresh</code></div>
+      </div>
+      <div className="feature">
+        <div className="icon green">📝</div>
+        <h3>Team Updates</h3>
+        <p>กรอก Bug, Decision, Question, หรือ Note ไว้ — export JSON แล้ว sync เข้า CLAUDE.md ได้ทุกวัน</p>
+        <div className="th">ไปที่ Section 10 เพื่อเพิ่มข้อมูล</div>
+      </div>
+    </div>
+  </section>
+);
+
+// ── SECTION 01: Scope ──
+const SectionScope = () => (
+  <Section id="scope" eyebrow="01 · Project Scope" eyebrowKind="accent"
+    title="What we're building"
+    subtitle={<>Replacing <strong>Mendix-based Item Management</strong> with a new <strong>Next.js 16 Supplier Portal</strong> — Phase 1 focuses on New Product Development (NPD).</>}
+    thai={<>BigC แทนที่ระบบ Item Management เดิม (Mendix) ด้วย Supplier Portal ใหม่ — Phase 1 เน้นที่การสร้างสินค้าใหม่ (NPD)</>}>
+    <div className="grid grid-2" style={{ marginTop:18 }}>
+      <div className="card soft accent-left">
+        <h4 style={{ marginTop:0, color:"var(--green)" }}>✅ In Scope (Phase 1)</h4>
+        <ul style={{ margin:0, paddingLeft:18, fontSize:14, color:"var(--ink-2)", lineHeight:2 }}>
+          <li><strong>NPD</strong> — New Item Creation (TYPE 1 & TYPE 2)</li>
+          <li>Duplicate Item / Delete Item</li>
+          <li>Existing Supplier + Existing Brand only</li>
+          <li>Approval Flow (LV1 → LV2 → SVP) + parallel reviewers</li>
+          <li>GOLD integration (SAP/master-data export)</li>
+          <li>6 Divisions: Hard Line, Home Line, Soft Line, Dry Food, Fresh Food, Non-Food</li>
+        </ul>
+      </div>
+      <div className="card soft">
+        <h4 style={{ marginTop:0, color:"var(--red)" }}>🚫 Out of Scope (Phase 1)</h4>
+        <ul style={{ margin:0, paddingLeft:18, fontSize:14, color:"var(--ink-2)", lineHeight:2 }}>
+          <li>New Supplier / New Brand</li>
+          <li>Recipe / Ingredient items</li>
+          <li>Item Maintenance (Change Requests)</li>
+          <li>GOLD V6 cloud API transition</li>
+          <li>Performance / Load testing</li>
+          <li>Invoice Process (go-live June 2026)</li>
+        </ul>
+      </div>
+    </div>
+    <div className="stat-row" style={{ marginTop:24 }}>
+      <div className="stat-card"><div className="num" style={{ color:"var(--primary)" }}>340</div><div className="lbl">Total TCs</div><div className="sub-lbl">NPD v2.8.2</div></div>
+      <div className="stat-card"><div className="num" style={{ color:"var(--green)" }}>126</div><div className="lbl">Tests Passing</div><div className="sub-lbl">0 failed ✅</div></div>
+      <div className="stat-card"><div className="num" style={{ color:"var(--accent)" }}>340</div><div className="lbl">Fields Total</div><div className="sub-lbl">across all divisions</div></div>
+      <div className="stat-card"><div className="num" style={{ color:"var(--amber)" }}>10</div><div className="lbl">SLA Days</div><div className="sub-lbl">working days (no weekends)</div></div>
+    </div>
+    <Callout kind="tip">
+      <strong>SLA Note:</strong> 10 working days total — เกินได้ ระบบแสดง <code className="inline">Overdue</code> แต่ไม่มี auto-reject. SVP approval ไม่ตายตัว — รอรอบ Present NPD meeting.
+      <span className="thai"> วันหยุดสุดสัปดาห์ไม่นับ</span>
+    </Callout>
+  </Section>
+);
+
+// ── SECTION 02: Approval Flow ──
+const SectionFlow = () => (
+  <Section id="flow" eyebrow="02 · Approval Flow" eyebrowKind=""
+    title="NPD Approval Flow"
+    subtitle={<>Supplier submission → Buyer LV1 → <strong>parallel reviewers</strong> → SVP → GOLD. Total <strong>≤10 working days</strong>.</>}
+    thai={<>กระบวนการอนุมัติ NPD — ซัพพลายเออร์ส่ง → Buyer LV1 ตรวจสอบ → ผู้ตรวจสอบคู่ขนาน → SVP อนุมัติสุดท้าย → GOLD</>}>
+    <div className="card" style={{ padding:28, marginTop:18, overflowX:"auto" }}>
+      <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6, minWidth:420 }}>
+        <div className="flow-node primary" style={{ width:200 }}>🏭 Supplier Submit<div className="flow-sla">Day 0</div></div>
+        <div className="flow-arrow">↓</div>
+        <div className="flow-node" style={{ width:260, borderColor:"var(--amber)", background:"var(--amber-soft)", color:"#92400E" }}>
+          👤 Buyer LV1 Review<div className="flow-sla">3 วัน</div>
+        </div>
+        <div style={{ fontSize:12, color:"var(--muted)", fontFamily:"var(--font-thai)" }}>↓ ถ้า POG=Yes</div>
+        <div className="flow-node" style={{ width:200, fontSize:12 }}>📐 SRD Review (if POG)<div className="flow-sla">2 วัน — sequential ใน LV1 stage</div></div>
+        <div className="flow-arrow">↓</div>
+        <div className="flow-node" style={{ width:200 }}>📊 Buyer LV1 Deck Prep<div className="flow-sla">1 วัน</div></div>
+        <div className="flow-arrow">↓ เข้า Parallel Stage</div>
+
+        <div className="flow-parallel" style={{ width:"100%", marginTop:8 }}>
+          <div style={{ flex:1, minWidth:110, display:"flex", flexDirection:"column", gap:4 }}>
+            <div className="flow-lane" style={{ borderColor:"var(--primary)", background:"var(--primary-soft)" }}>
+              <strong style={{ color:"var(--primary)" }}>L1 — ทุกไอเทม</strong><br/>
+              Buyer LV2 Review<div className="flow-sla">2 วัน</div>
+            </div>
+          </div>
+          <div style={{ flex:1, minWidth:110, display:"flex", flexDirection:"column", gap:4 }}>
+            <div className="flow-lane" style={{ borderColor:"var(--accent)" }}>
+              SCM (if DC)<div className="flow-sla">2 วัน</div>
+            </div>
+          </div>
+          <div style={{ flex:1, minWidth:110, display:"flex", flexDirection:"column", gap:4 }}>
+            <div className="flow-lane" style={{ borderColor:"var(--green)" }}>
+              DC Income (if DC)<div className="flow-sla">2 วัน</div>
+            </div>
+          </div>
+          <div style={{ flex:1, minWidth:110, display:"flex", flexDirection:"column", gap:4 }}>
+            <div className="flow-lane" style={{ borderColor:"var(--amber)" }}>
+              ECB (if Online)<div className="flow-sla">2 วัน</div>
+            </div>
+          </div>
+          <div style={{ flex:1, minWidth:110, display:"flex", flexDirection:"column", gap:4 }}>
+            <div className="flow-lane">
+              RA (if RA trigger*)<div className="flow-sla">2 วัน → DATABRICK</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flow-arrow">↓</div>
+        <div className="flow-node" style={{ width:240, borderColor:"var(--amber)", background:"var(--amber-soft)", color:"#92400E" }}>
+          👔 SVP (on behalf of CCO)<div className="flow-sla">ไม่ตายตัว — รอรอบ NPD meeting</div>
+        </div>
+        <div className="flow-arrow">↓</div>
+        <div className="flow-node gold" style={{ width:200, fontWeight:800 }}>
+          ✅ GOLD<div className="flow-sla">SAP / Master-data</div>
+        </div>
+      </div>
+    </div>
+    <Callout kind="warn">
+      <strong>TYPE 2 Bypass:</strong> ถ้า Buyer LV1 สร้าง Item แทน Supplier → ข้าม LV1 Review ไปเลย เข้า Parallel Stage ทันที.
+      <span className="thai"> Buyer สร้างให้ = ไม่ต้องผ่าน LV1 review</span>
+    </Callout>
+    <h3>SLA per Step</h3>
+    <div style={{ overflowX:"auto" }}>
+      <table className="data-table">
+        <thead><tr><th>Step</th><th>Days</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          {[
+            ["Supplier Revise","2 วัน","—"],
+            ["Buyer LV1 Review","3 วัน","✅ confirmed — เคย discrepancy 3 vs 5"],
+            ["SRD (if POG)","2 วัน","sequential ใน LV1 stage (ไม่ใช่ parallel LV2)"],
+            ["Buyer LV1 Deck Prep","1 วัน","step แยกต่างหากจาก Review"],
+            ["Buyer LV2 Review","2 วัน","—"],
+            ["SCM (if DC)","2 วัน","parallel กับ LV2"],
+            ["DC Income (if DC)","2 วัน","parallel กับ LV2"],
+            ["ECB (if Online)","2 วัน","parallel กับ LV2"],
+            ["RA","2 วัน","parallel กับ LV2 → DATABRICK"],
+            ["SVP/LV3","ไม่ตายตัว","รอรอบ Present NPD meeting"],
+            ["Total Target","10 วัน","เกินได้ → แสดง Overdue (ไม่มี auto-reject)"],
+          ].map(([step,days,note])=>(
+            <tr key={step}>
+              <td><strong>{step}</strong></td>
+              <td><span className="pill blue">{days}</span></td>
+              <td style={{ fontSize:13 }}>{note}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Section>
+);
+
+// ── SECTION 03: Routing ──
+const SectionRouting = () => (
+  <Section id="routing" eyebrow="03 · Routing Rules" eyebrowKind="green"
+    title="Conditional Routing"
+    subtitle={<>Reviewers added based on <strong>item attributes</strong> — POG, Delivery Type, and Channel determine which lanes activate.</>}
+    thai={<>ระบบเพิ่ม reviewer อัตโนมัติตามคุณสมบัติของสินค้า — POG, ประเภทการจัดส่ง, และ Channel</>}>
+    <div style={{ overflowX:"auto", marginTop:16 }}>
+      <table className="data-table">
+        <thead>
+          <tr><th>Condition</th><th>Reviewer Added</th><th>Stage</th></tr>
+        </thead>
+        <tbody>
+          {[
+            ["POG = Yes","SRD","LV1 stage (sequential, before Deck Prep)"],
+            ["Delivery = DC","SCM + DC Income","Parallel กับ LV2"],
+            ["Channel = Online","ECB","Parallel กับ LV2"],
+            ["RA trigger*","RA","Parallel กับ LV2 → DATABRICK"],
+          ].map(([cond,rev,stage])=>(
+            <tr key={cond}><td><code className="inline">{cond}</code></td><td><strong>{rev}</strong></td><td style={{ fontSize:13 }}>{stage}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <Callout kind="info">
+      <strong>Default NPD item values</strong> (Buyer สามารถเปลี่ยนได้ระหว่าง review):<br/>
+      <code className="inline">POG = YES</code> · <code className="inline">Delivery = DC</code> · <code className="inline">Channel = Online</code><br/>
+      → Triggers: <strong>SRD + SCM + DC Income + ECB</strong> (ผู้ตรวจสอบ 4 ฝ่าย)
+      <span className="thai"> ค่า default ของไอเทม NPD ใหม่ทุกตัว</span>
+    </Callout>
+    <h3>Routing Examples</h3>
+    <div style={{ overflowX:"auto" }}>
+      <table className="data-table">
+        <thead><tr><th>Item Type</th><th>Reviewers</th></tr></thead>
+        <tbody>
+          {[
+            ["DC + POG + Online (default)","LV2, LV3, SCM, DC Income, ECB + SRD (LV1 stage)"],
+            ["DC + Offline + no POG","LV2, LV3, SCM, DC Income only"],
+            ["DSD + POG + Offline","LV2, LV3 + SRD (LV1 stage)"],
+            ["DSD + Online only","LV2, LV3, ECB only"],
+          ].map(([type,rev])=>(
+            <tr key={type}><td style={{ fontSize:13 }}>{type}</td><td style={{ fontSize:13 }}>{rev}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <Callout kind="warn">
+      <strong>Open Question — Donjai Routing Split:</strong> Buyer LV1 Review แยกกันระหว่าง "Buyer บ้านใหญ่" กับ "Donjai" — routing criteria ยังไม่ confirm จาก PO. กระทบ TC-NPD-014/015/016.
+      <span className="thai"> รอ PO ยืนยัน routing logic ก่อนสร้าง TC ได้</span>
+    </Callout>
+  </Section>
+);
+
+// ── SECTION 04: Roles ──
+const SectionRoles = () => {
+  const roles = [
+    { name:"Supplier", th:"ซัพพลายเออร์", actions:["Create","Submit","Revise"], access:"Submit items, upload docs" },
+    { name:"Buyer LV1", th:"ผู้ซื้อ ระดับ 1", actions:["Review","Return","Reject","Submit"], access:"Review submissions, deck prep" },
+    { name:"Buyer LV2", th:"ผู้ซื้อ ระดับ 2", actions:["Fill fields","Generate deck","Submit LV3"], access:"Data enrichment + NPD deck" },
+    { name:"SRD", th:"SRD", actions:["View","Edit","Submit"], access:"Display Category field only (POG items)" },
+    { name:"SCM", th:"SCM", actions:["View","Edit","Submit"], access:"32 fields — distribution setup (DC items)" },
+    { name:"DC Income", th:"DC Income", actions:["View","Edit","Submit"], access:"33 fields — DC allowance per channel" },
+    { name:"ECB", th:"ECB", actions:["View","Edit","Submit"], access:"Online channel review" },
+    { name:"RA", th:"RA", actions:["View","Edit","Submit"], access:"Regulatory Affair → DATABRICK" },
+    { name:"SVP", th:"SVP/CCO", actions:["Final Approve","Reject"], access:"Final approval (NPD meeting)" },
+    { name:"IT Admin", th:"IT Admin", actions:["Admin","Edit","Approve","Reject"], access:"System administration, all access" },
+    { name:"GOLD", th:"GOLD", actions:["—"], access:"System status → triggers SAP/master-data" },
+  ];
+  return (
+    <Section id="roles" eyebrow="04 · Roles & Access" eyebrowKind="accent"
+      title="Roles & Permissions"
+      subtitle={<><strong>11 roles</strong> — each with scoped access to specific form sections and workflow actions.</>}
+      thai={<>11 บทบาท — แต่ละบทบาทเห็นและแก้ไขได้เฉพาะส่วนที่เกี่ยวข้อง</>}>
+      <div style={{ overflowX:"auto", marginTop:16 }}>
+        <table className="data-table">
+          <thead>
+            <tr><th>Role</th><th>ชื่อไทย</th><th>Actions</th><th>Access</th></tr>
+          </thead>
+          <tbody>
+            {roles.map(r=>(
+              <tr key={r.name}>
+                <td><strong style={{ fontFamily:"var(--font-mono)" }}>{r.name}</strong></td>
+                <td><span className="thai">{r.th}</span></td>
+                <td>{r.actions.map(a=><span key={a} className="pill blue" style={{ marginRight:4, marginBottom:2 }}>{a}</span>)}</td>
+                <td style={{ fontSize:13 }}>{r.access}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <h3>Fields per Role</h3>
+      <div className="cov-row">
+        {[
+          ["Hard Line","228 shown",228,340],
+          ["Home Line","229 shown",229,340],
+          ["Soft Line","237 shown",237,340],
+          ["Dry Food","246 shown",246,340],
+          ["Fresh Food","222 shown",222,340],
+          ["SCM Role","79 fields",79,340],
+          ["DC Income Role","106 fields",106,340],
+          ["SRD Role","1 field (Display Cat)",1,340],
+        ].map(([lbl,val,n,total])=>(
+          <div key={lbl} className="cov-item">
+            <div className="cov-label">{lbl}</div>
+            <div className="cov-bar-wrap">
+              <div className="cov-bar-fill" style={{ width:`${Math.round(n/total*100)}%`, background: n<50?"var(--red)":n<150?"var(--amber)":"var(--green)" }}></div>
+            </div>
+            <div className="cov-val">{val}</div>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+};
+
+// ── SECTION 05: Glossary ──
+const SectionGlossary = () => {
+  const terms = [
+    { term:"NPD", th:"สินค้าใหม่", def:"New Product Development — กระบวนการสร้างสินค้าใหม่" },
+    { term:"GOLD", th:"ระบบ Master Data", def:"สถานะหลังอนุมัติ SVP — trigger SAP export และ item registration" },
+    { term:"DATABRICK", th:"ระบบดาวน์สตรีม", def:"Downstream system รับผล RA review และ GOLD output" },
+    { term:"TYPE 1", th:"ซัพพลายเออร์เริ่ม", def:"Supplier สร้าง item เอง → ผ่าน Buyer LV1 review" },
+    { term:"TYPE 2", th:"Buyer สร้างแทน", def:"Buyer LV1 สร้างแทน Supplier → ข้าม LV1 review" },
+    { term:"POG",  th:"POG", def:"Point of Gondola — ถ้า Yes ต้องให้ SRD ตรวจสอบ Display Category" },
+    { term:"DC",   th:"Distribution Center", def:"Delivery = DC → ต้องให้ SCM + DC Income ตรวจสอบ" },
+    { term:"DSD",  th:"Direct Store Delivery", def:"ส่งตรงร้าน — ไม่ผ่าน DC → ไม่ต้องการ SCM/DC Income" },
+    { term:"SRD",  th:"SRD", def:"ทีมตรวจสอบ Display Category — แก้ได้แค่ field เดียว (if POG=Yes)" },
+    { term:"SCM",  th:"Supply Chain Mgmt", def:"ตรวจสอบ 32 fields สำหรับ DC items (distribution setup)" },
+    { term:"ECB",  th:"E-Commerce", def:"ตรวจสอบ Online channel — ถ้า Channel=Online" },
+    { term:"SVP",  th:"SVP/CCO", def:"Final Approver — approve ในรอบ NPD meeting (SLA ไม่ตายตัว)" },
+    { term:"SLA",  th:"Service Level Agreement", def:"10 working days total — เกินได้ ระบบแสดง Overdue" },
+    { term:"Overdue", th:"เกินกำหนด", def:"SLA > 10 วัน — ระบบแสดง flag แต่ไม่ auto-reject" },
+  ];
+  return (
+    <Section id="glossary" eyebrow="05 · Glossary" eyebrowKind="green"
+      title="Key Terms"
+      subtitle={<>คำย่อและ concepts สำคัญในโครงการ</>}>
+      <div className="glossary" style={{ marginTop:14 }}>
+        {terms.map(t=>(
+          <dl key={t.term} className="glossary-item">
+            <dt>{t.term}</dt>
+            <dd>{t.def}</dd>
+            {t.th&&<div className="th">{t.th}</div>}
+          </dl>
+        ))}
+      </div>
+    </Section>
+  );
+};
+
+// ── SECTION 06: TC Dashboard ──
+const SectionTCDash = () => {
+  const coverage = [
+    ["Requirements (BRD ACs)","~88%",88],
+    ["Workflow & Routing","~87%",87],
+    ["RBAC / Role Access","~83%",83],
+    ["Notifications","~90%",90],
+    ["GOLD Integration","~80%",80],
+    ["Validation Rules","~85%",85],
+    ["Field Coverage (340 fields)","~80%",80],
+    ["Specialist Role Actions","~75%",75],
+  ];
+  const tcSuites = [
+    { suite:"S1 Happy Path", range:"TC-NPD-227..234", count:8, status:"green" },
+    { suite:"S2 Conditional Visibility", range:"TC-NPD-235..244", count:10, status:"green" },
+    { suite:"S3 Error Path", range:"TC-NPD-245..282", count:38, status:"green" },
+    { suite:"S4 Division Deep Dive", range:"TC-NPD-283..329", count:47, status:"green" },
+    { suite:"Compliance (FF/HL/SL/DF/HB)", range:"TC-NPD-330..337", count:8, status:"green" },
+    { suite:"GOLD/Kafka Integration", range:"TC-NPD-338..340", count:3, status:"amber" },
+    { suite:"RA Role", range:"TC-NPD-341+", count:0, status:"red" },
+  ];
+  return (
+    <Section id="tc-dash" eyebrow="06 · TC Dashboard" eyebrowKind=""
+      title="Test Case Dashboard"
+      subtitle={<>NPD v2.8.2 — <strong>340 TCs</strong> (335 active + 5 OBSOLETE). Zero-fail audit verified.</>}
+      thai={<>สถานะ Test Case ล่าสุด — ครอบคลุมทุก workflow หลักของ NPD</>}>
+      <div className="stat-row">
+        <div className="stat-card"><div className="num" style={{ color:"var(--primary)" }}>340</div><div className="lbl">Total TCs</div><div className="sub-lbl">v2.8.2</div></div>
+        <div className="stat-card"><div className="num" style={{ color:"var(--green)" }}>335</div><div className="lbl">Active TCs</div><div className="sub-lbl">5 OBSOLETE</div></div>
+        <div className="stat-card"><div className="num" style={{ color:"var(--amber)" }}>3</div><div className="lbl">Blocked TCs</div><div className="sub-lbl">Kafka K-Q2/Q3/Q4</div></div>
+        <div className="stat-card"><div className="num" style={{ color:"var(--red)" }}>0</div><div className="lbl">RA Role TCs</div><div className="sub-lbl">Pending BRD confirm</div></div>
+      </div>
+
+      <h3>Coverage by Dimension</h3>
+      <div className="cov-row">
+        {coverage.map(([lbl,val,pct])=>(
+          <div key={lbl} className="cov-item">
+            <div className="cov-label">{lbl}</div>
+            <div className="cov-bar-wrap">
+              <div className="cov-bar-fill" style={{ width:`${pct}%`, background:pct>=85?"var(--green)":pct>=70?"var(--amber)":"var(--red)" }}></div>
+            </div>
+            <div className="cov-val">{val}</div>
+          </div>
+        ))}
+      </div>
+
+      <h3>Suite Breakdown</h3>
+      <div style={{ overflowX:"auto" }}>
+        <table className="data-table">
+          <thead><tr><th>Suite</th><th>TC Range</th><th>Count</th><th>Status</th></tr></thead>
+          <tbody>
+            {tcSuites.map(s=>(
+              <tr key={s.suite}>
+                <td><strong>{s.suite}</strong></td>
+                <td><code className="inline">{s.range}</code></td>
+                <td><span className="pill blue">{s.count}</span></td>
+                <td><span className={`pill ${s.status}`}>{s.status==="green"?"✅ Ready":s.status==="amber"?"⏸ Blocked":"🔴 Not Started"}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Callout kind="warn">
+        <strong>TC-NPD-338/339/340</strong> (Kafka portal-side TCs) — BLOCKED รอ K-Q2/K-Q3/K-Q4 จาก Dev.
+        <strong> RA Role TCs</strong> — 0 TC ทั้งหมด รอ BRD confirm + Plan 036-ra เสร็จ (TC reserved TC-341+)
+      </Callout>
+    </Section>
+  );
+};
+
+// ── SECTION 07: Automation ──
+const SectionAutomation = () => {
+  const specs = [
+    { file:"auth/login.spec.ts", tests:8, pass:7, fixme:1, phase:"1" },
+    { file:"auth/auth-guard.spec.ts", tests:3, pass:3, fixme:0, phase:"1" },
+    { file:"dashboard.spec.ts", tests:7, pass:6, fixme:1, phase:"1" },
+    { file:"inbox/inbox.spec.ts", tests:10, pass:6, fixme:4, phase:"1" },
+    { file:"items/items-list.spec.ts", tests:7, pass:7, fixme:0, phase:"1" },
+    { file:"items/new-item-setup.spec.ts", tests:10, pass:6, fixme:4, phase:"1" },
+    { file:"items/sidebar-collapse.spec.ts", tests:4, pass:4, fixme:0, phase:"1" },
+    { file:"items/wizard-draft.spec.ts", tests:3, pass:3, fixme:0, phase:"1" },
+    { file:"items/wizard-sections.spec.ts", tests:23, pass:14, fixme:9, phase:"2" },
+    { file:"items/wizard-validation.spec.ts", tests:20, pass:10, fixme:10, phase:"3" },
+    { file:"items/wizard-completion.spec.ts", tests:4, pass:2, fixme:2, phase:"4A" },
+    { file:"items/filter-ui.spec.ts", tests:16, pass:12, fixme:4, phase:"4B" },
+    { file:"auth/role-smoke.spec.ts", tests:10, pass:10, fixme:0, phase:"4C" },
+    { file:"items/wizard-conditional-fields.spec.ts", tests:5, pass:5, fixme:0, phase:"5" },
+    { file:"items/wizard-happy-path-*.spec.ts", tests:20, pass:20, fixme:0, phase:"4C" },
+  ];
+  const totalPass = specs.reduce((s,r)=>s+r.pass,0);
+  const totalFixme = specs.reduce((s,r)=>s+r.fixme,0);
+  return (
+    <Section id="automation" eyebrow="07 · Automation" eyebrowKind="green"
+      title="Playwright Automation"
+      subtitle={<><strong>170 tests total</strong> — 126 passed · 0 failed · 44 fixme. Config: <code className="inline">workers: 4</code>.</>}
+      thai={<>สถานะ Playwright automation suite — รัน: <code className="inline">npm run test:e2e:fresh</code></>}>
+      <div className="stat-row">
+        <div className="stat-card"><div className="num" style={{ color:"var(--green)" }}>126</div><div className="lbl">Passing</div><div className="sub-lbl">0 failed ✅</div></div>
+        <div className="stat-card"><div className="num" style={{ color:"var(--amber)" }}>44</div><div className="lbl">Fixme</div><div className="sub-lbl">Awaiting backend</div></div>
+        <div className="stat-card"><div className="num" style={{ color:"var(--primary)" }}>170</div><div className="lbl">Total Tests</div><div className="sub-lbl">across 15+ spec files</div></div>
+        <div className="stat-card"><div className="num" style={{ color:"var(--accent)" }}>4C</div><div className="lbl">Latest Phase</div><div className="sub-lbl">role-smoke complete</div></div>
+      </div>
+      <CodeBlock label="powershell">{`# Run from D:\\Big_C\\Portal_IM\\QA\\automation\\
+npm run test:e2e:fresh     # seed DB + run full suite
+npm run test:e2e:mockup    # requires server up + seeded
+npm run test:e2e:ui        # interactive Playwright UI
+npm run test:e2e:report    # open HTML report`}</CodeBlock>
+      <h3>Spec Files</h3>
+      <div style={{ overflowX:"auto" }}>
+        <table className="data-table">
+          <thead><tr><th>Spec File</th><th>Phase</th><th>Tests</th><th>Pass</th><th>Fixme</th></tr></thead>
+          <tbody>
+            {specs.map(s=>(
+              <tr key={s.file}>
+                <td style={{ fontFamily:"var(--font-mono)", fontSize:12 }}>{s.file}</td>
+                <td><span className="pill gray">{s.phase}</span></td>
+                <td>{s.tests}</td>
+                <td><span style={{ color:"var(--green)", fontWeight:700 }}>{s.pass}</span></td>
+                <td><span style={{ color: s.fixme>0?"var(--amber)":"var(--muted)" }}>{s.fixme}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Callout kind="info">
+        <strong>Config location:</strong> <code className="inline">QA/automation/playwright.config.ts</code> (permanent home since 2026-05-17).
+        <code className="inline">workers: 4</code> — ลด → 2 ทำให้แย่ลง. Fresh container = warmup routes ~12s.
+      </Callout>
+    </Section>
+  );
+};
+
+// ── SECTION 08: Key Files ──
+const SectionFiles = () => {
+  const files = [
+    { path:"QA/test-case/NPD_Test_Documentation_v2_8_2.xlsx", role:"🟢 CURRENT TC file — 340 TCs" },
+    { path:"QA/test-case/NPD_QA_Strategy_v1.0.xlsx", role:"QA Strategy — 5 sheets (89 ACs, RTM, Security Matrix)" },
+    { path:"QA/automation/playwright.config.ts", role:"E2E config (permanent) — baseURL=localhost:3100" },
+    { path:"QA/test-case/_standards/TC_Writing_Standard.md", role:"🔴 MUST READ before writing TCs" },
+    { path:"QA/test-case/_standards/HTML_Report_Standard.md", role:"HTML report standard — 3 types" },
+    { path:"QA/test-case/_tc_docs/TC-INV-Create-OCR-v1.0.md", role:"Invoice OCR TCs — 69 TCs" },
+    { path:"QA/test-case/_tc_docs/TC-INV-POGR-v1.0.md", role:"POGR TCs — 96 TCs (93 PASS + 3 OBSOLETE)" },
+    { path:"QA/test-case/_tc_docs/TC-ACC-Management-v1.0.md", role:"Account Management TCs" },
+    { path:"QA/test-case/_audit/v2_8_FINAL_audit_report.md", role:"FINAL audit — 310/310 zero-fail" },
+    { path:"Docs/feature-specs/dynamic-approval-workflow-requirements.md", role:"Approval Workflow FR/AC/NC/OQ spec" },
+    { path:"Docs/feature-specs/dynamic-approval-workflow-design.md", role:"Approval Workflow data model + API" },
+    { path:"Docs/excel/Item_Master_Analysis_v6.xlsx", role:"Master field matrix — 340 fields × 16 roles" },
+    { path:"UI/dev_16_May/", role:"🟢 Latest dev snapshot — 4 branches (dev/Account/Invoice/Items)" },
+    { path:"Current_Design/bigc-supplier-hub/CLAUDE.md", role:"Next.js app architecture reference" },
+  ];
+  return (
+    <Section id="files" eyebrow="08 · Key Files" eyebrowKind=""
+      title="Important Files"
+      subtitle={<>Quick reference — click paths to navigate.</>}
+      thai={<>ไฟล์สำคัญที่ต้องรู้จัก — TC, Automation, Docs, และ Dev snapshots</>}>
+      <div style={{ overflowX:"auto", marginTop:16 }}>
+        <table className="data-table">
+          <thead><tr><th style={{ width:"55%" }}>Path</th><th>Role</th></tr></thead>
+          <tbody>
+            {files.map(f=>(
+              <tr key={f.path}>
+                <td><code className="inline" style={{ fontSize:12, wordBreak:"break-all" }}>{f.path}</code></td>
+                <td style={{ fontSize:13 }}>{f.role}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Callout kind="danger">
+        🚫 <strong>NEVER read</strong> <code className="inline">Docs/excel/Prod_Product_Information_Master_Data/</code> without asking user permission 2–3 รอบก่อน — ไฟล์ใหญ่มาก เปลือง tokens
+      </Callout>
+    </Section>
+  );
+};
+
+// ── SECTION 09: Open Questions ──
+const SectionOpenQ = () => {
+  const questions = [
+    { id:"W1-Q3", priority:"high", cat:"TC", q:"Section count per division — D8 drift", th:"จำนวน section ต่อ Division ใน wizard ยังไม่ verify ครบ", status:"pending" },
+    { id:"W1-Q6", priority:"high", cat:"TC", q:"D11 drift — TC content to verify", th:"Drift D11 รอ verify Wave 1 Q6", status:"pending" },
+    { id:"Donjai", priority:"high", cat:"PO", q:"Donjai routing split — criteria ยังไม่ confirm", th:"Buyer LV1 แยกระหว่าง Buyer บ้านใหญ่/Donjai — routing criteria คืออะไร", status:"pending" },
+    { id:"K-Q2", priority:"high", cat:"Dev", q:"Kafka portal-side TC-338 — implementation status", th:"TC-338/339/340 blocked รอ Kafka spec", status:"blocked" },
+    { id:"K-Q3", priority:"high", cat:"Dev", q:"Kafka TC-339 trigger condition", th:"—", status:"blocked" },
+    { id:"K-Q4", priority:"high", cat:"Dev", q:"Kafka TC-340 error handling", th:"—", status:"blocked" },
+    { id:"OI-02", priority:"med", cat:"Dev", q:"POGR access — which roles? (commercial/buyer confirm)", th:"ยืนยัน role ที่เข้าถึง POGR ได้", status:"pending" },
+    { id:"OI-09", priority:"med", cat:"Dev", q:"No-GR seed data in db:seed", th:"ต้องการ seed data สำหรับ No-GR + open PO", status:"pending" },
+    { id:"OI-10", priority:"low", cat:"Dev", q:"Identical UI for supplier/IT-admin — intended Phase 1?", th:"UI เหมือนกันระหว่าง supplier กับ IT-admin — ตั้งใจไหม", status:"pending" },
+    { id:"RA-001", priority:"med", cat:"BRD", q:"RA role routing trigger condition", th:"เงื่อนไขที่ trigger RA role ยังไม่ได้ confirm", status:"blocked" },
+    { id:"G-Q1", priority:"low", cat:"GOLD", q:"GOLD V6 (OCI SAAS) timeline — 2-3 months?", th:"GOLD V6 มาเมื่อไหร่ กระทบ TC-034..039 ไหม", status:"pending" },
+    { id:"Delegate", priority:"low", cat:"BRD", q:"Self-service delegate feature spec", th:"BRD Q-02 — Delegate feature ยังไม่มี UI spec", status:"pending" },
+  ];
+  const priorityColor = p => p==="high"?"var(--red)":p==="med"?"var(--amber)":"var(--muted)";
+  const statusPill = s => s==="blocked"?<span className="pill red">Blocked</span>:<span className="pill amber">Pending</span>;
+  return (
+    <Section id="openq" eyebrow="09 · Open Questions" eyebrowKind="accent"
+      title="Open Questions"
+      subtitle={<>Items waiting for <strong>Dev / PO / BRD</strong> answers — must resolve before writing or executing related TCs.</>}
+      thai={<>รายการคำถามที่รอคำตอบจาก Dev/PO/BRD — ต้อง resolve ก่อน execute TC ที่เกี่ยวข้อง</>}>
+      <div style={{ overflowX:"auto", marginTop:16 }}>
+        <table className="data-table">
+          <thead><tr><th>ID</th><th>Cat</th><th>Question</th><th>Priority</th><th>Status</th></tr></thead>
+          <tbody>
+            {questions.map(q=>(
+              <tr key={q.id}>
+                <td><code className="inline" style={{ fontSize:12 }}>{q.id}</code></td>
+                <td><span className="pill gray" style={{ fontSize:11 }}>{q.cat}</span></td>
+                <td>
+                  <div style={{ fontWeight:600, fontSize:14 }}>{q.q}</div>
+                  {q.th&&<div className="thai" style={{ fontSize:12, marginTop:2 }}>{q.th}</div>}
+                </td>
+                <td><span style={{ color:priorityColor(q.priority), fontWeight:700, fontFamily:"var(--font-mono)", fontSize:12 }}>{q.priority.toUpperCase()}</span></td>
+                <td>{statusPill(q.status)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <Callout kind="tip">
+        เมื่อได้คำตอบแล้ว → เพิ่มใน <strong>Section 10 Team Updates</strong> พร้อม category = "Dev Answer" — จะถูก sync เข้า CLAUDE.md ตอน EOD
+      </Callout>
+    </Section>
+  );
+};
+
+// ── SECTION 10: Team Updates ──
+const STORAGE_KEY = "bigc_im_knowledge_updates";
+const CATEGORIES = ["Bug Found","Dev Answer","Decision","New Requirement","Question","Note","Blocker","TC Update","Other"];
+const PRIORITIES = ["🔴 High","🟡 Medium","🟢 Low"];
+
+// Shared entries baked into HTML by Claude on each sync (visible to ALL visitors)
+const SHARED   = window.SHARED_UPDATES || [];
+const SYNCMETA = window.SYNC_META      || { syncedAt:null, lastSyncedBy:"—", totalEntries:0, nextScheduled:"09:00 น. ทุกวัน" };
+
+const SectionUpdates = () => {
+  const [localEntries, setLocalEntries] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]"); } catch(e) { return []; }
+  });
+  const [form, setForm]         = useState({ category:"Note", author:"", priority:"🟡 Medium", title:"", description:"", linkedTC:"" });
+  const [filterCat, setFilterCat] = useState("All");
+  const [saved, setSaved]       = useState(false);
+  const fileRef = useRef(null);
+
+  const persistLocal = (list) => { setLocalEntries(list); localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); };
+  const update = (k,v) => setForm(f=>({...f,[k]:v}));
+
+  const submit = () => {
+    if(!form.title.trim()||!form.author.trim()) return;
+    const entry = { ...form, id:Date.now(), ts:new Date().toISOString(), synced:false };
+    persistLocal([entry, ...localEntries]);
+    setForm(f=>({...f, title:"", description:"", linkedTC:""}));
+    setSaved(true); setTimeout(()=>setSaved(false),2200);
+  };
+
+  const delLocal = (id) => { if(confirm("ลบ draft นี้?")) persistLocal(localEntries.filter(e=>e.id!==id)); };
+
+  const exportJSON = () => {
+    const data = { exportedAt:new Date().toISOString(), project:"BigC Supplier Portal IM", entries:localEntries };
+    const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement("a");
+    a.href=url; a.download=`bigc-im-updates-${new Date().toISOString().slice(0,10)}.json`; a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importJSON = (e) => {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data     = JSON.parse(ev.target.result);
+        const imported = data.entries||data;
+        if(!Array.isArray(imported)) { alert("Invalid file format"); return; }
+        const merged = [...imported, ...localEntries].filter((v,i,a)=>a.findIndex(x=>x.id===v.id)===i);
+        persistLocal(merged.sort((a,b)=>new Date(b.ts)-new Date(a.ts)));
+        alert(`Imported ${imported.length} entries ✅`);
+      } catch { alert("Invalid JSON file"); }
+    };
+    reader.readAsText(file);
+  };
+
+  const clearLocal = () => {
+    if(confirm("ลบ drafts ทั้งหมดใน browser นี้?\n(entries ที่ sync แล้วจะยังคงอยู่ใน Hub)"))
+      persistLocal([]);
+  };
+
+  const catColor = c => ({"Bug Found":"red","Dev Answer":"green","Decision":"blue","Blocker":"red","New Requirement":"blue","Question":"amber","TC Update":"green"})[c]||"gray";
+
+  const fmtDate = ts => {
+    try {
+      const d = new Date(ts);
+      return d.toLocaleDateString("th-TH",{day:"2-digit",month:"short",year:"numeric"})+" "+
+             d.toLocaleTimeString("th-TH",{hour:"2-digit",minute:"2-digit"});
+    } catch { return ts||"—"; }
+  };
+
+  const filteredShared = SHARED.filter(e=>filterCat==="All"||e.category===filterCat);
+
+  return (
+    <Section id="updates" eyebrow="10 · Team Updates" eyebrowKind="accent"
+      title="Team Updates Feed"
+      subtitle={<>ข้อมูลที่ sync แล้วจะ <strong>ปรากฏให้ทุกคนเห็น</strong> — Claude Co-Work sync ข้อมูลใหม่เข้า Hub ทุก <strong>09:00 น.</strong></>}
+      thai={<>น้องๆ กรอก Draft → Export JSON → Claude อ่านแล้ว embed เข้า HTML → Vercel deploy อัตโนมัติ → ทุกคนเห็น</>}>
+
+      {/* ── Sync Status Banner ── */}
+      <div style={{
+        display:"flex", alignItems:"center", gap:14,
+        padding:"14px 20px",
+        background: SYNCMETA.syncedAt ? "var(--green-soft)" : "var(--amber-soft)",
+        border:"1.5px solid", borderColor: SYNCMETA.syncedAt ? "var(--green)" : "var(--amber)",
+        borderRadius:"var(--radius)", marginBottom:24
+      }}>
+        <span style={{ fontSize:26, lineHeight:1 }}>{SYNCMETA.syncedAt ? "✅" : "⏰"}</span>
+        <div style={{ flex:1 }}>
+          <div style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:15, color:"var(--ink)" }}>
+            {SYNCMETA.syncedAt
+              ? `Last synced: ${fmtDate(SYNCMETA.syncedAt)}`
+              : "ยังไม่มีการ sync — รอ Co-Work agent รอบแรก"}
+          </div>
+          <div style={{ fontSize:12, color:"var(--muted)", fontFamily:"var(--font-thai)", marginTop:3 }}>
+            {SYNCMETA.syncedAt
+              ? `${SHARED.length} entries · synced by ${SYNCMETA.lastSyncedBy}`
+              : `Drafts ของคุณ: ${localEntries.length} entries · sync ครั้งต่อไป: ${SYNCMETA.nextScheduled}`}
+          </div>
+        </div>
+        {SYNCMETA.syncedAt && (
+          <div style={{ textAlign:"right", fontSize:12, color:"var(--muted)", fontFamily:"var(--font-mono)" }}>
+            <div>v{SYNCMETA.version}</div>
+            <div style={{ marginTop:2 }}>next: {SYNCMETA.nextScheduled}</div>
+          </div>
+        )}
+      </div>
+
+      {/* ════════════════════════════════════════════
+          SHARED FEED — baked in by Claude, everyone sees this
+          ════════════════════════════════════════════ */}
+      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:10 }}>
+        <h3 style={{ margin:0 }}>📡 Shared Updates</h3>
+        <span style={{
+          fontSize:12, padding:"3px 12px", borderRadius:999,
+          background: SHARED.length > 0 ? "var(--green-soft)" : "var(--surface-2)",
+          color: SHARED.length > 0 ? "var(--green)" : "var(--muted)",
+          border:"1px solid", borderColor: SHARED.length > 0 ? "var(--green)" : "var(--border)",
+          fontWeight:700
+        }}>
+          {SHARED.length > 0 ? `✅ ทุกคนเห็น · ${SHARED.length} entries` : "ยังไม่มีข้อมูล — รอ sync ครั้งแรก"}
+        </span>
+      </div>
+
+      {SHARED.length > 0 && (
+        <div className="filter-bar" style={{ marginBottom:14 }}>
+          <button className={`filter-btn ${filterCat==="All"?"active":""}`} onClick={()=>setFilterCat("All")}>All ({SHARED.length})</button>
+          {[...new Set(SHARED.map(e=>e.category))].map(c=>(
+            <button key={c} className={`filter-btn ${filterCat===c?"active":""}`} onClick={()=>setFilterCat(c)}>
+              {c} ({SHARED.filter(e=>e.category===c).length})
+            </button>
+          ))}
+        </div>
+      )}
+
+      {SHARED.length === 0 ? (
+        <div className="feed-empty" style={{ marginBottom:32 }}>
+          <div style={{ fontSize:40, marginBottom:10 }}>📡</div>
+          <div style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:16, color:"var(--ink-2)" }}>
+            รอ Claude Co-Work sync ครั้งแรก
+          </div>
+          <div style={{ fontFamily:"var(--font-thai)", fontSize:13, marginTop:6 }}>
+            เมื่อ Co-Work agent รัน จะ embed ข้อมูลเข้า HTML และ deploy ขึ้น Vercel โดยอัตโนมัติ
+          </div>
+        </div>
+      ) : (
+        <div className="feed" style={{ marginBottom:32 }}>
+          {filteredShared.map(e=>(
+            <div key={e.id} className="feed-entry" style={{ borderLeft:"3px solid var(--green)" }}>
+              <div className="entry-head">
+                <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                  <span className={`pill ${catColor(e.category)}`} style={{ fontSize:11 }}>{e.category}</span>
+                  <span style={{ fontSize:12, color:"var(--muted)" }}>{e.priority}</span>
+                </div>
+                {/* Sync batch badge — shows which sync added this entry */}
+                {e.syncBatch && (
+                  <span style={{
+                    fontSize:11, color:"var(--green)", background:"var(--green-soft)",
+                    padding:"2px 8px", borderRadius:6, border:"1px solid var(--green)",
+                    fontFamily:"var(--font-mono)", whiteSpace:"nowrap"
+                  }}>✅ sync {e.syncBatch}</span>
+                )}
+              </div>
+              <div className="entry-title">{e.title}</div>
+              {e.description && <div className="entry-body" style={{ marginTop:6, whiteSpace:"pre-wrap" }}>{e.description}</div>}
+              <div className="entry-meta">
+                <span className="meta-item">👤 {e.author}</span>
+                {e.linkedTC && <span className="meta-item">🔗 {e.linkedTC}</span>}
+                <span className="meta-item">🕐 {fmtDate(e.ts)}</span>
+                {e.syncedAt && (
+                  <span className="meta-item" style={{ color:"var(--green)" }}>
+                    📅 added on {fmtDate(e.syncedAt)}
+                  </span>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════
+          MY DRAFTS — localStorage, this browser only, pending sync
+          ════════════════════════════════════════════ */}
+      <div style={{ borderTop:"1px dashed var(--border-strong)", paddingTop:24, marginTop:8 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:14 }}>
+          <h3 style={{ margin:0 }}>📝 My Drafts</h3>
+          <span style={{
+            fontSize:12, padding:"3px 12px", borderRadius:999,
+            background:"var(--amber-soft)", color:"var(--amber)",
+            border:"1px solid var(--amber)", fontWeight:700
+          }}>⏳ browser นี้เท่านั้น — รอ sync</span>
+        </div>
+
+        {/* Input Form */}
+        <div className="update-form">
+          <h3 style={{ marginTop:0, fontSize:17, color:"var(--ink-2)" }}>➕ เพิ่ม Draft ใหม่</h3>
+          <div className="form-row cols-3">
+            <div className="form-group">
+              <label>Category <span className="th-label">ประเภท</span></label>
+              <select className="form-select" value={form.category} onChange={e=>update("category",e.target.value)}>
+                {CATEGORIES.map(c=><option key={c}>{c}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Priority <span className="th-label">ความสำคัญ</span></label>
+              <select className="form-select" value={form.priority} onChange={e=>update("priority",e.target.value)}>
+                {PRIORITIES.map(p=><option key={p}>{p}</option>)}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Your Name <span className="th-label">ชื่อผู้บันทึก *</span></label>
+              <input className="form-input" placeholder="ชื่อของคุณ..." value={form.author} onChange={e=>update("author",e.target.value)}/>
+            </div>
+          </div>
+          <div className="form-row cols-2">
+            <div className="form-group">
+              <label>Title <span className="th-label">หัวข้อ *</span></label>
+              <input className="form-input" placeholder="สรุปสั้นๆ ว่าเกิดอะไรขึ้น..." value={form.title} onChange={e=>update("title",e.target.value)}/>
+            </div>
+            <div className="form-group">
+              <label>Linked TC / File <span className="th-label">อ้างอิง (optional)</span></label>
+              <input className="form-input" placeholder="TC-NPD-xxx หรือชื่อไฟล์..." value={form.linkedTC} onChange={e=>update("linkedTC",e.target.value)}/>
+            </div>
+          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Description <span className="th-label">รายละเอียด</span></label>
+              <textarea className="form-textarea" placeholder="ปัญหาที่เจอ, คำตอบที่ได้, decision ที่ตัดสินใจ, หรือ note สำหรับทีม..." value={form.description} onChange={e=>update("description",e.target.value)}/>
+            </div>
+          </div>
+          <div style={{ display:"flex", alignItems:"center", gap:16 }}>
+            <button className="submit-btn" onClick={submit} disabled={!form.title.trim()||!form.author.trim()}>
+              {saved ? "✅ บันทึกแล้ว!" : "💾 บันทึก Draft"}
+            </button>
+            {(!form.title.trim()||!form.author.trim()) &&
+              <span style={{ fontSize:13, color:"var(--muted)", fontFamily:"var(--font-thai)" }}>กรอก Name + Title ก่อน</span>}
+          </div>
+        </div>
+
+        {/* Local Drafts Feed */}
+        {localEntries.length > 0 ? (
+          <div className="feed" style={{ marginTop:14 }}>
+            {localEntries.map(e=>(
+              <div key={e.id} className="feed-entry" style={{ borderLeft:"3px solid var(--amber)" }}>
+                <div className="entry-head">
+                  <div style={{ display:"flex", alignItems:"center", gap:8, flexWrap:"wrap" }}>
+                    <span className={`pill ${catColor(e.category)}`} style={{ fontSize:11 }}>{e.category}</span>
+                    <span style={{ fontSize:12, color:"var(--muted)" }}>{e.priority}</span>
+                    <span style={{ fontSize:11, color:"var(--amber)", fontWeight:700 }}>⏳ รอ sync</span>
+                  </div>
+                  <button className="entry-delete" onClick={()=>delLocal(e.id)} title="Delete draft">✕</button>
+                </div>
+                <div className="entry-title">{e.title}</div>
+                {e.description && <div className="entry-body" style={{ marginTop:6, whiteSpace:"pre-wrap" }}>{e.description}</div>}
+                <div className="entry-meta">
+                  <span className="meta-item">👤 {e.author}</span>
+                  {e.linkedTC && <span className="meta-item">🔗 {e.linkedTC}</span>}
+                  <span className="meta-item">🕐 {fmtDate(e.ts)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="feed-empty" style={{ marginTop:14 }}>
+            <div style={{ fontSize:36, marginBottom:8 }}>📝</div>
+            <div style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:15, color:"var(--ink-2)" }}>ยังไม่มี Drafts</div>
+            <div style={{ fontFamily:"var(--font-thai)", fontSize:13, marginTop:4 }}>กรอกฟอร์มด้านบนเพื่อเพิ่มข้อมูล</div>
+          </div>
+        )}
+
+        {/* Export/Import Bar */}
+        <div className="export-bar" style={{ marginTop:18 }}>
+          <span style={{ fontSize:13, fontWeight:700, color:"var(--ink-2)" }}>
+            📦 {localEntries.length} drafts รอ sync
+          </span>
+          <button className="export-btn dl" onClick={exportJSON}
+            disabled={localEntries.length===0} style={{ opacity:localEntries.length===0?0.45:1 }}
+            title="Export drafts → วางใน QA/updates/ → Claude sync ที่ 09:00">
+            ⬇ Export Drafts (EOD)
+          </button>
+          <button className="export-btn imp" onClick={()=>fileRef.current?.click()}>⬆ Import JSON</button>
+          <input ref={fileRef} type="file" accept=".json" style={{ display:"none" }} onChange={importJSON}/>
+          <button className="export-btn clr" onClick={clearLocal}
+            disabled={localEntries.length===0} style={{ opacity:localEntries.length===0?0.45:1 }}>
+            🗑 Clear Drafts
+          </button>
+          <span style={{ fontSize:12, color:"var(--muted)", fontFamily:"var(--font-thai)", marginLeft:"auto" }}>
+            Drafts อยู่ใน browser นี้เท่านั้น — Export แล้ววางใน QA/updates/
+          </span>
+        </div>
+      </div>
+
+      {/* ── Workflow Steps ── */}
+      <div className="card soft" style={{ marginTop:24 }}>
+        <h4 style={{ marginTop:0 }}>🔄 Workflow: ตั้งแต่ Draft → ทุกคนเห็น</h4>
+        <div className="steps" style={{ margin:"10px 0" }}>
+          <div className="step">
+            <div className="step-num" style={{ fontSize:14 }}>1</div>
+            <div className="step-body">
+              <h4>เพิ่ม Draft ระหว่างวัน</h4>
+              <p style={{ margin:0, fontSize:13 }}>กรอกฟอร์มด้านบน → "บันทึก Draft" — เก็บใน browser ของคุณ คนอื่นยังไม่เห็น</p>
+            </div>
+          </div>
+          <div className="step">
+            <div className="step-num accent" style={{ fontSize:14 }}>2</div>
+            <div className="step-body">
+              <h4>Export ก่อนเลิกงาน</h4>
+              <p style={{ margin:0, fontSize:13 }}>คลิก "Export Drafts (EOD)" → ได้ไฟล์ <code className="inline">bigc-im-updates-YYYY-MM-DD.json</code> → วางใน <code className="inline">QA/updates/</code></p>
+            </div>
+          </div>
+          <div className="step">
+            <div className="step-num" style={{ fontSize:14, background:"var(--green)" }}>3</div>
+            <div className="step-body">
+              <h4>Claude Co-Work sync ที่ 09:00 น. <span style={{ fontSize:12, color:"var(--green)", fontWeight:700 }}>อัตโนมัติ</span></h4>
+              <p style={{ margin:0, fontSize:13 }}>Co-Work agent อ่าน JSON → embed เข้า <code className="inline">SHARED_UPDATES</code> ใน HTML → push GitHub → Vercel deploy → <strong style={{ color:"var(--green)" }}>ทุกคนเห็น URL เดิม เนื้อหาใหม่</strong></p>
+            </div>
+          </div>
+        </div>
+        <Callout kind="tip" icon="💡">
+          <strong>ข้อมูลแต่ละ entry จะแสดง:</strong> Category · Priority · ชื่อผู้เพิ่ม · วันเวลาที่กรอก · วันที่ sync เข้า Hub — ไม่มีหาย ไม่มี duplicate
+        </Callout>
+      </div>
+
+      <h3 style={{ marginTop:28 }}>FAQ</h3>
+      <FAQItem q="คนอื่นเห็น Draft ที่ฉันกรอกเลยไหม?" qTh="Draft ใคร ใครเห็น">
+        <p><strong>ไม่</strong> — Draft อยู่ใน localStorage ของ browser คุณ คนอื่นจะเห็นก็ต่อเมื่อ Export แล้ว Claude sync เข้า <code className="inline">SHARED_UPDATES</code> และ deploy ขึ้น Vercel แล้ว</p>
+      </FAQItem>
+      <FAQItem q="ถ้าหลายคน Export ในวันเดียวกัน จะ conflict ไหม?" qTh="Multi-user export handling">
+        <p>ไม่ conflict — Claude ใช้ <code className="inline">entry.id</code> (timestamp milliseconds) เป็น dedup key ตอน merge ก่อน embed. วางไฟล์หลายคนพร้อมกันใน <code className="inline">QA/updates/</code> ได้เลย</p>
+      </FAQItem>
+      <FAQItem q="ถ้าไม่ export ก่อน 09:00 ทันไหม?" qTh="Deadline ของแต่ละวัน">
+        <p>Job รันที่ 09:00 — ถ้า export เสร็จก่อน 09:00 จะถูก sync วันนั้น ถ้าสายกว่านั้นจะรอรอบ 09:00 วันถัดไป. สามารถ trigger sync manual ได้โดยบอก Claude ว่า <code className="inline">"sync updates manual"</code></p>
+      </FAQItem>
+      <FAQItem q="Note 'added on' กับ 'วันที่กรอก' ต่างกันยังไง?" qTh="ความแตกต่างของ timestamp">
+        <p><code className="inline">🕐 วันที่กรอก</code> = เวลาที่คุณกด "บันทึก Draft" ใน browser · <code className="inline">📅 added on</code> = เวลาที่ Claude embed เข้า Hub (เวลา sync). สองอย่างนี้ต่างกันได้ไม่เกิน ~1 วัน</p>
+      </FAQItem>
+    </Section>
+  );
+};
+
+// ── Page ──
+const Page = () => (
+  <App>
+    <SectionWelcome/>
+    <SectionScope/>
+    <SectionFlow/>
+    <SectionRouting/>
+    <SectionRoles/>
+    <SectionGlossary/>
+    <SectionTCDash/>
+    <SectionAutomation/>
+    <SectionFiles/>
+    <SectionOpenQ/>
+    <SectionUpdates/>
+    <div style={{ marginTop:60, padding:"30px 0", borderTop:"1px dashed var(--border-strong)", textAlign:"center", color:"var(--muted)", fontSize:13 }}>
+      <div style={{ fontFamily:"var(--font-display)", fontWeight:700, fontSize:18, color:"var(--ink)", marginBottom:6 }}>BigC Supplier Portal IM · Knowledge Hub</div>
+      <div style={{ fontFamily:"var(--font-thai)", fontSize:13, marginTop:4 }}>อัพเดทล่าสุด: 2026-05-20 · สร้างด้วย READY MS × BigC Design System</div>
+      <div style={{ marginTop:8, fontSize:12 }}>Questions? แจ้ง QA Lead หรือเพิ่มใน <strong>Section 10 Team Updates</strong></div>
+    </div>
+  </App>
+);
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Page/>);
+</script>
+</body>
+</html>
