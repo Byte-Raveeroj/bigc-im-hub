@@ -1,37 +1,30 @@
-# ============================================================
-# BigC IM Knowledge Hub — Hourly Sync Script
-# รันโดย Claude Co-Work ทุกชั่วโมง 10:00–20:00 น.
-# Option B: รับ updates จาก HUB_DIR/updates/ (submitted via API)
-#           + QA/updates/ (local exports as fallback)
-# ============================================================
+# BigC IM Knowledge Hub -- Hourly Sync Script
+# Runs every hour 10:00-20:00 via Claude Co-Work cron
+# Option B: reads updates from HUB_DIR/updates/ (submitted via API)
+#           + QA/updates/ (local fallback / morning-boot)
 
 param([switch]$Manual)
 
 $HUB_DIR          = "D:\bigc-im-hub"
-$HUB_UPDATES_DIR  = "$HUB_DIR\updates"          # ← จาก Vercel API (Option B)
-$LOCAL_UPDATES_DIR= "D:\Big_C\Portal_IM\QA\updates"  # ← local fallback
+$HUB_UPDATES_DIR  = "$HUB_DIR\updates"
+$LOCAL_UPDATES_DIR= "D:\Big_C\Portal_IM\QA\updates"
 $INDEX_FILE       = "$HUB_DIR\index.html"
 $SYNCED_LOCAL     = "$LOCAL_UPDATES_DIR\_synced"
 $TODAY            = Get-Date -Format "yyyy-MM-dd"
 $NOW_ISO          = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")
 $NOW_DISPLAY      = Get-Date -Format "yyyy-MM-dd HH:mm"
 
-Write-Host "=== BigC IM Hub Sync — $NOW_DISPLAY ===" -ForegroundColor Cyan
+Write-Host "=== BigC IM Hub Sync -- $NOW_DISPLAY ===" -ForegroundColor Cyan
 
-# ──────────────────────────────────────────────────────────
-# STEP 1 — git pull ดึง updates ที่ทีมส่งมาผ่าน API
-# ──────────────────────────────────────────────────────────
+# STEP 1 -- git pull to get API-submitted files
 Write-Host "Pulling latest from GitHub..." -ForegroundColor Gray
 Set-Location $HUB_DIR
 $pullResult = git pull origin master 2>&1
 Write-Host "  $pullResult" -ForegroundColor Gray
 
-# ──────────────────────────────────────────────────────────
-# STEP 2 — รวบรวม JSON files จากทั้งสองแหล่ง
-# ──────────────────────────────────────────────────────────
+# STEP 2 -- collect JSON files from both sources
 $jsonFiles = @()
 
-# แหล่ง A: HUB_DIR/updates/ (Option B — submitted via API)
 if (Test-Path $HUB_UPDATES_DIR) {
     $hubFiles = Get-ChildItem -Path $HUB_UPDATES_DIR -Filter "*.json" -File |
                 Where-Object { $_.Name -ne ".gitkeep" }
@@ -41,7 +34,6 @@ if (Test-Path $HUB_UPDATES_DIR) {
     }
 }
 
-# แหล่ง B: QA/updates/ (local fallback / morning-boot)
 if (Test-Path $LOCAL_UPDATES_DIR) {
     $localFiles = Get-ChildItem -Path $LOCAL_UPDATES_DIR -Filter "*.json" -File |
                   Where-Object { $_.DirectoryName -eq $LOCAL_UPDATES_DIR }
@@ -52,13 +44,11 @@ if (Test-Path $LOCAL_UPDATES_DIR) {
 }
 
 if ($jsonFiles.Count -eq 0) {
-    Write-Host "No update files found — skipping sync." -ForegroundColor Yellow
+    Write-Host "No update files found -- skipping sync." -ForegroundColor Yellow
     exit 0
 }
 
-# ──────────────────────────────────────────────────────────
-# STEP 3 — อ่านและ merge entries ทั้งหมด
-# ──────────────────────────────────────────────────────────
+# STEP 3 -- read and merge all entries
 $allNew = @()
 foreach ($file in $jsonFiles) {
     try {
@@ -70,18 +60,16 @@ foreach ($file in $jsonFiles) {
             Write-Host "  Read $($entries.Count) entries from $($file.Name)" -ForegroundColor Gray
         }
     } catch {
-        Write-Host "  Warning: Could not parse $($file.Name) — skipping" -ForegroundColor Yellow
+        Write-Host "  Warning: Could not parse $($file.Name) -- skipping" -ForegroundColor Yellow
     }
 }
 
 if ($allNew.Count -eq 0) {
-    Write-Host "No valid entries found — skipping sync." -ForegroundColor Yellow
+    Write-Host "No valid entries found -- skipping sync." -ForegroundColor Yellow
     exit 0
 }
 
-# ──────────────────────────────────────────────────────────
-# STEP 4 — อ่าน SHARED_UPDATES ที่มีอยู่ใน index.html
-# ──────────────────────────────────────────────────────────
+# STEP 4 -- read existing SHARED_UPDATES from index.html
 $html = Get-Content $INDEX_FILE -Raw -Encoding UTF8
 
 $existingMatch = [regex]::Match($html, 'window\.SHARED_UPDATES\s*=\s*(\[[\s\S]*?\]);')
@@ -90,9 +78,7 @@ if ($existingMatch.Success) {
     try { $existingEntries = $existingMatch.Groups[1].Value | ConvertFrom-Json } catch { }
 }
 
-# ──────────────────────────────────────────────────────────
-# STEP 5 — Merge + dedup ด้วย id เป็น key
-# ──────────────────────────────────────────────────────────
+# STEP 5 -- merge + dedup by id
 $mergedDict = @{}
 foreach ($e in $existingEntries) { $mergedDict["$($e.id)"] = $e }
 foreach ($e in $allNew) {
@@ -108,9 +94,7 @@ $merged = $mergedDict.Values | Sort-Object { [DateTime]$_.ts } -Descending
 $totalEntries = $merged.Count
 Write-Host "Merged total: $totalEntries entries" -ForegroundColor Green
 
-# ──────────────────────────────────────────────────────────
-# STEP 6 — Build new SYNC_META + SHARED_UPDATES
-# ──────────────────────────────────────────────────────────
+# STEP 6 -- build new SYNC_META + SHARED_UPDATES
 $versionMatch = [regex]::Match($html, '"version"\s*:\s*(\d+)')
 $currentVersion = if ($versionMatch.Success) { [int]$versionMatch.Groups[1].Value } else { 0 }
 $newVersion = $currentVersion + 1
@@ -118,11 +102,9 @@ $newVersion = $currentVersion + 1
 $sharedJson = $merged | ConvertTo-Json -Depth 10 -Compress
 if ($merged.Count -eq 1) { $sharedJson = "[$sharedJson]" }
 
-$syncMetaJson = "{`"syncedAt`":`"$NOW_ISO`",`"lastSyncedBy`":`"Claude Co-Work`",`"totalEntries`":$totalEntries,`"version`":$newVersion,`"nextScheduled`":`"ทุกชั่วโมง 10:00–20:00 น.`"}"
+$syncMetaJson = "{`"syncedAt`":`"$NOW_ISO`",`"lastSyncedBy`":`"Claude Co-Work`",`"totalEntries`":$totalEntries,`"version`":$newVersion,`"nextScheduled`":`"Hourly 10:00-20:00`"}"
 
-# ──────────────────────────────────────────────────────────
-# STEP 7 — อัพเดท index.html
-# ──────────────────────────────────────────────────────────
+# STEP 7 -- update index.html
 $html = [regex]::Replace($html,
     'window\.SHARED_UPDATES\s*=\s*\[[\s\S]*?\];',
     "window.SHARED_UPDATES = $sharedJson;")
@@ -131,42 +113,35 @@ $html = [regex]::Replace($html,
     'window\.SYNC_META\s*=\s*\{[\s\S]*?\};',
     "window.SYNC_META = $syncMetaJson;")
 
-$html = $html -replace 'อัพเดทล่าสุด: \d{4}-\d{2}-\d{2}', "อัพเดทล่าสุด: $TODAY"
+# (footer date update skipped -- Thai chars not safe in PS5.1 string literals)
 
 [System.IO.File]::WriteAllText($INDEX_FILE, $html, [System.Text.Encoding]::UTF8)
-Write-Host "index.html updated ✅" -ForegroundColor Green
+Write-Host "index.html updated" -ForegroundColor Green
 
-# ──────────────────────────────────────────────────────────
-# STEP 8 — Archive processed files
-# ──────────────────────────────────────────────────────────
+# STEP 8 -- archive processed files
 $timestamp = Get-Date -Format "HHmm"
 
-# Archive Hub API files (delete from updates/ so git diff stays clean)
 foreach ($file in ($jsonFiles | Where-Object { $_.DirectoryName -eq $HUB_UPDATES_DIR })) {
     Remove-Item -Path $file.FullName -Force
     Write-Host "  Removed from updates/: $($file.Name)" -ForegroundColor Gray
 }
 
-# Archive local QA/updates/ files
 if (-not (Test-Path $SYNCED_LOCAL)) { New-Item -ItemType Directory -Path $SYNCED_LOCAL -Force | Out-Null }
 foreach ($file in ($jsonFiles | Where-Object { $_.DirectoryName -eq $LOCAL_UPDATES_DIR })) {
     $dest = "$SYNCED_LOCAL\${TODAY}_${timestamp}_$($file.Name)"
     Move-Item -Path $file.FullName -Destination $dest -Force
-    Write-Host "  Archived local: $($file.Name) → _synced/" -ForegroundColor Gray
+    Write-Host "  Archived local: $($file.Name)" -ForegroundColor Gray
 }
 
-# ──────────────────────────────────────────────────────────
-# STEP 9 — Git commit + push → Vercel auto-deploy
-# ──────────────────────────────────────────────────────────
+# STEP 9 -- git commit + push -> Vercel auto-deploy
 Set-Location $HUB_DIR
-git add index.html 2>&1 | Out-Null
+git add -A 2>&1 | Out-Null
 git commit -m "chore: sync updates $TODAY $(Get-Date -Format 'HHmm') (v$newVersion, $totalEntries entries)" 2>&1
 git push origin master 2>&1
 
 Write-Host ""
 Write-Host "=== Sync Complete ===" -ForegroundColor Green
-Write-Host "  New entries    : $($allNew.Count)"
-Write-Host "  Total entries  : $totalEntries"
-Write-Host "  Version        : v$newVersion"
-Write-Host "  Vercel URL     : https://bigc-im-hub.vercel.app"
-Write-Host "  Next sync      : ทุกชั่วโมง 10:00–20:00 น."
+Write-Host "  New entries : $($allNew.Count)"
+Write-Host "  Total       : $totalEntries"
+Write-Host "  Version     : v$newVersion"
+Write-Host "  Vercel URL  : https://bigc-im-hub.vercel.app"
