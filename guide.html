@@ -1,0 +1,2592 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BigC IM Wiki · Sync Flow Guide · READY MS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   BigC IM · Wiki Sync Flow Guide
+   Colors  : bigc-im-hub.vercel.app
+   Structure: bigc-kt-training.vercel.app
+   ============================================================ */
+:root {
+  --bg:#F8FBFF;--bg-2:#EEF5E8;--surface:#FFFFFF;--surface-2:#F9FDF5;
+  --ink:#18201A;--ink-2:#3D4840;--muted:#7A8A7D;
+  --border:#DDE8D8;--border-strong:#C4D9BC;
+  --primary:#5BA900;--primary-2:#93D600;--primary-soft:#EBF7D4;
+  --accent:#DB000E;--accent-soft:#FFEAEB;
+  --green:#3C8C1E;--green-soft:#D5F0C0;
+  --red:#C7493A;--red-soft:#F8E0DA;
+  --amber:#D78A1E;--amber-soft:#FBEDD2;
+  --shadow-sm:0 1px 3px rgba(24,32,26,.07),0 1px 2px rgba(24,32,26,.04);
+  --shadow-md:0 8px 24px -8px rgba(24,32,26,.13),0 2px 6px rgba(24,32,26,.06);
+  --shadow-lg:0 24px 60px -20px rgba(24,32,26,.16),0 4px 12px rgba(24,32,26,.07);
+  --radius-sm:8px;--radius:14px;--radius-lg:22px;--radius-xl:32px;
+  --sidebar-w:280px;
+  --font-display:"Bricolage Grotesque","IBM Plex Sans Thai",system-ui,sans-serif;
+  --font-body:"Plus Jakarta Sans","IBM Plex Sans Thai",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  --font-thai:"IBM Plex Sans Thai","Plus Jakarta Sans",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{min-height:100vh}
+.app{display:grid;grid-template-columns:var(--sidebar-w) 1fr;min-height:100vh}
+/* SIDEBAR */
+.sidebar{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--bg-2);border-right:1px solid var(--border);border-top:3px solid var(--primary-2);padding:28px 22px;display:flex;flex-direction:column;gap:18px}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding-bottom:8px}
+.sidebar-brand .logo{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--green) 0%,var(--primary-2) 100%);display:grid;place-items:center;color:#fff;font-family:var(--font-display);font-weight:800;font-size:17px;box-shadow:var(--shadow-sm)}
+.sidebar-brand .title{font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.1}
+.sidebar-brand .sub{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+.nav-section{margin-top:8px;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:0 8px 6px;font-weight:600}
+.nav-link{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:14px;color:var(--ink-2);cursor:pointer;text-decoration:none;font-weight:500;transition:background .15s ease,color .15s ease;border:none;background:transparent;text-align:left;width:100%;font-family:inherit}
+.nav-link:hover{background:rgba(24,32,26,.05);color:var(--ink)}
+.nav-link.active{background:var(--surface);color:var(--primary);box-shadow:var(--shadow-sm)}
+.nav-link .num{width:22px;height:22px;border-radius:6px;background:rgba(24,32,26,.06);display:grid;place-items:center;font-size:11px;font-weight:700;font-family:var(--font-mono);color:var(--ink-2);flex-shrink:0}
+.nav-link.active .num{background:var(--primary);color:#fff}
+.sidebar-footer{margin-top:auto;padding-top:16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:1.4}
+/* MAIN */
+.main{padding:56px 64px 120px;max-width:1080px;width:100%;margin-left:auto;margin-right:auto}
+section{padding:36px 0 24px;scroll-margin-top:24px}
+section+section{border-top:1px dashed var(--border-strong)}
+/* TYPOGRAPHY */
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--primary);background:var(--primary-soft);padding:6px 12px;border-radius:999px;margin-bottom:16px}
+.eyebrow.accent{color:var(--accent);background:var(--accent-soft)}
+.eyebrow.green{color:var(--green);background:var(--green-soft)}
+h1{font-family:var(--font-display);font-weight:700;font-size:clamp(36px,4vw,52px);line-height:1.05;letter-spacing:-.02em;margin:0 0 12px;color:var(--ink)}
+h1 .accent-word{font-style:italic;color:var(--accent);font-weight:600}
+h2{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,3vw,36px);line-height:1.1;letter-spacing:-.015em;margin:0 0 8px;color:var(--ink)}
+h3{font-family:var(--font-display);font-weight:600;font-size:21px;line-height:1.25;margin:24px 0 8px;color:var(--ink)}
+h4{font-family:var(--font-body);font-weight:600;font-size:16px;margin:16px 0 6px;color:var(--ink)}
+p{margin:0 0 14px;color:var(--ink-2)}
+p strong{color:var(--ink);font-weight:600}
+a{color:var(--primary);text-decoration:none;border-bottom:1px solid var(--primary-soft)}
+a:hover{border-bottom-color:var(--primary)}
+.lead{font-size:19px;line-height:1.55;color:var(--ink-2);max-width:70ch}
+.thai{font-family:var(--font-thai);color:var(--muted);font-size:.92em;line-height:1.65;font-weight:400}
+.thai-lead{font-family:var(--font-thai);color:var(--ink-2);font-size:16px;line-height:1.7;padding:12px 16px;background:var(--surface-2);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;margin:14px 0 22px}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow-sm)}
+.card.soft{background:var(--surface-2)}
+.grid{display:grid;gap:18px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:900px){.grid-2,.grid-3{grid-template-columns:1fr}}
+/* CALLOUT */
+.callout{display:flex;gap:14px;padding:18px 20px;border-radius:var(--radius);background:var(--primary-soft);border-left:4px solid var(--primary);margin:18px 0}
+.callout.warn{background:var(--amber-soft);border-left-color:var(--amber)}
+.callout.tip{background:var(--green-soft);border-left-color:var(--green)}
+.callout.danger{background:var(--red-soft);border-left-color:var(--red)}
+.callout-icon{font-family:var(--font-display);font-size:22px;flex-shrink:0}
+.callout-body{font-size:14px;line-height:1.55;color:var(--ink-2)}
+.callout-body strong{color:var(--ink)}
+/* CODE */
+.code-wrap{position:relative;margin:14px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);background:#1A1E16;max-width:100%;min-width:0}
+.code-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px 8px;background:#131710;border-bottom:1px solid #252D1A;font-family:var(--font-mono);font-size:11px;color:#9AB087;letter-spacing:.05em}
+.code-header .label{display:flex;align-items:center;gap:8px;text-transform:uppercase;font-weight:600}
+.code-header .label .dot{width:8px;height:8px;border-radius:50%;background:var(--primary-2)}
+.code-copy{font-family:var(--font-body);font-size:11px;font-weight:600;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#E8F5D4;padding:4px 10px;border-radius:6px;cursor:pointer;text-transform:uppercase;letter-spacing:.05em;transition:background .15s ease}
+.code-copy:hover{background:rgba(255,255,255,.16)}
+.code-copy.copied{background:var(--primary);border-color:var(--primary);color:#fff}
+pre.code{margin:0;padding:16px 18px;font-family:var(--font-mono);font-size:13px;line-height:1.65;color:#E8F5D4;overflow-x:auto;white-space:pre;tab-size:2}
+code.inline{font-family:var(--font-mono);font-size:.88em;background:var(--bg-2);border:1px solid var(--border);padding:1px 7px;border-radius:6px;color:var(--ink)}
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:18px;margin:18px 0}
+.step{display:grid;grid-template-columns:44px 1fr;gap:16px;align-items:flex-start}
+.step-num{width:44px;height:44px;border-radius:12px;background:var(--primary);color:#fff;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:18px}
+.step-num.accent{background:var(--accent)}
+.step-num.amber{background:var(--amber)}
+.step-body{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;min-width:0}
+.step-body h4{margin-top:0}
+/* FAQ */
+.faq-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:10px;overflow:hidden}
+.faq-q{width:100%;text-align:left;background:transparent;border:none;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:14px;cursor:pointer;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink)}
+.faq-q .chev{width:22px;height:22px;border-radius:50%;background:var(--bg-2);display:grid;place-items:center;font-size:11px;flex-shrink:0;transition:transform .2s ease;color:var(--ink-2)}
+.faq-item.open .chev{transform:rotate(180deg);background:var(--primary);color:#fff}
+.faq-a{padding:0 20px 16px;font-size:14px;color:var(--ink-2);line-height:1.6}
+/* HERO */
+.hero{padding-top:24px;padding-bottom:30px}
+.hero-meta{display:flex;gap:18px;flex-wrap:wrap;margin-top:26px;padding:18px 22px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm)}
+.hero-meta-item .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;margin-bottom:4px}
+.hero-meta-item .value{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--ink)}
+.hero-meta-divider{width:1px;background:var(--border);align-self:stretch}
+/* FEATURE STRIP */
+.feature-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:22px 0}
+@media(max-width:800px){.feature-strip{grid-template-columns:1fr}}
+.feature{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;position:relative;overflow:hidden}
+.feature .icon{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;margin-bottom:14px;font-size:22px}
+.feature .icon.go{background:var(--primary-soft)}
+.feature .icon.red{background:var(--accent-soft)}
+.feature .icon.grn{background:var(--green-soft)}
+.feature h3{margin:0 0 8px;font-size:18px}
+.feature p{margin:0;font-size:14px;color:var(--ink-2)}
+.feature .th{font-family:var(--font-thai);font-size:13px;color:var(--muted);margin-top:6px}
+/* COMPARE */
+.compare{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin:24px 0}
+@media(max-width:800px){.compare{grid-template-columns:1fr}}
+.compare-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:22px;position:relative;overflow:hidden}
+.compare-card::before{content:'';position:absolute;inset:0 0 auto 0;height:4px}
+.compare-card.phase0::before{background:var(--muted)}
+.compare-card.phase05::before{background:var(--primary)}
+.compare-card.phase1::before{background:var(--amber)}
+.compare-card .phase-tag{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:5px;display:inline-block;margin-bottom:10px}
+.phase-tag.p0{background:var(--bg-2);color:var(--muted)}
+.phase-tag.p05{background:var(--primary-soft);color:var(--green)}
+.phase-tag.p1{background:var(--amber-soft);color:var(--amber)}
+.compare-card h3{margin:0 0 8px;font-size:17px}
+.compare-card .tagline{font-size:13px;color:var(--muted);margin-bottom:14px;font-family:var(--font-thai)}
+.pros-cons{margin-top:10px}
+.pros-cons ul{padding:0;margin:0}
+.pros-cons li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;list-style:none;font-size:13.5px;line-height:1.45}
+.pros-cons .mark{flex-shrink:0;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;font-family:var(--font-mono);margin-top:2px}
+.pros-cons .pro .mark{background:var(--green-soft);color:var(--green)}
+.pros-cons .con .mark{background:var(--red-soft);color:var(--red)}
+/* INFOGRAPHIC wrapper */
+.ig-wrap{background:linear-gradient(180deg,#FFFFFF 0%,var(--surface-2) 100%);border:1px solid var(--border);border-radius:var(--radius-xl);padding:28px 32px 24px;margin:20px 0;box-shadow:var(--shadow-sm);position:relative;overflow:hidden}
+.ig-title{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--ink)}
+.ig-sub{font-family:var(--font-thai);font-size:12px;color:var(--muted);margin-top:3px}
+.ig-stage{position:relative;margin-top:16px}
+.ig-caption{font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-top:14px;text-align:center}
+.ig-caption .th{font-family:var(--font-thai);margin-top:2px;color:rgba(122,138,125,.75)}
+/* PILL badges */
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;font-family:var(--font-mono)}
+.pill.green{background:var(--green-soft);color:var(--green)}
+.pill.red{background:var(--accent-soft);color:var(--accent)}
+.pill.amber{background:var(--amber-soft);color:var(--amber)}
+.pill.blue{background:var(--primary-soft);color:var(--primary)}
+.pill.gray{background:var(--bg-2);color:var(--muted)}
+/* KBD */
+kbd{font-family:var(--font-mono);font-size:11px;background:var(--surface);border:1px solid var(--border-strong);border-bottom-width:2px;padding:2px 7px;border-radius:5px;color:var(--ink)}
+/* ANIMATION helpers */
+@keyframes clickRipple{0%{opacity:.85;transform:scale(.1)}100%{opacity:0;transform:scale(2.8)}}
+@keyframes fadeInAnim{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+/* PRINT */
+@media print{.sidebar,button{display:none!important}.app{grid-template-columns:1fr}.main{padding:20px;max-width:none}body{background:#fff;font-size:11pt}section{page-break-inside:avoid;padding:16px 0}}
+/* RESPONSIVE */
+@media(max-width:1000px){.app{grid-template-columns:1fr}.sidebar{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;max-height:75vh;z-index:50;border-top:1px solid var(--border);border-right:none;transform:translateY(calc(100% - 68px));transition:transform .25s ease;overflow-y:auto;box-shadow:0 -10px 28px rgba(24,32,26,.10)}.sidebar.open{transform:translateY(0)}.sidebar-brand{cursor:pointer;position:sticky;top:0;background:var(--surface);z-index:2;border-bottom:1px solid var(--border);padding-right:44px}.sidebar-brand .drawer-handle{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:18px;transition:transform .25s ease;line-height:1}.sidebar.open .sidebar-brand .drawer-handle{transform:translateY(-50%) rotate(180deg)}.main{padding:28px 22px 96px}}
+@media(min-width:1001px){.sidebar-brand .drawer-handle{display:none}}
+@media(max-width:700px){html,body{max-width:100vw;overflow-x:hidden}body{font-size:15px}.main{padding:22px 16px 96px}.ig-wrap{display:none!important}h1{font-size:clamp(28px,8vw,38px)!important}h2{font-size:clamp(22px,6vw,30px)!important}.lead{font-size:16px!important}.compare{grid-template-columns:1fr!important}.feature-strip{grid-template-columns:1fr!important}}
+  </style>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ── Components (pattern from bigc-kt-training) ── -->
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+function Section({ id, eyebrow, eyebrowKind="", title, subtitle, thai, children }) {
+  return (
+    <section id={id}>
+      {eyebrow && <span className={`eyebrow ${eyebrowKind}`}>{eyebrow}</span>}
+      <h2>{title}</h2>
+      {subtitle && <p className="lead" style={{marginTop:4}}>{subtitle}</p>}
+      {thai && <div className="thai-lead">{thai}</div>}
+      {children}
+    </section>
+  );
+}
+
+function Callout({ kind="info", icon, children }) {
+  const ic = icon||(kind==="warn"?"⚠":kind==="tip"?"★":kind==="danger"?"✕":"i");
+  return (
+    <div className={`callout ${kind==="info"?"":kind}`}>
+      <div className="callout-icon">{ic}</div>
+      <div className="callout-body">{children}</div>
+    </div>
+  );
+}
+
+function CodeBlock({ label="shell", children }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => { navigator.clipboard.writeText(typeof children==="string"?children:""); setCopied(true); setTimeout(()=>setCopied(false),1400); };
+  return (
+    <div className="code-wrap">
+      <div className="code-header">
+        <span className="label"><span className="dot"></span>{label}</span>
+        <button className={`code-copy ${copied?"copied":""}`} onClick={copy}>{copied?"Copied ✓":"Copy"}</button>
+      </div>
+      <pre className="code">{children}</pre>
+    </div>
+  );
+}
+
+function FAQItem({ q, qTh, children }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className={`faq-item ${open?"open":""}`}>
+      <button className="faq-q" onClick={()=>setOpen(!open)} aria-expanded={open}>
+        <span>{q}{qTh&&<div style={{fontFamily:"var(--font-thai)",fontSize:13,color:"var(--muted)",fontWeight:400,marginTop:2}}>{qTh}</div>}</span>
+        <span className="chev">▾</span>
+      </button>
+      {open&&<div className="faq-a">{children}</div>}
+    </div>
+  );
+}
+
+function Infographic({ title, thai, caption, captionTh, children, height=240 }) {
+  return (
+    <div className="ig-wrap">
+      <div className="ig-title">{title}</div>
+      {thai&&<div className="ig-sub">{thai}</div>}
+      <div className="ig-stage" style={{height}}>{children}</div>
+      {caption&&(
+        <div className="ig-caption">
+          {caption}
+          {captionTh&&<div className="th">{captionTh}</div>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+const NAV = [];
+
+const Sidebar = ({ active, onJump, open, onToggle }) => {
+  const groups = NAV.reduce((acc,item)=>{(acc[item.group]=acc[item.group]||[]).push(item);return acc;},{});
+  return (
+    <aside className={`sidebar ${open?"open":""}`}>
+      <div className="sidebar-brand" onClick={()=>onToggle&&onToggle(!open)} role="button" aria-label="menu">
+        <div className="logo">📋</div>
+        <div>
+          <div className="title">BigC IM · Wiki Sync</div>
+          <div className="sub">Way of Work · READY MS</div>
+        </div>
+        <span className="drawer-handle" aria-hidden="true">▴</span>
+      </div>
+      {Object.entries(groups).map(([group,items])=>(
+        <div key={group}>
+          <div className="nav-section">{group}</div>
+          {items.map(item=>(
+            <button key={item.id} className={`nav-link ${active===item.id?"active":""}`}
+              onClick={()=>{onJump(item.id);onToggle&&onToggle(false);}}>
+              <span className="num">{item.num}</span>
+              <span style={{display:"flex",flexDirection:"column",gap:0,alignItems:"flex-start"}}>
+                <span>{item.label}</span>
+                <span style={{fontFamily:"var(--font-thai)",fontSize:11,color:"var(--muted)",fontWeight:400,lineHeight:1.2}}>{item.labelTh}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      ))}
+      <div className="sidebar-footer">
+        <div style={{fontWeight:600,color:"var(--ink-2)",marginBottom:4}}>📄 Print this page</div>
+        <div>Press <kbd>Ctrl</kbd> <kbd>P</kbd> — PDF cheat-sheet</div>
+        <div className="thai" style={{fontSize:11,marginTop:4}}>กดเพื่อพิมพ์เป็น PDF</div>
+      </div>
+    </aside>
+  );
+};
+
+const App = ({ children }) => {
+  const [active, setActive] = useState(NAV[0]?.id||"");
+  const [open, setOpen] = useState(false);
+  const jump = (id) => {
+    const el = document.getElementById(id);
+    if(el){ const y=el.getBoundingClientRect().top+window.scrollY-16; window.scrollTo({top:y,behavior:"smooth"}); }
+    setActive(id);
+  };
+  useEffect(()=>{
+    if(!NAV.length) return;
+    const compute=()=>{
+      const y=window.scrollY,vh=window.innerHeight,docMax=document.documentElement.scrollHeight-vh;
+      if(y<80){setActive(NAV[0].id);return;}
+      if(docMax-y<80){setActive(NAV[NAV.length-1].id);return;}
+      const line=vh*0.3;let best=NAV[0].id;
+      for(const n of NAV){const el=document.getElementById(n.id);if(!el)continue;const top=el.getBoundingClientRect().top;if(top<=line)best=n.id;}
+      setActive(best);
+    };
+    let raf=0;
+    const onScroll=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;compute();});};
+    window.addEventListener("scroll",onScroll,{passive:true});
+    window.addEventListener("resize",onScroll);
+    compute();
+    return()=>{window.removeEventListener("scroll",onScroll);window.removeEventListener("resize",onScroll);if(raf)cancelAnimationFrame(raf);};
+  },[]);
+  return (
+    <div className="app">
+      <Sidebar active={active} onJump={jump} open={open} onToggle={setOpen}/>
+      <main className="main">{children}</main>
+    </div>
+  );
+};
+
+Object.assign(window,{Section,Callout,CodeBlock,FAQItem,Infographic,NAV,App});
+</script>
+
+<!-- ── Sections ── -->
+<script type="text/babel">
+/* eslint-disable */
+NAV.push(
+  {id:"overview",      num:"00",label:"Overview",        labelTh:"ภาพรวมระบบ",            group:"แนะนำ"},
+  {id:"way-of-work",   num:"01",label:"Way of Work",     labelTh:"ทำไมถึงเลือกแบบนี้",     group:"แนะนำ"},
+  {id:"quickstart",    num:"02",label:"Quick Start",     labelTh:"ติดตั้ง Claude Code",     group:"Setup"},
+  {id:"setup",         num:"03",label:"Team Setup",      labelTh:"ขั้นตอนสำหรับทีม",       group:"Setup"},
+  {id:"claude-md",     num:"✦", label:"CLAUDE.md",       labelTh:"scope · ประหยัด token",   group:"Setup"},
+  {id:"flow-init",     num:"04",label:"Flow 1 · Init",   labelTh:"Initial Setup",         group:"Flows"},
+  {id:"flow-po",       num:"05",label:"Flow 2 · PO",     labelTh:"วางไฟล์ → ทุกคนเห็น",   group:"Flows"},
+  {id:"flow-local",    num:"06",label:"Flow 3 · Local",  labelTh:"แก้ .md → sync",        group:"Flows"},
+  {id:"flow-notion",   num:"07",label:"Flow 4 · Notion", labelTh:"Notion → GitHub Actions",group:"Flows"},
+  {id:"flow-all",      num:"08",label:"Flow 5 · All",    labelTh:"ภาพรวมทั้งหมด",        group:"Flows"},
+  {id:"use-convert",   num:"09",label:"Convert Files",   labelTh:"แปลง PDF/Word → MD",    group:"USE"},
+  {id:"use-ops",       num:"10",label:"3 Operations",    labelTh:"Ingest · Query · Lint",  group:"USE"},
+  {id:"use-prompts",   num:"11",label:"Cheat Sheet",     labelTh:"โพรมต์พร้อมใช้ 23+",     group:"USE"},
+  {id:"github",        num:"12",label:"GitHub Actions",  labelTh:"Notion Polling (Advanced)",group:"Advanced"},
+  {id:"faq",           num:"13",label:"FAQ",             labelTh:"คำถามพบบ่อย",           group:"Reference"},
+  {id:"power-automate",num:"14",label:"Power Automate",  labelTh:"Auto-sync ทุกไฟล์ใหม่", group:"Reference"},
+  {id:"next-actions",  num:"15",label:"Next Actions",    labelTh:"ขยายต่อในอนาคต",        group:"Reference"},
+);
+
+/* ── 00 Overview ── */
+const S00 = () => (
+  <section id="overview" className="hero">
+    <span className="eyebrow">00 · Overview · BigC IM Wiki</span>
+    <h1>Wiki ทีม — <span className="accent-word">sync อัตโนมัติ</span><br/>ไม่มีค่าใช้จ่ายเพิ่ม</h1>
+    <p className="lead">
+      One shared vault on <strong>OneDrive</strong> · ทีมทุกคนเห็นไฟล์เดียวกัน อัตโนมัติ · Claude reads from every machine.
+    </p>
+    <div className="thai-lead">
+      ถังข้อมูลเดียวบน OneDrive — ทุกคนเห็นเหมือนกัน · sync ลงทุกเครื่องอัตโนมัติ · Claude อ่านได้จากทุกเครื่อง <strong>โดยไม่ต้องจ่ายเพิ่ม</strong>
+    </div>
+    <div className="hero-meta">
+      <div className="hero-meta-item"><div className="label">Audience</div><div className="value">S4: Supplier Portal</div></div>
+      <div className="hero-meta-divider"></div>
+      <div className="hero-meta-item"><div className="label">Setup time</div><div className="value">~30 นาที</div></div>
+      <div className="hero-meta-divider"></div>
+      <div className="hero-meta-item"><div className="label">ค่าใช้จ่าย</div><div className="value">฿0 เพิ่ม</div></div>
+    </div>
+    <div className="feature-strip" style={{marginTop:28}}>
+      <div className="feature">
+        <div className="icon go">☁️</div>
+        <h3>OneDrive Shared Folder</h3>
+        <p>วางไฟล์ครั้งเดียว — ทุกเครื่อง sync ภายใน 1 นาที</p>
+        <div className="th">ไม่ต้องส่ง email · ไม่ต้องแชร์ link</div>
+      </div>
+      <div className="feature">
+        <div className="icon grn">⚙️</div>
+        <h3>GitHub Actions (Optional)</h3>
+        <p>ตรวจ Notion ทุก 30 นาที · sync เนื้อหาเข้า vault อัตโนมัติ</p>
+        <div className="th">ฟรี · ไม่ต้องรัน server · ไม่ต้อง implement เพิ่ม</div>
+      </div>
+      <div className="feature">
+        <div className="icon red">🤖</div>
+        <h3>Claude Code Ingest</h3>
+        <p>ใครก็ได้ใน team รัน Claude · ingest เข้า wiki ได้ทันที</p>
+        <div className="th">ใช้ Claude subscription ที่มีอยู่แล้ว</div>
+      </div>
+    </div>
+  </section>
+);
+
+/* ── 01 Way of Work ── */
+const S01 = () => (
+  <Section id="way-of-work" eyebrow="01 · แนวทาง" eyebrowKind="green"
+    title="ทำไมถึงเลือกแนวทางนี้"
+    subtitle={<><strong>Free · Auto-detect · No server</strong> — จุดสมดุลที่คุ้มที่สุดระหว่าง manual กับ full-automation</>}
+    thai={<>ฟรี · ตรวจหาไฟล์ใหม่เอง · ไม่ต้องมี server · ไม่ต้อง implement เพิ่ม</>}
+  >
+    {/* ── KEY OBJECTIVES ── */}
+    <div style={{marginBottom:24}}>
+      <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,color:"var(--ink)",marginBottom:14}}>🎯 เป้าหมายที่ต้องการ</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        {[
+          {icon:"🗂",title:"Single source of truth",desc:"ทุกคนในทีมอ่านไฟล์จากแหล่งเดียวกัน — ไม่มีเวอร์ชันหลายชุดกระจายใน chat"},
+          {icon:"🔄",title:"อัพเดทถึงทุกคนอัตโนมัติ",desc:"ใครวางไฟล์ใหม่ใน General → ทุกเครื่องได้ไฟล์ล่าสุดทันที ไม่ต้องส่งซ้ำ"},
+          {icon:"🤖",title:"Claude สรุปให้เมื่อมีอัพเดท",desc:"วาง BRD ใหม่ แล้วถาม Claude ว่าต่างจากเดิมยังไง — ได้คำตอบทันทีโดยไม่ต้องอ่านเอง"},
+          {icon:"📚",title:"Personal knowledge library",desc:"แต่ละคนมี Obsidian vault ที่ sync กัน — browse, link, search ไฟล์ทีมได้ในแบบของตัวเอง"},
+          {icon:"📜",title:"ประวัติชัดเจน ย้อนดูได้",desc:"wiki/log.md บันทึกทุก ingest — รู้ว่าใครเพิ่มอะไร เมื่อไหร่ และมีการเปลี่ยนแปลงอะไรบ้าง"},
+          {icon:"🚀",title:"Onboard สมาชิกใหม่เร็วขึ้น",desc:"ถาม Claude ว่า 'สรุปโปรเจกต์นี้ให้หน่อย' — ได้ context ครบจาก wiki โดยไม่ต้องนั่งถ่ายทอดซ้ำ"},
+        ].map((o,i)=>(
+          <div key={i} style={{display:"flex",gap:10,padding:"12px 14px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:10}}>
+            <span style={{fontSize:20,flexShrink:0,lineHeight:1.3}}>{o.icon}</span>
+            <div>
+              <div style={{fontFamily:"var(--font-display)",fontWeight:600,fontSize:13,color:"var(--ink)",marginBottom:3}}>{o.title}</div>
+              <div style={{fontSize:12,color:"var(--ink-2)",lineHeight:1.55}}>{o.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div style={{background:"var(--surface)",border:"2px solid var(--primary)",borderRadius:"var(--radius-xl)",padding:"24px 28px",margin:"20px 0",boxShadow:"var(--shadow-sm)"}}>
+      <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:20}}>
+        <div style={{width:48,height:48,borderRadius:14,background:"var(--primary)",display:"grid",placeItems:"center",fontSize:24,flexShrink:0}}>⭐</div>
+        <div>
+          <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:20,color:"var(--ink)"}}>The Approach — ทำไมถึงเลือกแบบนี้</div>
+          <div style={{fontFamily:"var(--font-thai)",fontSize:13,color:"var(--muted)",marginTop:3}}>ฟรี · ตรวจหาเอง · ไม่ต้องมี server · setup ~30 นาทีจบ</div>
+        </div>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+        {[
+          {icon:"☁️",title:"ฟรีทั้งหมด",desc:"OneDrive ที่บริษัทมีอยู่แล้ว + GitHub Actions free tier 2,000 นาที/เดือน (ใช้จริงแค่ ~60 นาที/เดือน)"},
+          {icon:"⚙️",title:"Auto-detect Notion (Optional)",desc:"GitHub Actions poll Notion API ทุก 30 นาที → จับการเปลี่ยนแปลงอัตโนมัติ ใช้ได้โดยไม่ต้อง implement เพิ่ม"},
+          {icon:"🤖",title:"Claude Code พร้อมทุกเครื่อง",desc:"ทุกคนในทีม cd vault → claude ได้ทันที — ไม่ต้องตั้งค่าเพิ่ม ใช้ subscription ที่มีอยู่แล้ว"},
+          {icon:"📄",title:"CLAUDE.md กำหนดทิศทาง",desc:"ไฟล์เดียวบอก Claude ว่าต้องอ่านไฟล์ไหน ทำอะไรได้บ้าง — ทีมได้ผลลัพธ์เดียวกัน ประหยัด token"},
+          {icon:"🔄",title:"Always Latest",desc:"OneDrive sync 2 ทาง อัตโนมัติ 24/7 — ทุกคนเห็นข้อมูลล่าสุดเสมอ ไม่ต้องบอกใคร"},
+          {icon:"✅",title:"ไม่ต้อง implement เพิ่ม",desc:"ทำทุกขั้นตอนได้เองโดยไม่ต้องพัฒนา code เพิ่ม — ใช้ tools ที่บริษัทมีอยู่แล้ว: OneDrive + GitHub Actions + Notion API"},
+        ].map(({icon,title,desc})=>(
+          <div key={title} style={{display:"flex",gap:12,alignItems:"flex-start",padding:"12px 14px",background:"var(--bg)",borderRadius:"var(--radius)",border:"1px solid var(--border)"}}>
+            <span style={{fontSize:22,flexShrink:0,marginTop:2}}>{icon}</span>
+            <div>
+              <div style={{fontFamily:"var(--font-display)",fontWeight:600,fontSize:14,color:"var(--ink)",marginBottom:3}}>{title}</div>
+              <div style={{fontSize:12.5,color:"var(--ink-2)",lineHeight:1.55,fontFamily:"var(--font-thai)"}}>{desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <Callout kind="tip" icon="★">
+      <div><strong>ทำแค่ 1 ขั้นตอน:</strong> ทีมแต่ละคน sync OneDrive + เปิด Obsidian (Section 03) — เสร็จแล้วรัน Claude ได้ทันที <strong>ฟรี ไม่มีค่าใช้จ่ายเพิ่ม</strong> · Section 02 (GitHub Actions) เป็น Optional สำหรับ Notion polling เท่านั้น</div>
+    </Callout>
+  </Section>
+);
+
+/* ── 02 GitHub Actions Config ── */
+const yaml = `name: Notion Change Notify
+
+on:
+  schedule:
+    - cron: '0,30 1-12 * * 1-5'   # Mon–Fri 08:00–19:00 ICT (UTC+7) · ทุก 30 นาที
+  workflow_dispatch:           # สั่งรันมือได้
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Notion for recent edits
+        env:
+          NOTION_TOKEN: \${{ secrets.NOTION_TOKEN }}
+          DB_ID: \${{ secrets.NOTION_DATABASE_ID }}
+          TEAMS_WEBHOOK: \${{ secrets.TEAMS_WEBHOOK_URL }}
+        run: |
+          # หาหน้าที่แก้ใน 31 นาทีที่ผ่านมา
+          SINCE=$(date -u -d '31 minutes ago' '+%Y-%m-%dT%H:%M:%SZ')
+          RESP=$(curl -s -X POST \\
+            "https://api.notion.com/v1/databases/\${DB_ID}/query" \\
+            -H "Authorization: Bearer \${NOTION_TOKEN}" \\
+            -H "Notion-Version: 2022-06-28" \\
+            -H "Content-Type: application/json" \\
+            -d "{\\"filter\\":{\\"property\\":\\"last_edited_time\\",
+                 \\"date\\":{\\"after\\":\\"\${SINCE}\\"}}}")
+
+          COUNT=$(echo "\$RESP" | python3 -c \\
+            "import sys,json; d=json.load(sys.stdin); print(len(d.get('results',[])))")
+
+          if [ "\$COUNT" -gt "0" ]; then
+            NAMES=$(echo "\$RESP" | python3 -c \\
+              "import sys,json; d=json.load(sys.stdin);
+               [print('\\u2022', r['properties'].get('Name',{}).get('title',[{}])[0].get('plain_text','\\u2014'))
+                for r in d['results']]" 2>/dev/null || echo "\\u2022 \$COUNT pages updated")
+
+            MSG="\$COUNT หน้า Notion อัพเดทแล้ว:\\n\${NAMES}\\n\\nรัน Claude: ingest notion pages ที่เปลี่ยนแปลง"
+
+            curl -s -X POST "\${TEAMS_WEBHOOK}" \\
+              -H "Content-Type: application/json" \\
+              -d "{\\"@type\\":\\"MessageCard\\",\\"themeColor\\":\\"5BA900\\",\\"title\\":\\"\\ud83d\\udd14 BigC IM Wiki\\",\\"text\\":\\"\${MSG}\\"}"
+          fi`;
+
+const S02 = () => (
+  <Section id="quickstart" eyebrow="02 · Quick Start" eyebrowKind="green"
+    title="Quick Start — ติดตั้ง Claude Code"
+    subtitle={<>3 ขั้นตอน · จาก zero → Claude อ่าน vault ของทีมได้ · ใช้เวลาไม่ถึง 10 นาที</>}
+    thai={<>Claude Desktop เวอร์ชันใหม่ (มี <strong>Code tab</strong>) = มี Claude Code built-in แล้ว · ถ้าไม่มี → ใช้ Node.js + CLI แทน · จบแล้ว <code style={{fontFamily:"var(--font-mono)",fontSize:"0.88em",background:"rgba(0,0,0,0.07)",padding:"1px 6px",borderRadius:4}}>claude --version</code> ต้องทำงานได้</>}
+  >
+    {/* ── 3-Lane Install Tracks ── */}
+    {(() => {
+      const LANE_STEP = ({num,text}) => (
+        <div style={{display:"flex",alignItems:"flex-start",gap:10,marginBottom:8}}>
+          <div style={{width:24,height:24,borderRadius:"50%",background:"rgba(0,0,0,0.08)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,flexShrink:0,marginTop:1}}>{num}</div>
+          <div style={{fontSize:14,color:"#1F2937",lineHeight:1.55,fontFamily:"var(--font-body)"}}>{text}</div>
+        </div>
+      );
+      const LANE_VERIFY = ({color,cmd,isVisual,verifyLink}) => (
+        <div style={{marginTop:"auto",paddingTop:10,borderTop:"1px dashed rgba(0,0,0,0.1)"}}>
+          <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.06em",color,marginBottom:5,textTransform:"uppercase"}}>✅ ตรวจสอบ</div>
+          {verifyLink
+            ? <a href={verifyLink} onClick={e=>{e.preventDefault();document.getElementById(verifyLink.replace('#',''))?.scrollIntoView({behavior:'smooth'})}} style={{display:"block",textDecoration:"none",fontFamily:"var(--font-body)",fontSize:13,background:"rgba(0,0,0,0.06)",padding:"5px 10px",borderRadius:6,color,cursor:"pointer"}}>
+                {cmd} <span style={{fontSize:11,opacity:0.7}}>↓ ดูโครงสร้าง</span>
+              </a>
+            : <div style={{fontFamily:isVisual?"var(--font-body)":"var(--font-mono)",fontSize:13,background:"rgba(0,0,0,0.06)",padding:"5px 10px",borderRadius:6,color:isVisual?color:"inherit"}}>{cmd}</div>
+          }
+          <div style={{fontSize:12,color:"#6B7280",marginTop:4}}>{isVisual?"เห็นใน Obsidian = พร้อม · คลิกดูโครงสร้างแนะนำ":"รันใน Terminal — ถ้าเห็น version = พร้อม"}</div>
+        </div>
+      );
+      const lanes = [
+        {
+          color:"#7C3AED", colorSoft:"#F5F3FF", colorBorder:"#C4B5FD",
+          icon:"🟣", name:"Obsidian", badge:"ต้องมีเสมอ", badgeBg:"#EDE9FE", badgeColor:"#5B21B6",
+          link:"https://obsidian.md/download",
+          desc:"vault viewer · sync กับ OneDrive · ฟรี",
+          tag:null,
+          steps:[
+            {num:1, text:"ดาวน์โหลด Obsidian แล้วติดตั้ง"},
+            {num:2, text:'เปิดแอป → Open Folder → ชี้ไปที่ BigC-IM-Wiki บน OneDrive'},
+            {num:3, text:"เห็นไฟล์ .md ในแถบซ้าย = พร้อมแล้ว"},
+          ],
+          verify:{color:"#7C3AED", cmd:"vault panel แสดงไฟล์ .md ครบ", isVisual:true, verifyLink:"#vault-structure"},
+          foot:null,
+        },
+        {
+          color:"#D97706", colorSoft:"#FFFBEB", colorBorder:"#FCD34D",
+          icon:"🟠", name:"Claude Desktop", badge:"⭐ แนะนำ", badgeBg:"#D1FAE5", badgeColor:"#065F46",
+          link:"https://claude.ai/download",
+          desc:"เวอร์ชันใหม่ — มี Code tab = Claude Code built-in",
+          tag:"มี Code tab ✓",
+          steps:[
+            {num:1, text:"ดาวน์โหลด Claude Desktop แล้วติดตั้ง"},
+            {num:2, text:'เปิดแอป → ดูแถบบน → มี tab "Code" = ✓'},
+            {num:3, text:"เปิด Terminal แล้วรัน claude --version"},
+          ],
+          verify:{color:"#D97706", cmd:"claude --version"},
+          foot:null,
+        },
+        {
+          color:"#2563EB", colorSoft:"#EFF6FF", colorBorder:"#BFDBFE",
+          icon:"🟢", name:"Node.js + Claude CLI", badge:"🔧 ถ้าไม่มี Code tab", badgeBg:"#DBEAFE", badgeColor:"#1D4ED8",
+          link:"https://nodejs.org/en/download",
+          desc:"ติดตั้ง Node.js ก่อน แล้ว npm install claude-code",
+          tag:null,
+          steps:[
+            {num:1, text:"ดาวน์โหลด Node.js LTS แล้วติดตั้ง"},
+            {num:2, text:"เปิด Terminal: npm install -g @anthropic-ai/claude-code"},
+            {num:3, text:"claude login → เปิด browser → sign in → กลับ Terminal"},
+          ],
+          verify:{color:"#2563EB", cmd:"claude --version"},
+          foot:null,
+        },
+      ];
+      return (
+        <div style={{marginBottom:20}}>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16,alignItems:"stretch"}}>
+            {lanes.map(lane => (
+              <div key={lane.name} style={{
+                borderRadius:16, overflow:"hidden",
+                border:`1.5px solid ${lane.colorBorder}`,
+                display:"flex", flexDirection:"column",
+                boxShadow:"0 2px 8px rgba(0,0,0,0.06)",
+              }}>
+                {/* Lane header */}
+                <div style={{background:lane.color, padding:"10px 14px"}}>
+                  <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:2}}>
+                    <span style={{fontSize:18}}>{lane.icon}</span>
+                    <span style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"#fff"}}>{lane.name}</span>
+                    {lane.tag && <span style={{marginLeft:"auto",fontSize:10,background:"rgba(255,255,255,0.22)",color:"#fff",padding:"1px 7px",borderRadius:4,fontWeight:700,whiteSpace:"nowrap"}}>{lane.tag}</span>}
+                  </div>
+                  <span style={{fontSize:10,background:lane.badgeBg,color:lane.badgeColor,padding:"2px 7px",borderRadius:4,fontWeight:700}}>{lane.badge}</span>
+                </div>
+                {/* Download link */}
+                <a href={lane.link} target="_blank" style={{textDecoration:"none",display:"flex",alignItems:"center",padding:"10px 14px",background:lane.colorSoft,borderBottom:`1px solid ${lane.colorBorder}`,minHeight:90}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,height:"100%"}}>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontSize:14,fontWeight:700,color:"#1F2937",marginBottom:2,fontFamily:"var(--font-display)"}}>{lane.name}</div>
+                      <div style={{fontSize:12,color:"#6B7280"}}>{lane.desc}</div>
+                    </div>
+                    <span style={{fontSize:13,color:lane.color,fontWeight:700,flexShrink:0,whiteSpace:"nowrap"}}>↗ ดาวน์โหลด</span>
+                  </div>
+                </a>
+                {/* Steps */}
+                <div style={{padding:"12px 14px",background:"#fff",flex:1,display:"flex",flexDirection:"column"}}>
+                  <div style={{fontSize:11,fontWeight:700,letterSpacing:"0.06em",color:lane.color,marginBottom:10,textTransform:"uppercase"}}>ขั้นตอน</div>
+                  {lane.steps.map(s => <LANE_STEP key={s.num} num={s.num} text={s.text}/>)}
+                  {lane.verify && <LANE_VERIFY color={lane.verify.color} cmd={lane.verify.cmd} isVisual={lane.verify.isVisual} verifyLink={lane.verify.verifyLink}/>}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Merge point — run claude in vault */}
+          <div style={{marginTop:16,display:"flex",alignItems:"center",gap:0}}>
+            <div style={{flex:1,height:2,background:"linear-gradient(90deg,#7C3AED,#D97706,#2563EB)",borderRadius:2,opacity:0.35}}/>
+            <div style={{margin:"0 12px",fontSize:11,fontWeight:700,color:"var(--muted)",whiteSpace:"nowrap"}}>ทุก Path มาบรรจบกัน</div>
+            <div style={{flex:1,height:2,background:"linear-gradient(90deg,#2563EB,#D97706,#7C3AED)",borderRadius:2,opacity:0.35}}/>
+          </div>
+          <div className="card soft" style={{marginTop:12,borderLeft:"3px solid var(--primary)"}}>
+            <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--primary)",marginBottom:6}}>🚀 รัน Claude ใน vault</div>
+            <CodeBlock label="terminal">{`cd path/to/BigC-IM-Wiki
+claude`}</CodeBlock>
+            <p style={{fontSize:12,margin:"6px 0 0",color:"#5BA900"}}>💡 ครั้งต่อไปแค่ <code className="inline">claude</code> ในโฟลเดอร์เดิม — ทำครั้งเดียวพร้อมทุก vault</p>
+          </div>
+        </div>
+      );
+    })()}
+
+    {/* ── Vault Structure ── */}
+    <div id="vault-structure" style={{marginTop:24,scrollMarginTop:80}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:14}}>
+        <div style={{width:3,height:22,borderRadius:2,background:"#7C3AED"}}/>
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,color:"#7C3AED"}}>📁 โครงสร้าง S4-Wiki (Standard Schema)</div>
+        <div style={{fontSize:11,background:"#EDE9FE",color:"#5B21B6",padding:"2px 8px",borderRadius:20,fontWeight:700}}>Obsidian Vault</div>
+      </div>
+      <div style={{background:"#1E1B2E",borderRadius:14,padding:"16px 20px",fontFamily:"var(--font-mono)",fontSize:13,lineHeight:1.9,color:"#E2E8F0",position:"relative",overflow:"hidden"}}>
+        <div style={{position:"absolute",top:0,left:0,right:0,height:3,background:"linear-gradient(90deg,#7C3AED,#A855F7,#C084FC)",borderRadius:"14px 14px 0 0"}}/>
+        {[
+          {indent:0,icon:"📂",name:"S4-Wiki/",           color:"#A78BFA",bold:true,  note:""},
+          {indent:1,icon:"📄",name:"CLAUDE.md",          color:"#FCD34D",bold:false, note:"← schema · YOU write · Claude reads every time"},
+          {indent:1,icon:"📄",name:"README.md",          color:"#86EFAC",bold:false, note:"← team onboarding · Claude creates"},
+          {indent:1,icon:"📂",name:"raw/",               color:"#93C5FD",bold:true,  note:"← YOU drop source files here (IMMUTABLE)"},
+          {indent:2,icon:"📂",name:"workshops/",         color:"#CBD5E1",bold:false, note:""},
+          {indent:2,icon:"📂",name:"as-is/",             color:"#CBD5E1",bold:false, note:""},
+          {indent:2,icon:"📂",name:"meetings/",          color:"#CBD5E1",bold:false, note:""},
+          {indent:2,icon:"📂",name:"assets/",            color:"#CBD5E1",bold:false, note:"screenshots, images"},
+          {indent:2,icon:"📂",name:"_archive/",          color:"#F87171",bold:false, note:"← ย้ายมาที่นี่แทนการลบ 🚨"},
+          {indent:1,icon:"📂",name:"wiki/",              color:"#93C5FD",bold:true,  note:"← Claude writes here · humans read only"},
+          {indent:2,icon:"📄",name:"index.md",           color:"#86EFAC",bold:false, note:"catalog of every page"},
+          {indent:2,icon:"📄",name:"log.md",             color:"#86EFAC",bold:false, note:"append-only timeline"},
+          {indent:2,icon:"📂",name:"entities/",          color:"#CBD5E1",bold:false, note:"people, systems, stakeholders"},
+          {indent:2,icon:"📂",name:"topics/",            color:"#CBD5E1",bold:false, note:"business topics: NPD, approval flow, etc."},
+          {indent:2,icon:"📂",name:"summaries/",         color:"#CBD5E1",bold:false, note:"one summary per ingested source"},
+          {indent:1,icon:"📂",name:".obsidian/",         color:"#6B7280",bold:false, note:"← Obsidian config (DO NOT EDIT)"},
+        ].map((row,i)=>(
+          <div key={i} style={{display:"flex",alignItems:"baseline",paddingLeft:row.indent*18}}>
+            <span style={{color:"#4B5563",marginRight:6,userSelect:"none",fontSize:11}}>
+              {row.indent===0?"":row.indent===1?"├─ ":"│  ├─ "}
+            </span>
+            <span style={{marginRight:6}}>{row.icon}</span>
+            <span style={{color:row.color,fontWeight:row.bold?700:400}}>{row.name}</span>
+            {row.note&&<span style={{color:"#6B7280",fontSize:11,marginLeft:8}}>{row.note}</span>}
+          </div>
+        ))}
+        <div style={{marginTop:10,paddingTop:8,borderTop:"1px dashed rgba(255,255,255,0.1)",display:"flex",gap:16,flexWrap:"wrap"}}>
+          <span style={{color:"#FCD34D",fontSize:11}}>🟡 CLAUDE.md = soul of vault</span>
+          <span style={{color:"#86EFAC",fontSize:11}}>🟢 wiki/ = Claude's output</span>
+          <span style={{color:"#93C5FD",fontSize:11}}>🔵 raw/ = human input zone</span>
+          <span style={{color:"#F87171",fontSize:11}}>🔴 _archive/ = never delete, archive instead</span>
+        </div>
+      </div>
+      <div style={{marginTop:10,padding:"10px 14px",background:"#FFFBEB",border:"1px solid #FCD34D",borderRadius:10,fontSize:13,color:"#92400E"}}>
+        <strong>Rule:</strong> raw/ = ไฟล์ที่มนุษย์วาง (IMMUTABLE) · wiki/ = ไฟล์ที่ Claude เขียน (read-only for humans) · ลบอะไรก็ตาม → ย้ายเข้า raw/_archive/ เสมอ
+      </div>
+    </div>
+
+    <Callout kind="warn" icon="⚠">
+      <div><strong>OneDrive: ต้อง "Always keep on this device" ก่อน</strong> — คลิกขวา BigC-IM-Wiki ใน File Explorer → <strong>Always keep on this device</strong> · ถ้าเป็น cloud-only (ไอคอนเมฆ) Claude อ่านไฟล์ไม่เห็น</div>
+    </Callout>
+
+    {/* ── Obsidian Plugins ── */}
+    <div style={{marginTop:16}}>
+      <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:13,color:"var(--primary)",marginBottom:10}}>🔌 Obsidian Plugins ที่แนะนำ</div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12}}>
+        {[
+          {name:"Web Clipper",icon:"📎",desc:"บันทึกหน้าเว็บเป็น .md ตรงเข้า vault"},
+          {name:"Dataview",   icon:"🔍",desc:"query frontmatter ข้ามไฟล์ทั้ง vault"},
+          {name:"Graph View", icon:"🕸",desc:"เห็น link ระหว่างไฟล์ visual graph"},
+          {name:"Templater",  icon:"📋",desc:"template มีตัวแปร/วันที่ อัตโนมัติ"},
+        ].map(p => (
+          <div key={p.name} className="card soft" style={{textAlign:"center",padding:"12px 8px"}}>
+            <div style={{fontSize:20,marginBottom:4}}>{p.icon}</div>
+            <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:12,color:"var(--primary)",marginBottom:4}}>{p.name}</div>
+            <p style={{fontSize:11,margin:0,color:"#4B5563"}}>{p.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <p style={{fontSize:11,color:"#9CA3AF",marginTop:14,textAlign:"right"}}>
+      ✦ อ้างอิงและเนื้อหาบางส่วนจาก <a href="https://bigc-kt-training.vercel.app/" target="_blank" style={{color:"var(--primary)"}}>bigc-kt-training.vercel.app</a> · 05 · Setup
+    </p>
+  </Section>
+);
+
+/* ── 12 Advanced · GitHub Actions YAML ── */
+const S_GitHub = () => (
+  <Section id="github" eyebrow="12 · Advanced" eyebrowKind=""
+    title="GitHub Actions YAML — Notion Polling (Advanced / Optional)"
+    subtitle={<>ตั้งเฉพาะเมื่อต้องการ poll Notion อัตโนมัติ · Copy YAML → วางใน <code className="inline">.github/workflows/notion-notify.yml</code> → เพิ่ม 2 secrets → เสร็จ</>}
+    thai={<>ถ้าทีมไม่ได้ใช้ Notion หรือไม่ต้องการ auto-poll ข้ามขั้นตอนนี้ได้เลย — ไม่กระทบ Scenario 1 และ 2 แต่อย่างใด</>}
+  >
+    <Callout kind="warn" icon="⚠">
+      <div><strong>Optional Step</strong> — Section นี้ทำเฉพาะถ้าต้องการ Scenario 3 (Notion polling อัตโนมัติ) ถ้าไม่ต้องการ ข้ามได้เลย · สำหรับข้อมูล MS Teams notification ดูที่ <a href="#next-actions" style={{color:"var(--amber)"}}>Section 15 · Next Actions</a></div>
+    </Callout>
+    <Callout kind="info" icon="ℹ">
+      <div><strong>ทำก่อนให้ทีม:</strong> Admin หรือคนดูแล GitHub ตั้ง workflow นี้ก่อน — พอเสร็จแล้ว ทีมถึงค่อยทำ Section 03 (Team Setup) บนเครื่องตัวเอง</div>
+    </Callout>
+    <CodeBlock label="yaml · .github/workflows/notion-notify.yml">{yaml}</CodeBlock>
+    <div className="grid grid-3" style={{marginTop:16}}>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--primary)",marginBottom:6}}>ขั้นตอน 1</div>
+        <p style={{fontSize:13,margin:0}}>สร้าง GitHub repo ใหม่ (private ก็ได้) → สร้างโฟลเดอร์ <code className="inline">.github/workflows/</code> → วาง YAML ข้างบน</p>
+      </div>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--primary)",marginBottom:6}}>ขั้นตอน 2</div>
+        <p style={{fontSize:13,margin:0}}>Settings → Secrets → Actions → เพิ่ม 2 secrets: <code className="inline">NOTION_TOKEN</code> + <code className="inline">NOTION_DATABASE_ID</code> (TEAMS_WEBHOOK_URL เพิ่มในภายหลังได้ถ้าต้องการ)</p>
+      </div>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--primary)",marginBottom:6}}>ขั้นตอน 3</div>
+        <p style={{fontSize:13,margin:0}}>Push → Actions tab → Run workflow ทดสอบ → ดู output ใน GitHub Actions log — เสร็จแล้วจะ auto-run ทุก 30 นาที</p>
+      </div>
+    </div>
+    <Callout kind="tip" icon="💡">
+      <div>
+        <strong>Notion polling ทำงานได้ทันที</strong> โดยไม่ต้องมี Teams Webhook — ดู workflow log ใน GitHub Actions แทน · ถ้าต้องการเพิ่ม Teams notification ในภายหลัง ดูขั้นตอนใน <a href="#next-actions" style={{color:"var(--primary)"}}>Section 15 · Next Actions</a>
+      </div>
+    </Callout>
+  </Section>
+);
+
+/* ── Anim: Step 1 — OneDrive Setup Wizard (Real Flow) ── */
+function AnimStep1() {
+  const [phase, setPhase] = React.useState(0);
+  const durations = [2000,1500,2200,1800,2000,2200,2500,2800];
+  React.useEffect(() => {
+    const id = setTimeout(() => setPhase(p => (p+1)%8), durations[phase]);
+    return () => clearTimeout(id);
+  }, [phase]);
+
+  const labels = [
+    "SharePoint — S4-Supplier Portal › Documents › General",
+    "คลิกปุ่ม Sync ใน toolbar",
+    "Browser ถาม: Allow site to open OneDrive?",
+    "OneDrive กำลัง sync ไฟล์ลงเครื่อง...",
+    "Sign in ด้วย Microsoft account บริษัท",
+    "Error 0x8004016c → กด Next ผ่านได้เลย ไม่กระทบ sync",
+    "File Explorer → คลิกขวา → Always keep on this device",
+    "✓ BigC-IM-Wiki sync ลงเครื่องเรียบร้อย!"
+  ];
+
+  const syncHL   = phase === 1;
+  const showBrowserDialog = phase === 2;
+  const showSyncingDialog = phase === 3;
+  const showSignIn  = phase === 4;
+  const showError   = phase === 5;
+  const showExplorer = phase === 6;
+  const success  = phase === 7;
+
+  const cursors = [[80,130],[510,52],[338,192],[322,193],[300,178],[378,172],[246,149],[200,120]];
+  const [cx,cy] = cursors[phase]||[80,130];
+  const files = ["📁 01_Approval-Flow","📁 02_BRD","📄 CLAUDE.md","📄 QA-Strategy.md","📄 Field-Catalog.md"];
+
+  const isBrowser = !showSignIn && !showError && !showExplorer && !success;
+
+  return (
+    <div style={{position:"relative",borderRadius:10,overflow:"hidden",height:240,marginTop:14,
+      border:"1px solid #d0d0d0",boxShadow:"0 4px 16px rgba(0,0,0,.12)",
+      fontFamily:"'Segoe UI',system-ui,sans-serif",fontSize:12,background:"#fff",userSelect:"none"}}>
+
+      {/* Chrome bar — changes per screen type */}
+      {isBrowser ? (
+        <div style={{background:"#f0f0f0",borderBottom:"1px solid #d8d8d8",padding:"5px 10px",display:"flex",alignItems:"center",gap:8}}>
+          <div style={{display:"flex",gap:5}}>
+            {["#ff5f57","#febc2e","#28c840"].map((c,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:c}}/>)}
+          </div>
+          <div style={{flex:1,background:"#fff",border:"1px solid #ccc",borderRadius:12,padding:"3px 12px",fontSize:11,color:"#444",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>
+            🔒 bigc.sharepoint.com › S4-Supplier Portal › Documents › General
+          </div>
+        </div>
+      ) : showExplorer ? (
+        <div style={{background:"#f5f5f5",borderBottom:"1px solid #d8d8d8",padding:"6px 12px",display:"flex",alignItems:"center",gap:8}}>
+          <div style={{display:"flex",gap:5}}>
+            {["#ff5f57","#febc2e","#28c840"].map((c,i)=><div key={i} style={{width:10,height:10,borderRadius:"50%",background:c}}/>)}
+          </div>
+          <span style={{fontSize:12,fontWeight:600,color:"#333"}}>File Explorer</span>
+        </div>
+      ) : (
+        <div style={{background:"#1f1f1f",borderBottom:"1px solid #333",padding:"6px 12px",display:"flex",alignItems:"center",gap:8}}>
+          <div style={{width:14,height:14,borderRadius:"50%",background:"#0078d4",display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,color:"#fff",flexShrink:0}}>☁</div>
+          <span style={{fontSize:11,color:"#999"}}>Microsoft OneDrive Setup</span>
+        </div>
+      )}
+
+      {/* Screen content */}
+      {isBrowser && (
+        <div style={{background:"#fff",height:"calc(100% - 34px)",position:"relative"}}>
+          {/* SharePoint nav toolbar */}
+          <div style={{background:"#fff",borderBottom:"1px solid #e8e8e8",padding:"4px 8px",display:"flex",alignItems:"center",gap:5,overflow:"hidden",flexWrap:"nowrap"}}>
+            <span style={{color:"#0078d4",fontSize:11,fontWeight:600,whiteSpace:"nowrap",cursor:"default"}}>📋 S4-Supplier Portal</span>
+            <span style={{color:"#bbb",fontSize:11}}>›</span>
+            <span style={{color:"#666",fontSize:11,whiteSpace:"nowrap"}}>Documents</span>
+            <span style={{color:"#bbb",fontSize:11}}>›</span>
+            <span style={{color:"#0078d4",fontSize:11,fontWeight:600,whiteSpace:"nowrap"}}>General</span>
+            <div style={{flex:1}}/>
+            {["+ New","↑ Upload"].map(t=>(
+              <div key={t} style={{padding:"3px 7px",borderRadius:4,color:"#555",fontSize:11,border:"1px solid #ddd",background:"#fafafa",cursor:"default",whiteSpace:"nowrap"}}>{t}</div>
+            ))}
+            <div style={{padding:"3px 10px",borderRadius:4,cursor:"default",fontSize:11,fontWeight:syncHL?700:400,
+              background:syncHL?"#0078d4":"#f5f5f5",border:syncHL?"1.5px solid #005a9e":"1px solid #ccc",
+              color:syncHL?"#fff":"#444",boxShadow:syncHL?"0 0 8px rgba(0,120,212,.4)":"none",
+              whiteSpace:"nowrap",transition:"all .3s",flexShrink:0}}>
+              🔄 Sync
+            </div>
+          </div>
+          {/* File list */}
+          <div style={{padding:"6px 12px",background:"#fafafa"}}>
+            {files.map((f,i)=>(
+              <div key={i} style={{padding:"5px 8px",borderRadius:4,display:"flex",alignItems:"center",gap:8,fontSize:12,color:"#333",cursor:"default"}}>
+                <span>{f}</span>
+              </div>
+            ))}
+          </div>
+          {/* Browser dialog (phase 2) */}
+          {showBrowserDialog&&(
+            <div style={{position:"absolute",inset:0,background:"rgba(255,255,255,.8)",backdropFilter:"blur(2px)",display:"flex",alignItems:"center",justifyContent:"center",animation:"fadeInAnim .2s ease"}}>
+              <div style={{background:"#fff",border:"1px solid #bbb",borderRadius:8,width:310,padding:"20px",boxShadow:"0 8px 24px rgba(0,0,0,.18)"}}>
+                <div style={{fontSize:13,fontWeight:600,color:"#222",marginBottom:10}}>This site is trying to open<br/><strong style={{color:"#0078d4"}}>Microsoft OneDrive</strong></div>
+                <div style={{display:"flex",alignItems:"flex-start",gap:8,marginBottom:14,padding:"8px 10px",background:"#f8f8f8",borderRadius:6}}>
+                  <div style={{width:14,height:14,borderRadius:2,border:"1.5px solid #0078d4",background:"#0078d4",display:"flex",alignItems:"center",justifyContent:"center",color:"#fff",fontSize:10,flexShrink:0,marginTop:1}}>✓</div>
+                  <span style={{fontSize:11.5,color:"#333",lineHeight:1.4}}>Always allow onedrive.live.com to open links of this type in the associated app</span>
+                </div>
+                <div style={{display:"flex",justifyContent:"flex-end",gap:8}}>
+                  <div style={{padding:"6px 14px",borderRadius:6,background:"#f0f0f0",border:"1px solid #ccc",color:"#666",cursor:"default",fontSize:12}}>Cancel</div>
+                  <div style={{padding:"6px 14px",borderRadius:6,background:"#0078d4",color:"#fff",cursor:"default",fontSize:12,fontWeight:600}}>Open</div>
+                </div>
+              </div>
+            </div>
+          )}
+          {/* Syncing dialog (phase 3) */}
+          {showSyncingDialog&&(
+            <div style={{position:"absolute",inset:0,background:"rgba(255,255,255,.8)",backdropFilter:"blur(2px)",display:"flex",alignItems:"center",justifyContent:"center",animation:"fadeInAnim .2s ease"}}>
+              <div style={{background:"#fff",border:"1px solid #ccc",borderRadius:10,width:290,padding:"24px",boxShadow:"0 8px 24px rgba(0,0,0,.18)",textAlign:"center"}}>
+                <div style={{fontSize:28,marginBottom:8}}>☁️</div>
+                <div style={{fontWeight:600,fontSize:14,color:"#222",marginBottom:6}}>We're syncing your files</div>
+                <div style={{fontSize:11.5,color:"#666",marginBottom:16,fontFamily:"var(--font-thai)",lineHeight:1.5}}>ปิด window นี้ได้เลย — OneDrive จะ sync ต่อใน background</div>
+                <div style={{padding:"6px 20px",borderRadius:6,background:"#0078d4",color:"#fff",cursor:"default",fontSize:12,fontWeight:600,display:"inline-block"}}>Close</div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Sign in screen (phase 4) */}
+      {showSignIn&&(
+        <div style={{background:"#2b2b2b",height:"calc(100% - 34px)",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:10,animation:"fadeInAnim .3s ease"}}>
+          <div style={{fontSize:30,marginBottom:2}}>☁️</div>
+          <div style={{color:"#fff",fontSize:14,fontWeight:600}}>Sign in to OneDrive</div>
+          <div style={{background:"#3c3c3c",border:"1px solid #555",borderRadius:6,width:220,padding:"8px 12px",display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:11,color:"#aaa"}}>✉</span>
+            <span style={{fontSize:11.5,color:"#d0d0d0"}}>your.name@bigc.co.th</span>
+          </div>
+          <div style={{padding:"8px 28px",borderRadius:6,background:"#e3008c",color:"#fff",cursor:"default",fontSize:13,fontWeight:600,marginTop:2,boxShadow:"0 0 10px rgba(227,0,140,.3)"}}>Sign in →</div>
+        </div>
+      )}
+
+      {/* Error 0x8004016c screen (phase 5) */}
+      {showError&&(
+        <div style={{background:"#f3f3f3",height:"calc(100% - 34px)",display:"flex",flexDirection:"column",animation:"fadeInAnim .3s ease"}}>
+          <div style={{background:"#c42b1c",color:"#fff",padding:"5px 14px",fontSize:10.5,display:"flex",alignItems:"center",gap:6}}>
+            <span style={{fontSize:13}}>⚠</span>
+            <span>0x8004016c — Your organization's settings don't allow folder backup</span>
+          </div>
+          <div style={{padding:"14px 18px",flex:1,display:"flex",flexDirection:"column",justifyContent:"space-between"}}>
+            <div>
+              <div style={{fontSize:13,fontWeight:600,color:"#1a1a1a",marginBottom:5}}>Back up folders on this PC</div>
+              <div style={{fontSize:11.5,color:"#555",lineHeight:1.5}}>We can't back up Desktop, Documents, and Pictures because your organization's policy doesn't allow it.</div>
+            </div>
+            <div style={{display:"flex",justifyContent:"flex-end",gap:8,marginTop:8}}>
+              <div style={{padding:"5px 14px",borderRadius:4,background:"#fff",border:"1px solid #ccc",color:"#666",cursor:"default",fontSize:11}}>Try again</div>
+              <div style={{padding:"5px 14px",borderRadius:4,background:"#0067b8",color:"#fff",cursor:"default",fontSize:11,fontWeight:700,boxShadow:"0 0 8px rgba(0,103,184,.45)"}}>Next →</div>
+            </div>
+          </div>
+          <div style={{padding:"5px 14px",background:"#fff8e0",borderTop:"1px solid #f0d878",fontSize:10,color:"#7a5c00"}}>
+            💡 กด Next ผ่านได้เลย — error นี้ไม่กระทบ SharePoint Sync เลย
+          </div>
+        </div>
+      )}
+
+      {/* File Explorer + right-click (phase 6) */}
+      {showExplorer&&(
+        <div style={{background:"#fff",height:"calc(100% - 34px)",display:"flex",flexDirection:"column",animation:"fadeInAnim .3s ease"}}>
+          <div style={{background:"#f0f0f0",borderBottom:"1px solid #ddd",padding:"4px 10px",fontSize:10.5,color:"#444",display:"flex",alignItems:"center",gap:3,flexWrap:"nowrap",overflow:"hidden"}}>
+            <span>🖥</span><span>This PC</span><span style={{color:"#aaa"}}>›</span>
+            <span>Local Disk (D:)</span><span style={{color:"#aaa"}}>›</span>
+            <span>Big_C</span><span style={{color:"#aaa"}}>›</span>
+            <span style={{fontWeight:600,color:"#0078d4"}}>Ready Management Solutions</span>
+          </div>
+          <div style={{padding:"6px 10px",flex:1,position:"relative"}}>
+            {["📁 BigC-IM-Wiki","📁 Portal_IM","📄 CLAUDE.md"].map((f,i)=>(
+              <div key={i} style={{padding:"4px 8px",borderRadius:4,display:"flex",alignItems:"center",gap:8,fontSize:11.5,
+                color:i===0?"#000":"#666",background:i===0?"#cce5f8":"transparent",
+                border:i===0?"1px solid #99c9f0":"1px solid transparent",marginBottom:2}}>
+                <span>{f}</span>
+              </div>
+            ))}
+            {/* Right-click context menu */}
+            <div style={{position:"absolute",top:18,left:185,background:"#fff",border:"1px solid #ccc",borderRadius:4,
+              boxShadow:"0 4px 14px rgba(0,0,0,.22)",width:210,zIndex:10,animation:"fadeInAnim .2s ease"}}>
+              {["Open","Copy","Cut","Delete","Properties"].map(item=>(
+                <div key={item} style={{padding:"5px 13px",fontSize:11,color:"#555",cursor:"default"}}>{item}</div>
+              ))}
+              <div style={{borderTop:"1px solid #eee",margin:"2px 0"}}/>
+              <div style={{padding:"5px 13px",fontSize:11,fontWeight:700,color:"#0078d4",cursor:"default",background:"#e8f2fd"}}>
+                ✓ Always keep on this device
+              </div>
+              <div style={{padding:"5px 13px",fontSize:11,color:"#666",cursor:"default"}}>Free up space</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success (phase 7) */}
+      {success&&(
+        <div style={{display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",height:"calc(100% - 34px)",gap:8,animation:"fadeInAnim .4s ease"}}>
+          <span style={{fontSize:36}}>✅</span>
+          <div style={{fontWeight:700,color:"#2d6a00",fontSize:14}}>BigC-IM-Wiki Synced!</div>
+          <div style={{fontSize:11.5,color:"#5BA900",fontFamily:"var(--font-thai)"}}>ไฟล์ sync ลงเครื่องเรียบร้อย · OneDrive sync อัตโนมัติต่อจากนี้</div>
+          <div style={{fontSize:10,color:"#999",marginTop:2}}>C:\Users\...\OneDrive - Big C\BigC-IM-Wiki\</div>
+        </div>
+      )}
+
+      {/* Phase label */}
+      <div style={{position:"absolute",bottom:9,left:10,fontSize:10.5,fontWeight:500,fontFamily:"var(--font-thai)",
+        color:"#555",background:"rgba(255,255,255,.9)",backdropFilter:"blur(4px)",
+        padding:"2px 9px",borderRadius:12,border:"1px solid rgba(0,0,0,.07)",
+        maxWidth:"76%",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>
+        {labels[phase]}
+      </div>
+      {/* Dots */}
+      <div style={{position:"absolute",bottom:11,right:10,display:"flex",gap:4}}>
+        {[0,1,2,3,4,5,6,7].map(i=>(
+          <div key={i} style={{width:i===phase?18:5,height:5,borderRadius:3,
+            background:i===phase?"#5BA900":"#ccc",transition:"all .3s"}}/>
+        ))}
+      </div>
+      {/* Cursor */}
+      {phase < 7&&(
+        <div style={{position:"absolute",left:cx,top:cy,zIndex:20,pointerEvents:"none",
+          transition:"left .55s cubic-bezier(.4,0,.2,1),top .55s cubic-bezier(.4,0,.2,1)"}}>
+          <svg width="22" height="24" viewBox="0 0 22 24" style={{filter:"drop-shadow(1px 2px 2px rgba(0,0,0,.45))"}}>
+            <path d="M4 2 L4 18 L8 14.5 L11 20 L13.5 19 L10.5 13.5 L16 13.5 Z"
+              fill="white" stroke="#1a1a1a" strokeWidth="1.3" strokeLinejoin="round"/>
+          </svg>
+          {(phase===1||phase===2||phase===3||phase===4||phase===6)&&(
+            <div style={{position:"absolute",top:1,left:1,width:18,height:18,borderRadius:"50%",
+              border:"2.5px solid #0078d4",animation:"clickRipple .55s ease-out forwards"}}/>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Anim: Step 2 — Obsidian Vault Switcher (Real UI) ── */
+function AnimStep2() {
+  const [phase, setPhase] = React.useState(0);
+  const durations = [1800,1500,1000,1800,1000,1800,2800];
+  React.useEffect(() => {
+    const id = setTimeout(() => setPhase(p => (p+1)%7), durations[phase]);
+    return () => clearTimeout(id);
+  }, [phase]);
+
+  const labels = [
+    "เปิด Obsidian — vault ปัจจุบัน",
+    "คลิกไอคอน ⬆ มุมล่างซ้าย",
+    "เลือก Manage vaults...",
+    "คลิก Open folder as vault",
+    "เลือก folder จาก OneDrive",
+    "เลือก BigC-IM-Wiki → Select Folder",
+    "✓ BigC-IM-Wiki เปิดแล้ว · 40+ pages"
+  ];
+
+  const showDropdown  = phase === 1 || phase === 2;
+  const manageHL      = phase === 2;
+  const showModal     = phase === 3;
+  const showPicker    = phase === 4 || phase === 5;
+  const folderHL      = phase === 5;
+  const success       = phase === 6;
+
+  const cursors = [[36,192],[36,198],[115,183],[295,142],[280,162],[298,185],[200,130]];
+  const [cx,cy] = cursors[phase]||[36,192];
+
+  return (
+    <div style={{position:"relative",borderRadius:10,overflow:"hidden",height:240,marginTop:14,
+      border:"1px solid #404040",boxShadow:"0 4px 16px rgba(0,0,0,.28)",
+      fontFamily:"var(--font-body)",fontSize:12,background:"#1e1e1e",
+      userSelect:"none",color:"#d4d4d4"}}>
+
+      {/* Title bar */}
+      <div style={{background:"#1a1a1a",padding:"7px 12px",display:"flex",alignItems:"center",gap:7,borderBottom:"1px solid #333"}}>
+        {["#ff5f57","#ffbd2e","#28ca41"].map((c,i)=>(
+          <div key={i} style={{width:12,height:12,borderRadius:"50%",background:c,flexShrink:0}}/>
+        ))}
+        <span style={{color:"#777",fontSize:11,marginLeft:6}}>Obsidian</span>
+      </div>
+
+      {/* Main body */}
+      <div style={{display:"flex",height:"calc(100% - 34px)",position:"relative"}}>
+        {/* Left icon sidebar */}
+        <div style={{width:46,background:"#161616",borderRight:"1px solid #252525",display:"flex",flexDirection:"column",alignItems:"center",padding:"8px 0",gap:4,flexShrink:0}}>
+          {["🔍","📂","⭐","🔖","🔧"].map((ic,i)=>(
+            <div key={i} style={{width:32,height:32,borderRadius:6,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,color:"#484848"}}>{ic}</div>
+          ))}
+          {/* Vault switcher button — bottom of sidebar */}
+          <div style={{position:"absolute",bottom:8,left:7,display:"flex",alignItems:"center",gap:5,padding:"4px 7px",
+            background:phase===1?"#2a2a2a":"transparent",borderRadius:6,cursor:"default",
+            border:phase===1?"1px solid #404040":"1px solid transparent",transition:"all .3s",width:32}}>
+            <div style={{width:16,height:16,borderRadius:3,background:"#5BA900",display:"flex",alignItems:"center",justifyContent:"center",fontSize:9,flexShrink:0}}>📋</div>
+          </div>
+        </div>
+
+        {/* Main editor area */}
+        <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:5,color:"#484848",position:"relative",padding:"0 16px"}}>
+          {!success ? (
+            <>
+              <div style={{fontSize:12,color:"#444",marginBottom:4}}>No file is open</div>
+              {["Create new note","Go to file","Open Obsidian Sync"].map(t=>(
+                <div key={t} style={{fontSize:11,color:"#555",padding:"2px 0"}}>{t}</div>
+              ))}
+              {/* Vault name bottom-left of main area */}
+              <div style={{position:"absolute",bottom:8,left:8,display:"flex",alignItems:"center",gap:5,
+                padding:"4px 8px",background:phase===1?"#2a2a2a":"rgba(255,255,255,.03)",
+                borderRadius:6,border:"1px solid rgba(255,255,255,.06)",cursor:"default",transition:"all .3s"}}>
+                <div style={{width:14,height:14,borderRadius:2,background:"#5BA900",flexShrink:0}}/>
+                <span style={{fontSize:11,color:"#999"}}>Obsidian Vault</span>
+                <span style={{fontSize:13,color:phase===1?"#5BA900":"#484848",marginLeft:2}}>⬆</span>
+              </div>
+            </>
+          ) : (
+            /* Success — file list */
+            <div style={{width:"100%",animation:"fadeInAnim .4s ease"}}>
+              <div style={{fontSize:11,fontWeight:600,color:"#5BA900",marginBottom:8,display:"flex",alignItems:"center",gap:5}}>
+                <div style={{width:12,height:12,borderRadius:2,background:"#5BA900"}}/>
+                BigC-IM-Wiki
+              </div>
+              {["CLAUDE.md","00_Approval-Flow.md","BRD-NPD-v1.md","Field-Catalog.md","QA-Strategy.md"].map(f=>(
+                <div key={f} style={{padding:"3px 5px",fontSize:11,color:"#86c55a",display:"flex",gap:6,alignItems:"center"}}>
+                  <span style={{fontSize:10,color:"#5BA900"}}>📄</span><span>{f}</span>
+                </div>
+              ))}
+              <div style={{marginTop:6,fontSize:10,color:"#5BA900",fontWeight:600}}>✓ 40+ pages loaded</div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Vault switcher dropdown (phases 1–2) */}
+      {showDropdown&&(
+        <div style={{position:"absolute",bottom:46,left:8,background:"#252525",border:"1px solid #444",borderRadius:8,
+          width:190,boxShadow:"0 -8px 20px rgba(0,0,0,.5)",zIndex:15,animation:"fadeInAnim .2s ease"}}>
+          <div style={{padding:"7px 10px",borderBottom:"1px solid #333",display:"flex",alignItems:"center",gap:7}}>
+            <div style={{width:14,height:14,borderRadius:2,background:"#5BA900",flexShrink:0}}/>
+            <span style={{fontSize:12,color:"#e0e0e0",fontWeight:600}}>Obsidian Vault</span>
+            <span style={{marginLeft:"auto",fontSize:10,color:"#5BA900"}}>✓</span>
+          </div>
+          <div style={{padding:"7px 10px",borderBottom:"1px solid #333",display:"flex",alignItems:"center",gap:7}}>
+            <div style={{width:14,height:14,borderRadius:2,background:"#7c3aed",flexShrink:0}}/>
+            <span style={{fontSize:12,color:"#888"}}>IM</span>
+          </div>
+          <div style={{padding:"7px 10px",display:"flex",alignItems:"center",gap:6,
+            background:manageHL?"rgba(255,255,255,.08)":"transparent",cursor:"default",borderRadius:"0 0 8px 8px",transition:"background .2s"}}>
+            <span style={{fontSize:14,color:"#666"}}>⚙</span>
+            <span style={{fontSize:11.5,color:manageHL?"#e0e0e0":"#777",fontWeight:manageHL?600:400}}>Manage vaults...</span>
+          </div>
+        </div>
+      )}
+
+      {/* Manage Vaults modal (phase 3) */}
+      {showModal&&(
+        <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.65)",display:"flex",alignItems:"center",justifyContent:"center",animation:"fadeInAnim .2s ease",zIndex:10}}>
+          <div style={{background:"#242424",border:"1px solid #444",borderRadius:12,width:360,overflow:"hidden",boxShadow:"0 8px 32px rgba(0,0,0,.6)",display:"flex",flexDirection:"column"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px",borderBottom:"1px solid #333"}}>
+              <span style={{fontSize:13,fontWeight:600,color:"#ddd"}}>Manage vaults</span>
+              <span style={{fontSize:16,color:"#666",cursor:"default"}}>✕</span>
+            </div>
+            <div style={{display:"flex",flex:1}}>
+              {/* Left: vault list */}
+              <div style={{width:150,background:"#1c1c1c",borderRight:"1px solid #333",padding:"8px"}}>
+                {[{color:"#5BA900",name:"Obsidian Vault",active:true},{color:"#7c3aed",name:"IM",active:false}].map(v=>(
+                  <div key={v.name} style={{display:"flex",alignItems:"center",gap:6,padding:"6px 8px",borderRadius:5,marginBottom:3,background:v.active?"#2d2d2d":"transparent"}}>
+                    <div style={{width:12,height:12,borderRadius:2,background:v.color,flexShrink:0}}/>
+                    <span style={{fontSize:11,color:v.active?"#ddd":"#888"}}>{v.name}</span>
+                  </div>
+                ))}
+              </div>
+              {/* Right: actions */}
+              <div style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",gap:7,padding:"14px"}}>
+                <div style={{fontSize:22,marginBottom:4}}>🔮</div>
+                {[
+                  {icon:"✨",label:"Create new vault",hl:false},
+                  {icon:"📂",label:"Open folder as vault",hl:true},
+                  {icon:"🔗",label:"Sign in to Sync",hl:false},
+                ].map(b=>(
+                  <div key={b.label} style={{width:"100%",padding:"7px 10px",borderRadius:6,cursor:"default",
+                    background:b.hl?"#2a3a5a":"rgba(255,255,255,.04)",
+                    border:b.hl?"1px solid #4d6a9a":"1px solid rgba(255,255,255,.07)",
+                    display:"flex",alignItems:"center",gap:7,transition:"all .25s"}}>
+                    <span style={{fontSize:13}}>{b.icon}</span>
+                    <span style={{fontSize:11.5,color:b.hl?"#93c5fd":"#888",fontWeight:b.hl?600:400}}>{b.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* File picker (phases 4–5) */}
+      {showPicker&&(
+        <div style={{position:"absolute",inset:0,background:"rgba(0,0,0,.7)",display:"flex",alignItems:"center",justifyContent:"center",animation:"fadeInAnim .2s ease",zIndex:10}}>
+          <div style={{background:"#252525",border:"1px solid #555",borderRadius:10,width:300,padding:"14px",boxShadow:"0 8px 28px rgba(0,0,0,.55)"}}>
+            <div style={{fontSize:12,fontWeight:600,color:"#e0e0e0",marginBottom:8}}>Open folder as vault</div>
+            <div style={{fontSize:10.5,color:"#666",marginBottom:6,padding:"4px 8px",background:"#1a1a1a",borderRadius:4,display:"flex",alignItems:"center",gap:5}}>
+              <span>📍</span><span style={{color:"#999"}}>OneDrive - Big C › My Files</span>
+            </div>
+            {[
+              {icon:"📁",label:"Documents",active:false},
+              {icon:"📁",label:"BigC-IM-Wiki",active:folderHL},
+              {icon:"📁",label:"Portal_IM",active:false},
+            ].map(it=>(
+              <div key={it.label} style={{padding:"5px 10px",borderRadius:5,cursor:"default",display:"flex",alignItems:"center",gap:7,
+                background:it.active?"#2d3a5a":"transparent",border:it.active?"1px solid #4d6a9a":"1px solid transparent",
+                color:it.active?"#93c5fd":"#888",marginBottom:3,fontSize:11.5,fontWeight:it.active?600:400,transition:"all .25s"}}>
+                <span>{it.icon}</span><span>{it.label}</span>
+                {it.active&&<span style={{marginLeft:"auto",fontSize:10,color:"#60a5fa"}}>← เลือก</span>}
+              </div>
+            ))}
+            <div style={{display:"flex",justifyContent:"flex-end",gap:8,marginTop:10}}>
+              <div style={{padding:"5px 12px",borderRadius:6,background:"#333",border:"1px solid #555",color:"#888",cursor:"default",fontSize:11}}>Cancel</div>
+              <div style={{padding:"5px 12px",borderRadius:6,cursor:"default",fontSize:11,
+                background:folderHL?"#7c3aed":"#2d2d2d",border:folderHL?"1px solid #a855f7":"1px solid #555",
+                color:folderHL?"#fff":"#666",fontWeight:folderHL?600:400,transition:"all .25s"}}>Select Folder</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Phase label */}
+      <div style={{position:"absolute",bottom:9,left:10,fontSize:10.5,fontWeight:500,fontFamily:"var(--font-thai)",
+        color:"#bbb",background:"rgba(0,0,0,.55)",backdropFilter:"blur(4px)",
+        padding:"2px 9px",borderRadius:12,border:"1px solid rgba(255,255,255,.06)",
+        maxWidth:"76%",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>
+        {labels[phase]}
+      </div>
+      {/* Dots */}
+      <div style={{position:"absolute",bottom:11,right:10,display:"flex",gap:4}}>
+        {[0,1,2,3,4,5,6].map(i=>(
+          <div key={i} style={{width:i===phase?18:5,height:5,borderRadius:3,
+            background:i===phase?"#a855f7":"#444",transition:"all .3s"}}/>
+        ))}
+      </div>
+      {/* Cursor */}
+      {phase<6&&(
+        <div style={{position:"absolute",left:cx,top:cy,zIndex:20,pointerEvents:"none",
+          transition:"left .55s cubic-bezier(.4,0,.2,1),top .55s cubic-bezier(.4,0,.2,1)"}}>
+          <svg width="22" height="24" viewBox="0 0 22 24" style={{filter:"drop-shadow(1px 2px 3px rgba(0,0,0,.65))"}}>
+            <path d="M4 2 L4 18 L8 14.5 L11 20 L13.5 19 L10.5 13.5 L16 13.5 Z"
+              fill="white" stroke="#1a1a1a" strokeWidth="1.3" strokeLinejoin="round"/>
+          </svg>
+          {(phase===2||phase===4||phase===5)&&(
+            <div style={{position:"absolute",top:1,left:1,width:18,height:18,borderRadius:"50%",
+              border:"2.5px solid #a855f7",animation:"clickRipple .55s ease-out forwards"}}/>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── Anim: Step 3 — Claude Code reads vault ── */
+function AnimClaudeCode() {
+  const [phase, setPhase] = React.useState(0);
+  const durations = [1200,1500,1400,1200,1200,2400];
+  React.useEffect(() => {
+    const id = setTimeout(() => setPhase(p => (p+1)%6), durations[phase]);
+    return () => clearTimeout(id);
+  }, [phase]);
+
+  const labels = ["เปิด Terminal","พิมพ์ cd vault path","พิมพ์ claude","Claude กำลังอ่านไฟล์...","CLAUDE.md โหลดแล้ว","✓ Claude พร้อมตอบ!"];
+
+  return (
+    <div style={{borderRadius:10,overflow:"hidden",height:198,marginTop:14,
+      border:"1px solid #30363d",boxShadow:"0 4px 16px rgba(0,0,0,.28)",
+      fontFamily:"'JetBrains Mono',ui-monospace,monospace",fontSize:12,
+      background:"#0d1117",userSelect:"none",position:"relative"}}>
+
+      {/* Terminal title bar */}
+      <div style={{background:"#161b22",padding:"7px 12px",
+        display:"flex",alignItems:"center",gap:7,borderBottom:"1px solid #30363d"}}>
+        {["#ff5f57","#febc2e","#28ca41"].map((c,i)=>(
+          <div key={i} style={{width:11,height:11,borderRadius:"50%",background:c,flexShrink:0}}/>
+        ))}
+        <span style={{color:"#8b949e",fontSize:11,marginLeft:6,fontFamily:"var(--font-body)"}}>
+          Terminal · BigC-IM-Wiki
+        </span>
+      </div>
+
+      {/* Terminal body */}
+      <div style={{padding:"12px 16px",height:"calc(100% - 34px)",overflow:"hidden",lineHeight:1.65}}>
+        {phase===0&&(
+          <span style={{color:"#e6edf3"}}>{">"} <span style={{color:"#888",borderRight:"2px solid #e6edf3",paddingRight:2,animation:"blink 1s step-end infinite"}}> </span></span>
+        )}
+        {phase===1&&(
+          <div>
+            <div style={{color:"#e6edf3"}}>{">"} <span style={{color:"#79c0ff"}}>cd</span> <span style={{color:"#a5d6ff"}}>"OneDrive - Big C/BigC-IM-Wiki"</span></div>
+          </div>
+        )}
+        {phase===2&&(
+          <div>
+            <div style={{color:"#3fb950",marginBottom:4}}>{">"} cd "OneDrive - Big C/BigC-IM-Wiki"</div>
+            <div>
+              <span style={{color:"#58a6ff",fontWeight:600}}>BigC-IM-Wiki</span>
+              <span style={{color:"#e6edf3"}}> {">"} </span>
+              <span style={{color:"#e6edf3"}}>claude</span>
+              <span style={{color:"#888",borderRight:"2px solid #e6edf3",paddingRight:2}}> </span>
+            </div>
+          </div>
+        )}
+        {phase===3&&(
+          <div>
+            <div style={{color:"#3fb950",marginBottom:4}}>{">"} cd "OneDrive - Big C/BigC-IM-Wiki"</div>
+            <div><span style={{color:"#58a6ff",fontWeight:600}}>BigC-IM-Wiki</span><span style={{color:"#e6edf3"}}> {">"} claude</span></div>
+            <div style={{marginTop:6}}>
+              <div style={{color:"#d29922"}}>  ◌ Reading CLAUDE.md...</div>
+              <div style={{color:"#d29922"}}>  ◌ Scanning 40 .md files...</div>
+            </div>
+          </div>
+        )}
+        {phase===4&&(
+          <div>
+            <div style={{color:"#3fb950",marginBottom:4}}>{">"} cd "OneDrive - Big C/BigC-IM-Wiki"</div>
+            <div><span style={{color:"#58a6ff",fontWeight:600}}>BigC-IM-Wiki</span><span style={{color:"#e6edf3"}}> {">"} claude</span></div>
+            <div style={{marginTop:6}}>
+              <div style={{color:"#3fb950"}}>  ✓ CLAUDE.md loaded · scope defined</div>
+              <div style={{color:"#3fb950"}}>  ✓ 40 pages indexed</div>
+              <div style={{color:"#3fb950"}}>  ✓ Context: Approval Flow · QA · BRD</div>
+            </div>
+          </div>
+        )}
+        {phase===5&&(
+          <div>
+            <div style={{color:"#3fb950",marginBottom:4}}>{">"} cd "OneDrive - Big C/BigC-IM-Wiki"</div>
+            <div><span style={{color:"#58a6ff",fontWeight:600}}>BigC-IM-Wiki</span><span style={{color:"#e6edf3"}}> {">"} claude</span></div>
+            <div style={{marginTop:6}}>
+              <div style={{color:"#3fb950"}}>  ✓ Ready! 🤖</div>
+              <div style={{color:"#e6edf3",marginTop:5,fontFamily:"var(--font-thai)",fontSize:12,lineHeight:1.5}}>
+                {"  "}ถามได้เลยครับ <span style={{color:"#79c0ff"}}>→</span> <span style={{color:"#a5d6ff"}}>"สรุป session วันนี้"</span>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Phase label */}
+      <div style={{position:"absolute",bottom:9,left:10,fontSize:11,fontWeight:500,
+        fontFamily:"var(--font-thai)",color:"#8b949e",
+        background:"rgba(13,17,23,.9)",backdropFilter:"blur(4px)",
+        padding:"2px 9px",borderRadius:12,border:"1px solid rgba(255,255,255,.08)"}}>
+        {labels[phase]}
+      </div>
+      {/* Dots */}
+      <div style={{position:"absolute",bottom:11,right:10,display:"flex",gap:5}}>
+        {[0,1,2,3,4,5].map(i=>(
+          <div key={i} style={{width:i===phase?18:6,height:6,borderRadius:3,
+            background:i===phase?"#5BA900":"#30363d",transition:"all .3s"}}/>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── 03 Team Setup ── */
+const S03 = () => (
+  <Section id="setup" eyebrow="03 · Setup" eyebrowKind="green"
+    title="Team Setup"
+    subtitle={<>2 tracks · <strong>🔧 Creator</strong> ทำครั้งเดียวก่อนให้ทีม · <strong>👥 Joiner</strong> ทุกคนทำบนเครื่องตัวเอง</>}
+    thai={<>Creator = คนแรกที่ตั้ง vault (ทำครั้งเดียว) · Joiner = สมาชิกทีมทุกคนที่ต่อเข้ามาใหม่</>}
+  >
+    {/* ── KEY OBJECTIVES ── */}
+    <div style={{marginBottom:28}}>
+      <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,color:"var(--ink)",marginBottom:14}}>🎯 ทำไมต้อง setup สิ่งนี้?</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        {[
+          {icon:"🗂",title:"Single source of truth",desc:"ทุกคนในทีมอ่านไฟล์จากแหล่งเดียวกัน — ไม่มีเวอร์ชันหลายชุดกระจายใน chat"},
+          {icon:"🔄",title:"อัพเดทถึงทุกคนอัตโนมัติ",desc:"ใครวางไฟล์ใหม่ใน General → ทุกเครื่องได้ไฟล์ล่าสุดทันที ไม่ต้องส่งซ้ำ"},
+          {icon:"🤖",title:"Claude สรุปให้เมื่อมีอัพเดท",desc:"วาง BRD ใหม่ แล้วถาม Claude ว่าต่างจากเดิมยังไง — ได้คำตอบทันทีโดยไม่ต้องอ่านเอง"},
+          {icon:"📚",title:"Personal knowledge library",desc:"แต่ละคนมี Obsidian vault ที่ sync กัน — browse, link, search ไฟล์ทีมได้ในแบบของตัวเอง"},
+          {icon:"📜",title:"ประวัติชัดเจน ย้อนดูได้",desc:"wiki/log.md บันทึกทุก ingest — รู้ว่าใครเพิ่มอะไร เมื่อไหร่ และมีการเปลี่ยนแปลงอะไรบ้าง"},
+          {icon:"🚀",title:"Onboard สมาชิกใหม่เร็วขึ้น",desc:"ถาม Claude ว่า 'สรุปโปรเจกต์นี้ให้หน่อย' — ได้ context ครบจาก wiki โดยไม่ต้องนั่งถ่ายทอดซ้ำ"},
+        ].map((o,i)=>(
+          <div key={i} style={{display:"flex",gap:10,padding:"12px 14px",background:"var(--surface)",border:"1px solid var(--border)",borderRadius:10}}>
+            <span style={{fontSize:20,flexShrink:0,lineHeight:1.3}}>{o.icon}</span>
+            <div>
+              <div style={{fontFamily:"var(--font-display)",fontWeight:600,fontSize:13,color:"var(--ink)",marginBottom:3}}>{o.title}</div>
+              <div style={{fontSize:12,color:"var(--ink-2)",lineHeight:1.55}}>{o.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* ── DELETION WARNING ── */}
+    <div style={{background:"#FEF2F2",border:"2px solid #DC2626",borderRadius:12,padding:"14px 18px",marginBottom:24,display:"flex",gap:12,alignItems:"flex-start"}}>
+      <span style={{fontSize:22,flexShrink:0,lineHeight:1}}>🚨</span>
+      <div>
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"#B91C1C",marginBottom:4}}>ห้ามลบไฟล์หรือ folder จาก vault บนเครื่อง local เด็ดขาด</div>
+        <div style={{fontSize:13,color:"#7F1D1D",lineHeight:1.6}}>
+          <strong style={{color:"#B91C1C"}}>ลบ local = ลบ OneDrive = ลบเครื่องทุกคนในทีมทันที</strong> · ถ้าต้องการ "เก็บออก" → ย้ายไปที่ <code style={{background:"#FEE2E2",padding:"1px 5px",borderRadius:4,fontSize:12}}>raw/_archive/</code> แทน ห้ามกด Delete · ถ้าเผลอลบ → ติดต่อ <strong>IT Admin</strong> — กู้คืนได้จาก SharePoint Recycle Bin ภายใน 93 วัน
+        </div>
+      </div>
+    </div>
+
+    {/* ── CREATOR TRACK ── */}
+    <div style={{marginBottom:36}}>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16,padding:"10px 16px",background:"#FFF7ED",border:"1.5px solid #F97316",borderRadius:10}}>
+        <span style={{fontSize:20}}>🔧</span>
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,color:"#C2410C"}}>Creator Track — ทำครั้งเดียว (Admin / คนแรก)</div>
+      </div>
+      <div className="steps">
+        <div className="step">
+          <div className="step-num amber">1</div>
+          <div className="step-body">
+            <h4>Sync OneDrive ลงเครื่อง — S4 - Supplier Portal</h4>
+            <ol style={{marginTop:8,marginBottom:0,paddingLeft:18,fontSize:13,color:"var(--ink-2)",lineHeight:1.9}}>
+              <li>เปิด <strong>OneDrive web</strong> (browser) → ไปที่ <code className="inline">S4 - Supplier Portal › Documents › General</code></li>
+              <li>คลิกไอคอน <strong>Sync</strong> <span style={{fontSize:11,color:"var(--muted)"}}>— อยู่แถบเมนูด้านบนของ OneDrive</span></li>
+              <li>เลือก path ในเครื่อง local ที่จะวาง → ยืนยัน</li>
+              <li>เมื่อ sync สำเร็จ เปิด <strong>File Explorer</strong> → ไปที่ folder <strong>General</strong> ที่ sync ลงมา</li>
+              <li>คลิกขวา folder <strong>General</strong> → <strong>"Always keep on this device"</strong></li>
+            </ol>
+            <AnimStep1/>
+            <div style={{display:"flex",gap:10,alignItems:"flex-start",padding:"10px 14px",background:"#F9FAFB",borderRadius:10,border:"1px solid #E5E7EB",marginTop:8}}>
+              <span style={{fontSize:14,flexShrink:0,marginTop:1}}>💬</span>
+              <div style={{fontSize:13,color:"#374151",lineHeight:1.55}}><strong>เจอ Error 0x8004016c?</strong> กด "Next" ผ่านได้เลย — เป็นแค่ policy ของ IT Admin ไม่กระทบ SharePoint Sync</div>
+            </div>
+          </div>
+        </div>
+        <div className="step">
+          <div className="step-num amber">2</div>
+          <div className="step-body">
+            <h4>สร้าง folder <code className="inline">S4-Wiki</code> ใน General</h4>
+            <CodeBlock label="file explorer">{`[OneDrive] › S4 - Supplier Portal › Documents › General
+→ คลิกขวา พื้นที่ว่าง → New Folder
+→ ตั้งชื่อ: S4-Wiki`}</CodeBlock>
+            <Callout kind="info" icon="ℹ">
+              <div>Folder S4-Wiki จะ sync ขึ้น OneDrive อัตโนมัติ — สมาชิกทีมจะเห็น S4-Wiki ใน General ภายใน ~60 วินาที</div>
+            </Callout>
+          </div>
+        </div>
+        <div className="step">
+          <div className="step-num amber">3</div>
+          <div className="step-body">
+            <h4>วาง <code className="inline">CLAUDE.md</code> ที่ root ของ S4-Wiki</h4>
+            <p style={{marginTop:4}}>copy template จาก <a href="#claude-md" onClick={e=>{e.preventDefault();document.getElementById('claude-md')?.scrollIntoView({behavior:'smooth'})}}>Section ✦ CLAUDE.md</a> → วางไฟล์ที่:</p>
+            <CodeBlock label="path">{`[...] › General › S4-Wiki › CLAUDE.md`}</CodeBlock>
+            <p style={{fontSize:12,color:"var(--muted)",marginTop:6}}>CLAUDE.md = สิ่งแรกที่ Claude อ่านทุกครั้ง — ต้องวางก่อนรัน claude</p>
+          </div>
+        </div>
+        <div className="step">
+          <div className="step-num amber">4</div>
+          <div className="step-body">
+            <h4>เปิด Terminal → cd เข้า S4-Wiki → รัน claude</h4>
+            <CodeBlock label="terminal">{`cd "[...path...] \\General\\S4-Wiki"
+claude`}</CodeBlock>
+            <Callout kind="tip" icon="💡">
+              <div>วิธีหา path ที่แน่นอน: File Explorer → ไปที่ S4-Wiki → คลิก address bar ข้างบน → path จะปรากฏ → Copy</div>
+            </Callout>
+          </div>
+        </div>
+        <div className="step">
+          <div className="step-num amber">5</div>
+          <div className="step-body">
+            <h4>สั่ง Claude สร้าง folder structure</h4>
+            <p style={{marginTop:4}}>พิมพ์ prompt นี้ใน Claude (copy ได้เลย):</p>
+            <CodeBlock label="prompt → claude">{`Initialize this vault. Create all folders defined in CLAUDE.md:
+raw/workshops, raw/as-is, raw/meetings, raw/assets,
+wiki/entities, wiki/topics, wiki/summaries.
+Then create wiki/index.md and wiki/log.md with starter content.`}</CodeBlock>
+            <Callout kind="tip" icon="✓">
+              <div><strong>Claude จะสร้าง folder structure + starter files ทั้งหมดให้</strong> · OneDrive sync ขึ้นให้อัตโนมัติ · ทีม Joiner จะเห็น S4-Wiki มีโครงสร้างครบใน ~60 วินาที</div>
+            </Callout>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* ── JOINER TRACK ── */}
+    <div>
+      <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:16,padding:"10px 16px",background:"#F0FDF4",border:"1.5px solid #22C55E",borderRadius:10}}>
+        <span style={{fontSize:20}}>👥</span>
+        <div>
+          <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,color:"#15803D"}}>Joiner Track — ทีมทุกคนทำบนเครื่องตัวเอง</div>
+          <div style={{fontSize:12,color:"#166534",marginTop:2}}>ทำหลัง Creator ตั้ง vault เสร็จแล้ว · ~5 นาที/คน</div>
+        </div>
+      </div>
+
+      {/* DELETION WARNING repeat for Joiner */}
+      <div style={{background:"#FEF2F2",border:"1.5px solid #FCA5A5",borderRadius:10,padding:"10px 14px",marginBottom:16,display:"flex",gap:10,alignItems:"flex-start"}}>
+        <span style={{fontSize:16,flexShrink:0}}>🚨</span>
+        <div style={{fontSize:13,color:"#B91C1C",lineHeight:1.55}}><strong>ย้ำ: ห้ามลบไฟล์ใน S4-Wiki จากเครื่อง local</strong> — ลบ local = ลบ OneDrive = หายทั้งทีม · ย้ายไป <code style={{background:"#FEE2E2",padding:"1px 5px",borderRadius:4,fontSize:12}}>raw/_archive/</code> แทนเสมอ</div>
+      </div>
+
+      <div className="steps">
+        <div className="step">
+          <div className="step-num">1</div>
+          <div className="step-body">
+            <h4>Sync OneDrive ลงเครื่อง</h4>
+            <ol style={{marginTop:8,marginBottom:0,paddingLeft:18,fontSize:13,color:"var(--ink-2)",lineHeight:1.9}}>
+              <li>เปิด <strong>OneDrive web</strong> (browser) → ไปที่ <code className="inline">S4 - Supplier Portal › Documents › General</code></li>
+              <li>คลิกไอคอน <strong>Sync</strong> <span style={{fontSize:11,color:"var(--muted)"}}>— อยู่แถบเมนูด้านบนของ OneDrive</span></li>
+              <li>เลือก path ในเครื่อง local ที่จะวาง → ยืนยัน</li>
+              <li>เมื่อ sync สำเร็จ เปิด <strong>File Explorer</strong> → ไปที่ folder <strong>General</strong> ที่ sync ลงมา</li>
+              <li>คลิกขวา folder <strong>General</strong> → <strong>"Always keep on this device"</strong></li>
+            </ol>
+            <p style={{fontSize:13,color:"#5BA900",marginTop:8}}>✓ S4-Wiki จะปรากฏพร้อมไฟล์ทั้งหมดที่ Creator สร้างไว้</p>
+          </div>
+        </div>
+        <div className="step">
+          <div className="step-num">2</div>
+          <div className="step-body">
+            <h4>เปิด Obsidian → Open folder as vault → เลือก S4-Wiki</h4>
+            <CodeBlock label="obsidian">{`Vault switcher (ไอคอนล่างซ้าย) → Open folder as vault
+→ เลือก [...] \\General\\S4-Wiki
+→ Trust → เห็นไฟล์ .md ทันที ✓`}</CodeBlock>
+            <AnimStep2/>
+          </div>
+        </div>
+        <div className="step">
+          <div className="step-num">3</div>
+          <div className="step-body">
+            <h4>เปิด Claude Code จาก S4-Wiki</h4>
+            <CodeBlock label="terminal">{`cd "[...] \\General\\S4-Wiki"
+claude`}</CodeBlock>
+            <p style={{marginTop:8,fontSize:13,color:"var(--ink-2)"}}>Claude อ่าน CLAUDE.md อัตโนมัติ — รู้ vault structure และ context S4 ทันที · พร้อมรับคำสั่ง ingest / query / lint</p>
+            <AnimClaudeCode/>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+);
+
+/* ── 04 Flow 1 · Initial Setup ── */
+const svgInit = `<svg viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:300px;display:block">
+  <defs>
+    <marker id="arr1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5BA900"/></marker>
+    <filter id="glow1"><feGaussianBlur stdDeviation="3" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- OneDrive source -->
+  <rect x="10" y="110" width="185" height="80" rx="12" fill="#F0FAE6" stroke="#5BA900" stroke-width="2"/>
+  <text x="102" y="140" text-anchor="middle" font-size="24">☁️</text>
+  <text x="102" y="163" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="13" font-weight="700" fill="#18201A">OneDrive</text>
+  <text x="102" y="179" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#5BA900">BigC-IM-Wiki/ (ถังตั้งต้น)</text>
+
+  <!-- OneDrive sync -->
+  <rect x="265" y="115" width="175" height="70" rx="12" fill="#F9FDF5" stroke="#C4D9BC" stroke-width="1.5"/>
+  <text x="352" y="142" text-anchor="middle" font-size="18">🔄</text>
+  <text x="352" y="161" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">OneDrive sync อัตโนมัติ</text>
+  <text x="352" y="176" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#7A8A7D">background 24/7</text>
+
+  <!-- Machine A + Claude A (combined box) -->
+  <rect x="508" y="15" width="302" height="82" rx="10" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="1.5"/>
+  <text x="659" y="38" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">💻 เครื่องทีม A — vault local</text>
+  <text x="659" y="54" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">sync ลงอัตโนมัติ</text>
+  <line x1="520" y1="63" x2="798" y2="63" stroke="#3C8C1E" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.4"/>
+  <text x="659" y="80" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10.5" fill="#3C8C1E">🤖 Claude Code — อ่าน vault นี้ได้เลย</text>
+
+  <!-- Machine B + Claude B -->
+  <rect x="508" y="109" width="302" height="82" rx="10" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="1.5"/>
+  <text x="659" y="132" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">💻 เครื่องทีม B — vault local</text>
+  <text x="659" y="148" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">sync ลงอัตโนมัติ</text>
+  <line x1="520" y1="157" x2="798" y2="157" stroke="#3C8C1E" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.4"/>
+  <text x="659" y="174" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10.5" fill="#3C8C1E">🤖 Claude Code — อ่าน vault นี้ได้เลย</text>
+
+  <!-- Machine C + Claude C -->
+  <rect x="508" y="203" width="302" height="82" rx="10" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="1.5"/>
+  <text x="659" y="226" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">💻 เครื่องทีม C — vault local</text>
+  <text x="659" y="242" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">sync ลงอัตโนมัติ</text>
+  <line x1="520" y1="251" x2="798" y2="251" stroke="#3C8C1E" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.4"/>
+  <text x="659" y="268" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10.5" fill="#3C8C1E">🤖 Claude Code — อ่าน vault นี้ได้เลย</text>
+
+  <!-- Arrows -->
+  <path id="f1a" d="M 195 150 L 263 150" stroke="#5BA900" stroke-width="2" fill="none" stroke-dasharray="5 3" marker-end="url(#arr1)"/>
+  <text x="229" y="144" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="9" fill="#5BA900">sync ลง</text>
+  <path id="f1b" d="M 440 140 L 506 56" stroke="#C4D9BC" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arr1)"/>
+  <path id="f1c" d="M 440 150 L 506 150" stroke="#C4D9BC" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arr1)"/>
+  <path id="f1d" d="M 440 160 L 506 244" stroke="#C4D9BC" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arr1)"/>
+
+  <circle r="6" fill="#5BA900" filter="url(#glow1)" opacity="0.9"><animateMotion dur="2s" repeatCount="indefinite" begin="0s"><mpath href="#f1a"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow1)" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" begin="0.4s"><mpath href="#f1b"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow1)" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" begin="0.8s"><mpath href="#f1c"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow1)" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#f1d"/></animateMotion></circle>
+</svg>`;
+
+const S04 = () => (
+  <Section id="flow-init" eyebrow="04 · Flow 1" eyebrowKind="green"
+    title="Initial Setup — ดาวน์โหลด vault ลงเครื่อง"
+    subtitle={<>OneDrive เป็น <strong>ถังตั้งต้น</strong> — ทีมแต่ละคน sync folder ลงเครื่อง local ของตัวเอง</>}
+    thai={<>OneDrive มีข้อมูลอยู่แล้ว แค่ดาวน์โหลดลงเครื่อง ทำครั้งเดียวตลอดกาล</>}
+  >
+    <Infographic title="Flow 1 · Initial Setup (ทำครั้งเดียว)" thai="OneDrive → sync ลงทุกเครื่องในทีม + Claude Code อ่านได้ทันที" height={320}
+      caption="OneDrive คือถังตั้งต้น — ทีมแต่ละคน sync folder ลงเครื่องผ่าน OneDrive App หรือ Add Shortcut · Claude Code (ของแต่ละคน) อ่าน vault local บนเครื่องตัวเองโดยตรง">
+      <div dangerouslySetInnerHTML={{__html: svgInit}} style={{width:"100%"}}/>
+    </Infographic>
+    <div className="grid grid-3" style={{marginTop:8}}>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,marginBottom:6}}>☁️ OneDrive (ถังตั้งต้น)</div>
+        <p style={{fontSize:13,margin:0}}>BigC-IM-Wiki อยู่บน OneDrive อยู่แล้ว — ไม่ต้องอัพอะไรขึ้น ใช้ได้ทันที</p>
+      </div>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,marginBottom:6}}>🔄 OneDrive sync</div>
+        <p style={{fontSize:13,margin:0}}>background process ทำงาน 24/7 — sync ขึ้นลงอัตโนมัติทันทีที่มีไฟล์เปลี่ยนแปลง</p>
+      </div>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,marginBottom:6}}>💻 ทุกเครื่องในทีม</div>
+        <p style={{fontSize:13,margin:0}}>"Always keep on this device" หรือ "Add shortcut" → vault ปรากฏใน local path เดียวกันทุกคน</p>
+      </div>
+    </div>
+  </Section>
+);
+
+/* ── 05 Flow 2 · Scenario 1 · Upload to OneDrive ── */
+const svgPO = `<svg viewBox="0 0 820 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:180px;display:block">
+  <defs>
+    <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5BA900"/></marker>
+    <filter id="glow2"><feGaussianBlur stdDeviation="3" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- Node 1: ทีมวางไฟล์ -->
+  <rect x="10" y="50" width="145" height="80" rx="12" fill="#EBF7D4" stroke="#5BA900" stroke-width="1.5"/>
+  <text x="82" y="78" text-anchor="middle" font-size="20">📤</text>
+  <text x="82" y="98" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">ทีมวางไฟล์</text>
+  <text x="82" y="114" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#5BA900">OneDrive folder</text>
+
+  <!-- Node 2: OneDrive -->
+  <rect x="215" y="50" width="155" height="80" rx="12" fill="#F0FAE6" stroke="#5BA900" stroke-width="2"/>
+  <text x="292" y="78" text-anchor="middle" font-size="22">☁️</text>
+  <text x="292" y="100" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="13" font-weight="700" fill="#18201A">OneDrive</text>
+  <text x="292" y="116" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#7A8A7D">sync ลง ~60s</text>
+
+  <!-- Node 3: Obsidian ทุกเครื่อง -->
+  <rect x="430" y="50" width="195" height="80" rx="12" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="1.5"/>
+  <text x="527" y="78" text-anchor="middle" font-size="18">👀</text>
+  <text x="527" y="98" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">Obsidian ทุกเครื่อง</text>
+  <text x="527" y="114" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">เห็นไฟล์ทันที</text>
+
+  <!-- Node 4: Claude Code -->
+  <rect x="685" y="50" width="130" height="80" rx="12" fill="#EBF7D4" stroke="#3C8C1E" stroke-width="1.5" stroke-dasharray="5 3"/>
+  <text x="750" y="78" text-anchor="middle" font-size="18">🤖</text>
+  <text x="750" y="98" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">Claude Code</text>
+  <text x="750" y="114" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10" fill="#3C8C1E">cd vault → ingest</text>
+
+  <!-- Arrows -->
+  <path id="pp1" d="M 155 90 L 213 90" stroke="#5BA900" stroke-width="2" fill="none" stroke-dasharray="5 3" marker-end="url(#arr2)"/>
+  <path id="pp2" d="M 370 90 L 428 90" stroke="#C4D9BC" stroke-width="2" fill="none" stroke-dasharray="4 3" marker-end="url(#arr2)"/>
+  <text x="399" y="83" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="9" fill="#5BA900">~60s</text>
+  <path id="pp3" d="M 625 90 L 683 90" stroke="#C4D9BC" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arr2)"/>
+  <text x="654" y="83" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="9" fill="#3C8C1E">cd vault</text>
+
+  <circle r="6" fill="#5BA900" filter="url(#glow2)" opacity="0.9"><animateMotion dur="2s" repeatCount="indefinite" begin="0s"><mpath href="#pp1"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow2)" opacity="0.85"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0.6s"><mpath href="#pp2"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow2)" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#pp3"/></animateMotion></circle>
+</svg>`;
+
+const S05 = () => (
+  <Section id="flow-po" eyebrow="05 · Flow 2" eyebrowKind="green"
+    title="Scenario 1 — วางไฟล์บน OneDrive → ทุกเครื่องเห็น"
+    subtitle={<>ใครวางไฟล์บน OneDrive → <strong>OneDrive sync ลงทุก vault local ในทีมอัตโนมัติ</strong> ภายใน 60 วินาที</>}
+    thai={<>ไม่ต้องส่ง email · ไม่ต้องแจ้ง · ไม่ต้อง sync มือ — OneDrive ทำเองตลอด 24/7</>}
+  >
+    <Infographic title="Scenario 1 · วางไฟล์บน OneDrive → ทุกเครื่องเห็นอัตโนมัติ" thai="ทีมวางไฟล์ใน OneDrive → sync ลงทุก vault local ทันที → Claude ingest ได้เลย" height={200}
+      caption="ไฟล์ sync ลงทุกเครื่องภายใน 10–60 วินาที · ไม่ต้องบอกใคร"
+      captionTh="OneDrive background process ทำงานตลอด 24/7 — ทุกคนใน vault เห็นไฟล์ใหม่พร้อมกัน">
+      <div dangerouslySetInnerHTML={{__html: svgPO}} style={{width:"100%"}}/>
+    </Infographic>
+    <Callout kind="tip" icon="💡">
+      <div><strong>Conflict Rule:</strong> ถ้าจะ ingest แจ้งในกลุ่มก่อน <em>"กำลัง ingest [ชื่อไฟล์]"</em> → เสร็จแล้วแจ้ง <em>"เสร็จแล้ว"</em> — OneDrive ไม่มี file lock ทำให้สองคน ingest พร้อมกันได้ แต่ไม่แนะนำ</div>
+    </Callout>
+  </Section>
+);
+
+/* ── 06 Flow 3 · Scenario 2 · Local edit → OneDrive → others ── */
+const svgLocal = `<svg viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:300px;display:block">
+  <defs>
+    <marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5BA900"/></marker>
+    <filter id="glow3"><feGaussianBlur stdDeviation="3" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- แก้ไฟล์ (left) -->
+  <rect x="10" y="110" width="170" height="80" rx="12" fill="#EBF7D4" stroke="#5BA900" stroke-width="1.5"/>
+  <text x="95" y="138" text-anchor="middle" font-size="18">✏️</text>
+  <text x="95" y="158" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">แก้ไฟล์ vault local</text>
+  <text x="95" y="174" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#7A8A7D">เครื่องใครก็ได้</text>
+
+  <!-- OneDrive (center) -->
+  <rect x="250" y="110" width="175" height="80" rx="12" fill="#F0FAE6" stroke="#5BA900" stroke-width="2"/>
+  <text x="337" y="138" text-anchor="middle" font-size="22">☁️</text>
+  <text x="337" y="160" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="13" font-weight="700" fill="#18201A">OneDrive</text>
+  <text x="337" y="176" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#5BA900">sync ขึ้น-ลง อัตโนมัติ</text>
+
+  <!-- Machine B + Claude B -->
+  <rect x="495" y="15" width="320" height="82" rx="10" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="1.5"/>
+  <text x="655" y="38" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">💻 เครื่องทีม B — ได้รับทันที</text>
+  <text x="655" y="54" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">vault local sync ลงอัตโนมัติ</text>
+  <line x1="507" y1="63" x2="803" y2="63" stroke="#3C8C1E" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.4"/>
+  <text x="655" y="80" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10.5" fill="#3C8C1E">🤖 Claude Code — อ่าน vault นี้ได้เลย</text>
+
+  <!-- Machine C + Claude C -->
+  <rect x="495" y="109" width="320" height="82" rx="10" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="1.5"/>
+  <text x="655" y="132" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">💻 เครื่องทีม C — ได้รับทันที</text>
+  <text x="655" y="148" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">vault local sync ลงอัตโนมัติ</text>
+  <line x1="507" y1="157" x2="803" y2="157" stroke="#3C8C1E" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.4"/>
+  <text x="655" y="174" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10.5" fill="#3C8C1E">🤖 Claude Code — อ่าน vault นี้ได้เลย</text>
+
+  <!-- Machine D + Claude D -->
+  <rect x="495" y="203" width="320" height="82" rx="10" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="1.5"/>
+  <text x="655" y="226" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">💻 เครื่องทีม D — ได้รับทันที</text>
+  <text x="655" y="242" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">vault local sync ลงอัตโนมัติ</text>
+  <line x1="507" y1="251" x2="803" y2="251" stroke="#3C8C1E" stroke-width="0.6" stroke-dasharray="3 3" opacity="0.4"/>
+  <text x="655" y="268" text-anchor="middle" dominant-baseline="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10.5" fill="#3C8C1E">🤖 Claude Code — อ่าน vault นี้ได้เลย</text>
+
+  <!-- Arrows -->
+  <path id="ql1" d="M 180 150 L 248 150" stroke="#5BA900" stroke-width="2" fill="none" stroke-dasharray="5 3" marker-end="url(#arr3)"/>
+  <text x="214" y="144" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="9" fill="#5BA900">sync ขึ้น</text>
+  <path id="ql2" d="M 425 140 L 493 56" stroke="#C4D9BC" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+  <path id="ql3" d="M 425 150 L 493 150" stroke="#C4D9BC" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+  <path id="ql4" d="M 425 160 L 493 244" stroke="#C4D9BC" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arr3)"/>
+
+  <circle r="6" fill="#5BA900" filter="url(#glow3)" opacity="0.9"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0s"><mpath href="#ql1"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow3)" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" begin="0.4s"><mpath href="#ql2"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow3)" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" begin="0.8s"><mpath href="#ql3"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow3)" opacity="0.85"><animateMotion dur="1.5s" repeatCount="indefinite" begin="1.2s"><mpath href="#ql4"/></animateMotion></circle>
+</svg>`;
+
+const S06 = () => (
+  <Section id="flow-local" eyebrow="06 · Flow 3" eyebrowKind="green"
+    title="Scenario 2 — แก้ local → sync ขึ้น OneDrive → ทีมคนอื่นได้รับ"
+    subtitle={<>ใครแก้ไฟล์บน vault local → <strong>OneDrive sync ขึ้น cloud อัตโนมัติ</strong> → sync ลงทุก vault local อื่นในทีม</>}
+    thai={<>ไม่ต้อง commit · ไม่ต้อง push · แค่กด save — OneDrive sync ขึ้น-ลงเองอัตโนมัติ</>}
+  >
+    <Infographic title="Scenario 2 · แก้ local → OneDrive → ทีมคนอื่นได้รับ + Claude Code แต่ละคนอ่านได้" thai="save ไฟล์ → sync ขึ้น OneDrive → sync ลงทุก vault ในทีม → Claude แต่ละคน ingest ได้เลย" height={320}
+      caption="OneDrive sync 2 ทาง — ทุกคนแก้ได้พร้อมกัน · Claude Code (ของแต่ละคน) อ่าน vault local บนเครื่องตัวเองโดยตรง">
+      <div dangerouslySetInnerHTML={{__html: svgLocal}} style={{width:"100%"}}/>
+    </Infographic>
+    <Callout kind="tip" icon="💡">
+      <div>
+        <strong>Sync 2 ทาง (Bidirectional):</strong> ไม่ว่าจะแก้จากเครื่องไหน ทีมคนอื่นจะได้รับการเปลี่ยนแปลงนั้นทันที — OneDrive sync <em>ทุกทิศทาง</em> พร้อมกัน
+        <div className="thai" style={{marginTop:6}}>ระวัง: ถ้าสองคนแก้ไฟล์เดียวกันพร้อมกัน → OneDrive จะสร้าง conflict copy ให้ resolve เอง — ใช้ MS Teams แจ้งก่อน ingest</div>
+      </div>
+    </Callout>
+  </Section>
+);
+
+/* ── 07 Flow 4 · Scenario 3 · Notion อัพเดท ── */
+const svgNotion = `<svg viewBox="0 0 820 220" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:220px;display:block">
+  <defs>
+    <marker id="arr4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5BA900"/></marker>
+    <marker id="arr4b" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#D78A1E"/></marker>
+    <filter id="glow4"><feGaussianBlur stdDeviation="3" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <rect x="10" y="80" width="145" height="60" rx="12" fill="#F9FDF5" stroke="#C4D9BC" stroke-width="1.5"/>
+  <text x="82" y="106" text-anchor="middle" font-size="22">📓</text>
+  <text x="82" y="128" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="13" font-weight="700" fill="#18201A">Notion DB</text>
+
+  <rect x="225" y="60" width="160" height="100" rx="12" fill="#FFFBF0" stroke="#D78A1E" stroke-width="1.5"/>
+  <text x="305" y="92" text-anchor="middle" font-size="22">⚙️</text>
+  <text x="305" y="114" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="12" font-weight="700" fill="#18201A">GitHub Actions</text>
+  <text x="305" y="131" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#D78A1E">poll ทุก 30 นาที</text>
+  <text x="305" y="148" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#7A8A7D">ฟรี 2,000 min/mo</text>
+
+  <!-- Teams (optional — dashed gray) -->
+  <rect x="460" y="15" width="190" height="55" rx="10" fill="#F8F8F8" stroke="#BBBBBB" stroke-width="1.2" stroke-dasharray="5 4"/>
+  <text x="555" y="36" text-anchor="middle" font-size="15">📲</text>
+  <text x="555" y="53" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#999">MS Teams (optional)</text>
+
+  <rect x="460" y="85" width="190" height="55" rx="10" fill="#EBF7D4" stroke="#5BA900" stroke-width="1.5"/>
+  <text x="555" y="108" text-anchor="middle" font-size="18">🤖</text>
+  <text x="555" y="128" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="700" fill="#18201A">Claude ingest</text>
+
+  <rect x="460" y="155" width="190" height="55" rx="10" fill="#F0FAE6" stroke="#5BA900" stroke-width="2"/>
+  <text x="555" y="178" text-anchor="middle" font-size="18">☁️</text>
+  <text x="555" y="197" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">OneDrive → ทุกเครื่อง</text>
+
+  <rect x="715" y="155" width="95" height="55" rx="10" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="1.5"/>
+  <text x="762" y="178" text-anchor="middle" font-size="16">💻💻💻</text>
+  <text x="762" y="197" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10" fill="#3C8C1E">ทีมทุกเครื่อง</text>
+
+  <path id="pn0" d="M 155 110 L 223 110" stroke="#C4D9BC" stroke-width="2" fill="none" stroke-dasharray="5 3" marker-end="url(#arr4)"/>
+  <path id="pn1" d="M 385 90 L 458 42" stroke="#CCCCCC" stroke-width="1.2" fill="none" stroke-dasharray="5 5" opacity="0.6"/>
+  <path id="pn2" d="M 385 110 L 458 112" stroke="#C4D9BC" stroke-width="2" fill="none" stroke-dasharray="4 3" marker-end="url(#arr4)"/>
+  <path id="pn3" d="M 385 130 L 458 180" stroke="#C4D9BC" stroke-width="2" fill="none" stroke-dasharray="4 3" marker-end="url(#arr4)"/>
+  <path id="pn4" d="M 650 182 L 713 182" stroke="#C4D9BC" stroke-width="1.5" fill="none" stroke-dasharray="4 3" marker-end="url(#arr4)"/>
+  <path d="M 305 60 Q 210 20 157 80" stroke="#D78A1E" stroke-width="1.5" fill="none" stroke-dasharray="6 4" opacity="0.5" marker-end="url(#arr4b)"/>
+  <text x="220" y="20" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="10" fill="#D78A1E" opacity="0.8">ตรวจซ้ำทุก 30 นาที</text>
+
+  <circle r="5" fill="#5BA900" filter="url(#glow4)"><animateMotion dur="1.8s" repeatCount="indefinite" begin="0s"><mpath href="#pn0"/></animateMotion></circle>
+  <circle r="5" fill="#5BA900" filter="url(#glow4)"><animateMotion dur="1.5s" repeatCount="indefinite" begin="0.9s"><mpath href="#pn2"/></animateMotion></circle>
+  <circle r="5" fill="#5BA900" filter="url(#glow4)"><animateMotion dur="1.5s" repeatCount="indefinite" begin="1.3s"><mpath href="#pn3"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow4)"><animateMotion dur="1.5s" repeatCount="indefinite" begin="1.7s"><mpath href="#pn4"/></animateMotion></circle>
+</svg>`;
+
+const S07 = () => (
+  <Section id="flow-notion" eyebrow="07 · Flow 4" eyebrowKind=""
+    title="Scenario 3 — Notion อัพเดท → GitHub Actions → sync อัตโนมัติ"
+    subtitle={<>GitHub Actions <strong>poll Notion API</strong> ทุก 30 นาที · จับการเปลี่ยนแปลงอัตโนมัติ · เนื้อหา sync เข้า OneDrive ให้ทีม</>}
+    thai={<>ทีมไม่ต้องแจ้งใคร — GitHub Actions จับการเปลี่ยนแปลงเอง ingest เข้า vault + ทีมทุกเครื่องได้รับอัตโนมัติ</>}
+  >
+    <Infographic title="Scenario 3 · Notion → GitHub Actions → Claude ingest → OneDrive → ทุกเครื่อง" thai="poll อัตโนมัติ → Claude ingest → sync ลงทุก vault ในทีม" height={240}
+      caption="ใช้ Notion API (ฟรี) + GitHub Actions (ฟรี 2,000 นาที/เดือน) · MS Teams = optional (ดู Section 15)"
+      captionTh="ไม่มีค่าใช้จ่ายเพิ่มในทุกขั้นตอน — ใช้ Claude subscription ที่มีอยู่แล้ว">
+      <div dangerouslySetInnerHTML={{__html: svgNotion}} style={{width:"100%"}}/>
+    </Infographic>
+    <div className="card" style={{marginBottom:18,borderLeft:"3px solid var(--amber)"}}>
+      <h4 style={{marginTop:0,color:"var(--amber)"}}>🔑 วิธีให้ GitHub Actions อ่าน Notion ได้ — 4 ขั้นตอน</h4>
+      <p style={{fontSize:13,color:"var(--ink-2)",fontFamily:"var(--font-thai)",marginTop:0,marginBottom:14,lineHeight:1.7}}>
+        ต้องสร้าง <strong>"Internal Integration"</strong> ใน Notion ก่อน แล้ว share database ให้มัน (read-only) — token ที่ได้ใส่เป็น GitHub Secret ทำครั้งเดียวจบ
+      </p>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+        {[
+          {step:"①",title:"สร้าง Notion Integration",desc:'ไปที่ notion.so/my-integrations → "New integration" → ตั้งชื่อ "BigC IM Bot" → เลือก workspace BigC → Create → ได้ token ขึ้นต้นด้วย secret_...'},
+          {step:"②",title:"Share Notion Database",desc:'เปิด Notion database ที่ต้องการ → คลิก ··· (3 จุด บนขวา) → Connections → Add connections → เลือก "BigC IM Bot" → database นี้จะ poll ได้แล้ว'},
+          {step:"③",title:"Copy Database ID",desc:'URL ของ database: notion.so/.../[DATABASE-ID]?v=... → copy 32 ตัว hex ข้างหน้า ?v= นี่คือ NOTION_DATABASE_ID'},
+          {step:"④",title:"ใส่ GitHub Secrets",desc:'ไปที่ GitHub repo → Settings → Secrets → Actions → เพิ่ม NOTION_TOKEN (secret_...) + NOTION_DATABASE_ID (32 hex) → Push YAML (Section 02) → เสร็จ'},
+        ].map(({step,title,desc})=>(
+          <div key={step} style={{display:"flex",gap:10,alignItems:"flex-start",padding:"10px 12px",background:"var(--bg-2)",borderRadius:"var(--radius)",border:"1px solid var(--border)"}}>
+            <div style={{width:22,height:22,borderRadius:"50%",background:"var(--amber)",color:"#fff",display:"grid",placeItems:"center",fontSize:11,fontWeight:700,flexShrink:0,marginTop:1}}>{step}</div>
+            <div>
+              <div style={{fontFamily:"var(--font-display)",fontWeight:600,fontSize:13,color:"var(--ink)",marginBottom:3}}>{title}</div>
+              <div style={{fontSize:12,color:"var(--ink-2)",lineHeight:1.5,fontFamily:"var(--font-thai)"}}>{desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div style={{marginTop:12,padding:"7px 12px",background:"var(--bg-2)",borderRadius:8,border:"1px solid var(--border)",fontSize:12,fontFamily:"var(--font-thai)",color:"var(--ink-2)"}}>
+        ℹ️ Integration ได้รับแค่ permission <strong>"Read content"</strong> — ไม่มี write/delete access ปลอดภัย 100% · ถ้าต้องการ Teams notification ในภายหลัง ดูที่ <a href="#next-actions" style={{color:"var(--amber)"}}>Section 15</a>
+      </div>
+    </div>
+    <div className="card">
+      <h4 style={{marginTop:0}}>📋 เช็ค workflow output ใน GitHub Actions</h4>
+      <p style={{fontSize:13,color:"var(--ink-2)",fontFamily:"var(--font-thai)",marginTop:0,marginBottom:10,lineHeight:1.7}}>
+        หลัง push YAML → ไปที่ GitHub repo → <strong>Actions tab</strong> → คลิก workflow ล่าสุด → ดู log output — จะเห็นว่า poll Notion พบ N หน้าที่เปลี่ยนแปลง
+      </p>
+      <div style={{fontFamily:"var(--font-mono,monospace)",fontSize:12,background:"#0d1117",color:"#e6edf3",borderRadius:8,padding:"12px 16px",lineHeight:1.8}}>
+        <div style={{color:"#8b949e"}}>{'# GitHub Actions log output'}</div>
+        <div><span style={{color:"#3fb950"}}>✓</span> Notion poll complete</div>
+        <div><span style={{color:"#3fb950"}}>✓</span> Found <span style={{color:"#79c0ff"}}>3</span> pages updated in last 31 min</div>
+        <div><span style={{color:"#d29922"}}>  • BRD Section 3 — Approval Flow</span></div>
+        <div><span style={{color:"#d29922"}}>  • Field Spec — SCM Update</span></div>
+        <div><span style={{color:"#d29922"}}>  • QA Strategy v2.8</span></div>
+      </div>
+      <Callout kind="tip" icon="💡">
+        <div>อยากให้ทีมได้รับแจ้งอัตโนมัติก่อนรัน Claude? → ดู <a href="#next-actions" style={{color:"var(--primary)"}}>Section 15 · Next Actions</a> — Teams notification roadmap พร้อม setup steps</div>
+      </Callout>
+    </div>
+  </Section>
+);
+
+/* ── 08 Flow 5 · ภาพรวมทั้งหมด ── */
+const svgAll = `<svg viewBox="0 0 820 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:260px;display:block">
+  <defs>
+    <marker id="arr5" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5BA900"/></marker>
+    <filter id="glow5"><feGaussianBlur stdDeviation="3" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+
+  <!-- COLUMN 1: Sources (3 boxes) -->
+  <rect x="5" y="25" width="145" height="50" rx="10" fill="#EBF7D4" stroke="#5BA900" stroke-width="1.5"/>
+  <text x="77" y="46" text-anchor="middle" font-size="14">📥</text>
+  <text x="77" y="63" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">ทีมวางไฟล์ใหม่</text>
+
+  <rect x="5" y="105" width="145" height="50" rx="10" fill="#EBF7D4" stroke="#5BA900" stroke-width="1.5"/>
+  <text x="77" y="126" text-anchor="middle" font-size="14">✏️</text>
+  <text x="77" y="143" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">ทีมแก้ .md Obsidian</text>
+
+  <rect x="5" y="185" width="145" height="50" rx="10" fill="#FFFBF0" stroke="#D78A1E" stroke-width="1.5"/>
+  <text x="77" y="206" text-anchor="middle" font-size="14">📓</text>
+  <text x="77" y="223" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">Notion อัพเดท</text>
+
+  <!-- COLUMN 2: OneDrive Hub -->
+  <rect x="205" y="80" width="155" height="100" rx="16" fill="#F0FAE6" stroke="#5BA900" stroke-width="2"/>
+  <text x="282" y="117" text-anchor="middle" font-size="26">☁️</text>
+  <text x="282" y="143" text-anchor="middle" font-family="Plus Jakarta Sans,sans-serif" font-size="13" font-weight="700" fill="#18201A">OneDrive</text>
+  <text x="282" y="159" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#5BA900">BigC-IM-Wiki/</text>
+
+  <!-- COLUMN 3: Obsidian -->
+  <rect x="420" y="80" width="155" height="100" rx="16" fill="#D5F0C0" stroke="#3C8C1E" stroke-width="2"/>
+  <text x="497" y="117" text-anchor="middle" font-size="22">👀</text>
+  <text x="497" y="143" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">Obsidian ทุกเครื่อง</text>
+  <text x="497" y="159" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">vault local (sync แล้ว)</text>
+
+  <!-- COLUMN 4: Claude Code -->
+  <rect x="635" y="80" width="175" height="100" rx="16" fill="#EBF7D4" stroke="#5BA900" stroke-width="2"/>
+  <text x="722" y="117" text-anchor="middle" font-size="22">🤖</text>
+  <text x="722" y="143" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="12" font-weight="600" fill="#18201A">Claude Code</text>
+  <text x="722" y="159" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="11" fill="#3C8C1E">อ่าน vault local โดยตรง</text>
+
+  <!-- Sources → OneDrive arrows (dashed) -->
+  <path id="lc1" d="M 150 50 Q 177 50 203 105" stroke="#C4D9BC" stroke-width="2" fill="none" stroke-dasharray="5 3" marker-end="url(#arr5)"/>
+  <path id="lc2" d="M 150 130 L 203 130" stroke="#C4D9BC" stroke-width="2" fill="none" stroke-dasharray="5 3" marker-end="url(#arr5)"/>
+  <path id="lc3" d="M 150 210 Q 177 210 203 155" stroke="#C4D9BC" stroke-width="2" fill="none" stroke-dasharray="5 3" marker-end="url(#arr5)"/>
+
+  <!-- OneDrive → Obsidian arrow (dashed) -->
+  <path id="cr1" d="M 360 130 L 418 130" stroke="#5BA900" stroke-width="2" fill="none" stroke-dasharray="5 3" marker-end="url(#arr5)"/>
+  <text x="389" y="124" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="9" fill="#5BA900">sync ลง</text>
+
+  <!-- Obsidian → Claude Code arrow (solid green) -->
+  <path id="cr2" d="M 575 130 L 633 130" stroke="#3C8C1E" stroke-width="2.5" fill="none" marker-end="url(#arr5)"/>
+  <text x="604" y="122" text-anchor="middle" font-family="IBM Plex Sans Thai,sans-serif" font-size="9" fill="#3C8C1E">อ่านจาก</text>
+
+  <!-- Animated dots -->
+  <circle r="5" fill="#5BA900" filter="url(#glow5)"><animateMotion dur="2s" repeatCount="indefinite" begin="0s"><mpath href="#lc1"/></animateMotion></circle>
+  <circle r="5" fill="#5BA900" filter="url(#glow5)"><animateMotion dur="2s" repeatCount="indefinite" begin="0.5s"><mpath href="#lc2"/></animateMotion></circle>
+  <circle r="5" fill="#D78A1E" filter="url(#glow5)"><animateMotion dur="2s" repeatCount="indefinite" begin="1.0s"><mpath href="#lc3"/></animateMotion></circle>
+  <circle r="5" fill="#5BA900" filter="url(#glow5)"><animateMotion dur="2s" repeatCount="indefinite" begin="0.3s"><mpath href="#cr1"/></animateMotion></circle>
+  <circle r="5" fill="#3C8C1E" filter="url(#glow5)"><animateMotion dur="2s" repeatCount="indefinite" begin="0.8s"><mpath href="#cr2"/></animateMotion></circle>
+</svg>`;
+
+const S08 = () => (
+  <Section id="flow-all" eyebrow="08 · Flow 5" eyebrowKind="green"
+    title="ภาพรวมทั้งหมด — One Diagram"
+    subtitle={<>ทุก scenario รวมกัน: Sources → OneDrive → <strong>Obsidian</strong> → <strong>Claude Code</strong> อ่าน vault local โดยตรง</>}
+    thai={<>Claude Code ไม่ได้อ่านจาก OneDrive — อ่านจาก vault ที่ Obsidian sync ลงมาที่เครื่องแล้วเท่านั้น</>}
+  >
+    <Infographic title="ภาพรวมทั้งหมด · Sources → OneDrive → Obsidian → Claude Code" thai="ลำดับการไหลของข้อมูล: ทีม → OneDrive → Obsidian sync → Claude อ่าน vault local" height={280}
+      caption="Claude Code อ่าน vault local ที่ Obsidian sync ลงมา — ไม่ใช่ OneDrive cloud โดยตรง"
+      captionTh="ไม่ว่าจะเป็นไฟล์จากทีม / การแก้ .md / หรือ Notion — ทุกอย่างไหลผ่าน OneDrive → Obsidian ก่อน Claude เห็น">
+      <div dangerouslySetInnerHTML={{__html: svgAll}} style={{width:"100%"}}/>
+    </Infographic>
+    <div className="grid grid-3" style={{marginTop:8}}>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--primary)",marginBottom:6}}>📥 Sources (ซ้าย)</div>
+        <p style={{fontSize:13,margin:0}}>ทุกอย่างที่ทีมสร้างหรือแก้ไข — ไฟล์ใหม่ / .md ใน Obsidian / เนื้อหาใน Notion — ล้วนไหลเข้า OneDrive</p>
+      </div>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--primary)",marginBottom:6}}>☁️ OneDrive Hub</div>
+        <p style={{fontSize:13,margin:0}}>ถังข้อมูลเดียวกลางทีม — sync ขึ้นลงอัตโนมัติ 24/7 ไม่ต้องมีคนดูแล ไม่มีค่าใช้จ่ายเพิ่ม</p>
+      </div>
+      <div className="card soft">
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--primary)",marginBottom:6}}>👥 Consumers (ขวา)</div>
+        <p style={{fontSize:13,margin:0}}>ทีมอ่านผ่าน Obsidian · ถาม Claude Code โดยตรง — ทั้ง 2 ช่องทางดึงจาก OneDrive vault เดียวกัน · Teams notification ดู <a href="#next-actions">Section 15</a></p>
+      </div>
+    </div>
+  </Section>
+);
+
+/* ── 09 Convert Files ── */
+const S_Convert = () => (
+  <Section id="use-convert" eyebrow="09 · ก่อน Ingest" eyebrowKind="green"
+    title="Convert PDF / Word / PPTX → Markdown"
+    subtitle={<>Claude อ่าน plain text ได้ดีที่สุด · แปลงไฟล์ก่อน ingest เพื่อผลลัพธ์ที่แม่นยำกว่า</>}
+    thai={<>ไฟล์ PDF/DOCX/PPTX ที่ยังไม่แปลง Claude อ่านได้แต่ข้อความอาจหลุด · แปลงเป็น .md ก่อนให้ผลดีกว่าเสมอ</>}
+  >
+    <Callout kind="warn" icon="⚠">
+      <div><strong>PDF สแกน (ภาพ) ≠ PDF ข้อความ</strong> — ถ้าไฟล์เป็นภาพสแกน ต้องผ่าน OCR ก่อน (เช่น Adobe Acrobat / Google Drive → Open with Docs) จึงแปลงเป็น Markdown ได้</div>
+    </Callout>
+    <div style={{display:"flex",flexDirection:"column",gap:12,marginBottom:16}}>
+      {[
+        {icon:"📄",label:"PDF → Markdown",
+         prompt:`claude "แปลง raw/[ชื่อไฟล์].pdf เป็น wiki/topics/[ชื่อ].md รักษาหัวข้อ ตาราง และ bullet list ทั้งหมดไว้ให้ครบ"`},
+        {icon:"📝",label:"Word (DOCX) → Markdown",
+         prompt:`claude "อ่าน raw/as-is/[ชื่อ].docx สรุปเป็น wiki/topics/[ชื่อ].md แยกหัวข้อตาม heading ของเอกสาร"`},
+        {icon:"📊",label:"PowerPoint (PPTX) → Markdown",
+         prompt:`claude "อ่านสไลด์ raw/workshops/[ชื่อ].pptx สรุปประเด็นสำคัญต่อ slide เป็น wiki/summaries/[ชื่อ]-summary.md"`},
+      ].map(f => (
+        <div key={f.label} className="card soft" style={{display:"flex",alignItems:"flex-start",gap:16}}>
+          <span style={{fontSize:28,flexShrink:0,marginTop:2}}>{f.icon}</span>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--primary)",marginBottom:6}}>{f.label}</div>
+            <CodeBlock label="terminal">{f.prompt}</CodeBlock>
+          </div>
+        </div>
+      ))}
+    </div>
+    <Callout kind="tip" icon="💡">
+      <div><strong>Golden prompt สำหรับ PDF ยาก</strong> — ถ้า PDF มีตารางซับซ้อน ลอง: <em>"อ่านไฟล์นี้ทีละหน้า แล้วแปลงตารางเป็น Markdown table · ถ้าอ่านตรงไหนไม่ได้ให้บอกว่า [ไม่ชัด] แทนที่จะเดา"</em></div>
+    </Callout>
+    <p style={{fontSize:11,color:"#9CA3AF",marginTop:12,textAlign:"right"}}>
+      ✦ อ้างอิงและเนื้อหาบางส่วนจาก <a href="https://bigc-kt-training.vercel.app/" target="_blank" style={{color:"var(--primary)"}}>bigc-kt-training.vercel.app</a> · 06 · Convert
+    </p>
+  </Section>
+);
+
+/* ── 10 Three Operations ── */
+const S_Operations = () => (
+  <Section id="use-ops" eyebrow="10 · Day-to-Day" eyebrowKind="green"
+    title="3 Operations หลัก — Ingest · Query · Lint"
+    subtitle={<>ทุกงาน Claude บน vault แบ่งได้เป็น 3 ประเภทนี้ · เข้าใจแล้วทำได้ทุกอย่าง</>}
+    thai={<>Ingest = ป้อนข้อมูลใหม่ · Query = ถามหาข้อมูล · Lint = ตรวจสอบคุณภาพ</>}
+  >
+    <div className="grid grid-3">
+      {[
+        {
+          icon:"📥", op:"Ingest",
+          color:"#3C8C1E",
+          desc:"เพิ่มข้อมูลใหม่เข้า wiki — แปลงไฟล์, สรุป meeting, บันทึก workshop",
+          when:"เมื่อมีไฟล์ใหม่ใน raw/ หรือหลังประชุมสำคัญ",
+          example:`claude "ingest ไฟล์ทั้งหมดใน
+raw/meetings/ ที่ยังไม่มีใน wiki/
+สรุปแต่ละไฟล์เป็น .md แยก"`
+        },
+        {
+          icon:"🔍", op:"Query",
+          color:"#1D6FA4",
+          desc:"ค้นหาและตอบคำถามจากข้อมูลที่มีใน wiki — ไม่ต้องจำเองทุกอย่าง",
+          when:"เมื่อต้องการข้อมูลเร็ว · ก่อนประชุม · เมื่อทีมถาม",
+          example:`claude "ใน wiki มีการพูดถึง
+approval flow ของ NPD ไว้ที่ไหนบ้าง
+สรุปให้หน่อย"`
+        },
+        {
+          icon:"🔎", op:"Lint",
+          color:"#7C3AED",
+          desc:"ตรวจสอบว่า wiki ครบถ้วน ถูกต้อง ไม่มีข้อมูลเก่าหรือขัดแย้งกัน",
+          when:"รายสัปดาห์ · ก่อน sprint review · หลัง update ใหญ่",
+          example:`claude "ตรวจสอบ wiki/entities/
+ทุกไฟล์ — มีไฟล์ไหนที่ข้อมูล
+ขัดแย้งกันบ้าง รายงานมา"`
+        },
+      ].map(o => (
+        <div key={o.op} className="card soft" style={{borderTop:`3px solid ${o.color}`}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+            <span style={{fontSize:24}}>{o.icon}</span>
+            <span style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:16,color:o.color}}>{o.op}</span>
+          </div>
+          <p style={{fontSize:13,margin:"0 0 8px"}}>{o.desc}</p>
+          <div style={{fontSize:11,color:"#6B7280",marginBottom:8}}><strong>เมื่อไหร่:</strong> {o.when}</div>
+          <CodeBlock label="ตัวอย่าง prompt">{o.example}</CodeBlock>
+        </div>
+      ))}
+    </div>
+    <p style={{fontSize:11,color:"#9CA3AF",marginTop:14,textAlign:"right"}}>
+      ✦ อ้างอิงและเนื้อหาบางส่วนจาก <a href="https://bigc-kt-training.vercel.app/" target="_blank" style={{color:"var(--primary)"}}>bigc-kt-training.vercel.app</a> · 07 · Operations
+    </p>
+  </Section>
+);
+
+/* ── 11 Cheat Sheet ── */
+const S_Cheatsheet = () => {
+  const [tab, setTab] = React.useState("ingest");
+  const prompts = {
+    ingest: [
+      {label:"สรุป meeting",     prompt:`claude "อ่าน raw/meetings/[ชื่อไฟล์].md\nสรุปประเด็นสำคัญ + action items\nบันทึกเป็น wiki/summaries/[ชื่อ]-summary.md"`},
+      {label:"แปลง PDF",        prompt:`claude "แปลง raw/[ไฟล์].pdf เป็น\nwiki/topics/[ชื่อ].md\nรักษา heading และ table ไว้ทั้งหมด"`},
+      {label:"Ingest folder",   prompt:`claude "ingest ทุกไฟล์ใน raw/workshops/\nที่ยังไม่มีใน wiki/ สร้าง index\nสรุปด้วย"`},
+      {label:"Update entity",   prompt:`claude "อัพเดท wiki/entities/[ชื่อ].md\nด้วยข้อมูลล่าสุดจาก raw/[ไฟล์]"`},
+      {label:"บันทึก decision",  prompt:`claude "บันทึก decision ที่ประชุมวันนี้:\n[วาง decision] → เพิ่มใน\nwiki/topics/decisions.md"`},
+      {label:"สร้าง index",      prompt:`claude "สร้าง wiki/INDEX.md\nสรุปทุกไฟล์ใน wiki/ พร้อม\nลิงก์และคำอธิบาย 1 บรรทัด"`},
+    ],
+    query: [
+      {label:"หาข้อมูล",        prompt:`claude "ใน wiki มีข้อมูลเกี่ยวกับ\n[หัวข้อ] ไว้ที่ไหนบ้าง\nสรุปให้หน่อย"`},
+      {label:"เปรียบเทียบ",     prompt:`claude "เปรียบเทียบ [A] กับ [B]\nจากข้อมูลใน wiki ต่างกันอย่างไร"`},
+      {label:"Timeline",        prompt:`claude "เรียง timeline ของ\n[โปรเจกต์/กระบวนการ] จากไฟล์\nทั้งหมดใน wiki/"`},
+      {label:"สรุปให้ผู้บริหาร", prompt:`claude "สรุปสถานะ [โปรเจกต์]\nเป็นภาษาที่ผู้บริหารเข้าใจ\nไม่เกิน 5 bullet"`},
+      {label:"หา gap",          prompt:`claude "จาก wiki ปัจจุบัน\nข้อมูลส่วนไหนที่ยังขาด\nหรือไม่ครบถ้วน"`},
+      {label:"Q&A พร้อม ref",   prompt:`claude "ตอบคำถาม: [คำถาม]\nอ้างอิงไฟล์ที่ใช้ตอบด้วย"`},
+      {label:"คำศัพท์/略語",    prompt:`claude "รวม glossary คำศัพท์\nทั้งหมดใน wiki ที่เป็น\nคำย่อหรือ technical term"`},
+      {label:"Cross-link",      prompt:`claude "ไฟล์ไหนใน wiki\nที่ควรลิงก์หากัน\nแต่ยังไม่มี link"`},
+      {label:"Status check",    prompt:`claude "สรุปสิ่งที่ยัง\nต้อง follow-up จากทุกไฟล์\nใน wiki/summaries/"`},
+    ],
+    lint: [
+      {label:"ตรวจ outdated",   prompt:`claude "ไฟล์ไหนใน wiki\nที่ไม่ได้อัพเดทมากกว่า\n30 วัน รายการมา"`},
+      {label:"หา conflict",     prompt:`claude "มีข้อมูลไหนใน wiki\nที่ขัดแย้งกันเองบ้าง\nระบุไฟล์และบรรทัด"`},
+      {label:"ตรวจ format",     prompt:`claude "ตรวจ wiki/ ทั้งหมด\nไฟล์ไหนที่ frontmatter\nหรือ heading ไม่ถูก format"`},
+      {label:"Dead links",      prompt:`claude "หา internal link\nทั้งหมดใน wiki ที่ชี้ไป\nไฟล์ที่ไม่มีจริง"`},
+      {label:"Coverage map",    prompt:`claude "สร้าง coverage map\nหัวข้อไหนใน CLAUDE.md scope\nที่ยังไม่มีไฟล์ wiki ครอบคลุม"`},
+    ],
+    schema: [
+      {label:"สร้าง template",  prompt:`claude "สร้าง Markdown template\nสำหรับ [ประเภทเอกสาร]\nพร้อม frontmatter ที่ต้องมี"`},
+      {label:"Batch rename",    prompt:`claude "ดูไฟล์ทั้งหมดใน wiki/\nแล้วแนะนำ naming convention\nที่ consistent"`},
+      {label:"IM-specific: NPD",prompt:`claude "สรุป NPD approval flow\nล่าสุดจาก wiki และ\nระบุ step ที่ยังเปิดอยู่"`},
+      {label:"IM-specific: TC", prompt:`claude "จากไฟล์ test case ใน wiki\nTC ไหนที่ยัง To Be Executed\nและ priority สูง"`},
+      {label:"IM-specific: BRD",prompt:`claude "compare BRD scope\nกับ TC ที่มีใน wiki —\nมี requirement ไหนที่ยังขาด TC"`},
+    ],
+  };
+  const tabs = [
+    {key:"ingest", label:"📥 Ingest", count:prompts.ingest.length},
+    {key:"query",  label:"🔍 Query",  count:prompts.query.length},
+    {key:"lint",   label:"🔎 Lint",   count:prompts.lint.length},
+    {key:"schema", label:"⚙️ IM-Specific", count:prompts.schema.length},
+  ];
+  return (
+    <Section id="use-prompts" eyebrow="11 · Cheat Sheet" eyebrowKind="green"
+      title="Prompt Cheat Sheet — 23+ โพรมต์พร้อมใช้"
+      subtitle={<>คัดลอก → แก้ชื่อไฟล์ → วางใน Claude · ไม่ต้องเขียนเอง</>}
+      thai={<>แบ่งตาม operation: Ingest 6 · Query 9 · Lint 5 · IM-Specific 5 — รวม 25 prompt</>}
+    >
+      <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
+        {tabs.map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)}
+            style={{padding:"6px 14px",borderRadius:20,border:"1.5px solid",cursor:"pointer",fontSize:13,
+              borderColor: tab===t.key ? "var(--primary)" : "#D1D5DB",
+              background:  tab===t.key ? "var(--primary)" : "transparent",
+              color:       tab===t.key ? "#fff" : "#374151",
+              fontWeight:  tab===t.key ? 700 : 400,
+            }}>
+            {t.label} <span style={{opacity:0.75,fontSize:11}}>({t.count})</span>
+          </button>
+        ))}
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}}>
+        {(prompts[tab]||[]).map((p,i) => (
+          <div key={i} className="card soft" style={{padding:"12px 14px"}}>
+            <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:13,color:"var(--primary)",marginBottom:6}}>{p.label}</div>
+            <CodeBlock label="prompt">{p.prompt}</CodeBlock>
+          </div>
+        ))}
+      </div>
+      <p style={{fontSize:11,color:"#9CA3AF",marginTop:14,textAlign:"right"}}>
+        ✦ อ้างอิงและเนื้อหาบางส่วนจาก <a href="https://bigc-kt-training.vercel.app/" target="_blank" style={{color:"var(--primary)"}}>bigc-kt-training.vercel.app</a> · 08 · Reference · เสริมด้วย IM-specific prompts
+      </p>
+    </Section>
+  );
+};
+
+/* ── 14 Power Automate — Auto-sync ── */
+const S_PowerAutomate = () => (
+  <Section id="power-automate" eyebrow="14 · Reference" eyebrowKind=""
+    title="Power Automate — Auto-sync ทุกไฟล์ใหม่เข้า raw/"
+    subtitle={<>ตั้งครั้งเดียว · ทำงานบน cloud 24/7 · ไม่ต้องเปิดเครื่องใคร · ฟรีกับ Microsoft 365</>}
+    thai={<>ไฟล์ใหม่ใน General → copy เข้า S4-Wiki/raw/ อัตโนมัติทันที · mirror subfolder structure</>}
+  >
+    <Callout kind="info" icon="ℹ">
+      <div><strong>ไม่บังคับ — Optional setup</strong> · ถ้าไม่ตั้ง Power Automate ก็ยังใช้งานได้ปกติ — แค่ต้อง copy ไฟล์เข้า raw/ เองเมื่อต้องการให้ Claude ingest · Power Automate ทำให้ขั้นตอนนี้เป็น auto</div>
+    </Callout>
+
+    <div style={{marginBottom:20}}>
+      <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--ink)",marginBottom:12}}>ทำงานยังไง?</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:12}}>
+        {[
+          {step:"1",icon:"📄",title:"ไฟล์ใหม่ใน General",desc:"ใครวางไฟล์ใน S4 - Supplier Portal › Documents › General (หรือ subfolder ใดก็ตาม)"},
+          {step:"2",icon:"⚡",title:"Power Automate trigger",desc:"ตรวจพบไฟล์ใหม่/อัพเดทใน SharePoint ทันที — ไม่ต้องรอ"},
+          {step:"3",icon:"📁",title:"Copy → raw/ อัตโนมัติ",desc:"copy ไปวางใน S4-Wiki/raw/[subfolder เดียวกัน] · mirror structure ครบ"},
+        ].map(c=>(
+          <div key={c.step} className="card soft" style={{padding:"14px 16px"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+              <div style={{width:24,height:24,borderRadius:6,background:"var(--primary)",color:"#fff",display:"grid",placeItems:"center",fontSize:12,fontWeight:700}}>{c.step}</div>
+              <span style={{fontSize:18}}>{c.icon}</span>
+            </div>
+            <div style={{fontFamily:"var(--font-display)",fontWeight:600,fontSize:13,color:"var(--ink)",marginBottom:4}}>{c.title}</div>
+            <div style={{fontSize:12,color:"var(--ink-2)",lineHeight:1.55}}>{c.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:14,color:"var(--ink)",marginBottom:12}}>Step-by-Step Setup</div>
+
+    <div className="steps">
+      <div className="step">
+        <div className="step-num">1</div>
+        <div className="step-body">
+          <h4>เปิด Power Automate</h4>
+          <CodeBlock label="browser">{`flow.microsoft.com
+→ Login ด้วย company account (@readyms.com)`}</CodeBlock>
+          <Callout kind="tip" icon="💡">
+            <div>ฟรีกับ Microsoft 365 Business ทุก plan · ไม่ต้องเป็น Admin · ใช้ company account ปกติได้เลย</div>
+          </Callout>
+        </div>
+      </div>
+      <div className="step">
+        <div className="step-num">2</div>
+        <div className="step-body">
+          <h4>สร้าง Flow ใหม่</h4>
+          <CodeBlock label="power automate">{`คลิก "Create" (เมนูซ้าย)
+→ เลือก "Automated cloud flow" (ตัวแรกซ้ายสุด)
+
+ในหน้า "Build an automated cloud flow":
+→ Flow name: S4-Wiki Auto-sync General → raw/
+→ เลือก trigger: "When an item is created or modified"
+   (ใต้หัวข้อ SharePoint — ไม่ใช่ OneDrive for Business)
+→ คลิก Create`}</CodeBlock>
+        </div>
+      </div>
+      <div className="step">
+        <div className="step-num">3</div>
+        <div className="step-body">
+          <h4>ตั้งค่า Trigger — คลิก card แล้วกรอก 2 fields</h4>
+          <CodeBlock label="trigger settings">{`Site Address → dropdown ไม่ขึ้น → คลิก "Enter custom value"
+  https://readymanagementsolutions.sharepoint.com/sites/S4-SupplierPortal
+
+List Name → dropdown ไม่ขึ้น → คลิก "Enter custom value"
+  Documents`}</CodeBlock>
+          <Callout kind="info" icon="ℹ">
+            <div>ถ้า dropdown ไม่โหลด = ยังไม่ได้ connect → คลิก <strong>"Change connection"</strong> ด้านล่าง → Sign in → กลับมากรอกใหม่</div>
+          </Callout>
+        </div>
+      </div>
+      <div className="step">
+        <div className="step-num">4</div>
+        <div className="step-body">
+          <h4>เพิ่ม Action — Copy file (SharePoint)</h4>
+          <CodeBlock label="action settings">{`คลิก "+" ใต้ trigger card
+→ Search: "copy file"
+→ เลือก SharePoint → "Copy file" (ไม่ใช่ OneDrive for Business)
+→ เลือก connection (raveeroj.thiensiripipat@readyms.com)
+
+กรอก 5 fields:
+  Current Site Address    : S4 - Supplier Portal (เดียวกับ trigger)
+  File to Copy            : คลิก field → ⚡ dynamic content → เลือก "Identifier"
+  Destination Site Address: S4 - Supplier Portal (เดียวกัน)
+  Destination Folder      : /Shared Documents/General/S4-Wiki/raw
+  If another file...      : Replace`}</CodeBlock>
+        </div>
+      </div>
+      <div className="step">
+        <div className="step-num">5</div>
+        <div className="step-body">
+          <h4>Save → Test → ยืนยันผล</h4>
+          <CodeBlock label="test">{`คลิก Save (มุมบนขวา)
+→ คลิก Test → เลือก "Manually" → คลิก Test
+
+ทดสอบ:
+→ ไปที่ SharePoint General → วางไฟล์ทดสอบไว้
+→ กลับมาดู Power Automate — รอ flow run
+→ "Your flow ran successfully" ✅
+→ เช็ค SharePoint: General/S4-Wiki/raw/ → ไฟล์ปรากฏ ✓`}</CodeBlock>
+        </div>
+      </div>
+    </div>
+
+    <Callout kind="tip" icon="★">
+      <div>
+        <strong>Bonus — Power Automate ช่วยป้องกัน Deletion ด้วย:</strong> Power Automate copy ทางเดียว (General → raw/) — ไม่ sync การลบ · ถ้าใครลบไฟล์จาก General → raw/ ยังมีสำเนาอยู่ · raw/ กลายเป็น historical archive อัตโนมัติ
+      </div>
+    </Callout>
+  </Section>
+);
+
+/* ── 13 FAQ ── */
+const S09 = () => (
+  <Section id="faq" eyebrow="13 · FAQ" eyebrowKind="accent"
+    title="คำถามพบบ่อย"
+    thai={<>ตอบทุกคำถามก่อนเริ่ม setup</>}
+  >
+    <FAQItem q="OneDrive Sync ทำแค่ครั้งเดียวแล้วหยุดไหม?" qTh="ต้อง sync ซ้ำทุกครั้งที่มีไฟล์ใหม่ไหม?">
+      <strong>ไม่ — sync ครั้งเดียวตลอดกาล</strong> เมื่อทีมกด "Add to my OneDrive" ครั้งแรก OneDrive ติดตั้ง background process ที่ทำงาน 24/7 ตรวจไฟล์ใหม่อัตโนมัติ ไม่ต้องทำซ้ำ
+      <div className="thai" style={{marginTop:8}}>เปรียบเทียบ: เหมือนเปิด Google Drive แล้ว sync — ทำครั้งเดียวแล้วทำงานเอง</div>
+    </FAQItem>
+    <FAQItem q="ถ้าใช้ Claude subscription อยู่แล้ว ต้องจ่ายเพิ่มไหม?" qTh="วิธีนี้มีค่าใช้จ่ายอะไรบ้าง?">
+      <strong>ฟรีทั้งหมด</strong> — Claude subscription ครอบคลุม Claude Code (interactive) แล้ว · GitHub Actions ฟรี 2,000 นาที/เดือน (ใช้จริงแค่ ~60 นาที/เดือน) · Notion API ฟรีสำหรับ Internal Integration · MS Teams Incoming Webhook ฟรีใน Microsoft 365
+      <div className="thai" style={{marginTop:8}}>💡 แนวทางนี้ใช้เฉพาะ subscription ที่บริษัทมีอยู่แล้ว — ไม่มีค่าใช้จ่ายเพิ่มแม้แต่บาทเดียว</div>
+    </FAQItem>
+    <FAQItem q="ต้อง implement อะไรเพิ่มไหม?" qTh="setup นี้ต้องการ Dev ไหม?">
+      <strong>ไม่ต้อง implement เพิ่มเลย</strong> — ทีมคนใดก็ได้ทำทุกขั้นตอนได้เอง: sync OneDrive + (Optional) สร้าง GitHub repo + copy-paste YAML + ใส่ secrets ทำครั้งเดียวใช้เวลา ~30 นาที
+      <div className="thai" style={{marginTop:8}}>Dev จำเป็นเฉพาะถ้าต้องการ full-automation หรือ Teams notification แบบ content-summary (ดู Section 15) — แนวทางพื้นฐานนี้ทีมทำเองได้ทั้งหมด</div>
+    </FAQItem>
+    <FAQItem q="ถ้าสองคนแก้ไฟล์เดียวกันพร้อมกัน จะเกิดอะไร?" qTh="Conflict กรณีแก้ .md พร้อมกัน">
+      OneDrive จะสร้าง <strong>conflict copy</strong> เช่น <code className="inline">Approval Flow (ชื่อ conflicted copy).md</code> ต้อง merge เอง กฎง่ายๆ: ถ้าจะ ingest ใหม่ แจ้งในกลุ่มก่อน <em>"กำลัง ingest..."</em> → รอ <em>"เสร็จแล้ว"</em> ค่อยทำต่อ
+    </FAQItem>
+    <FAQItem q="Notion API ฟรีจริงไหม มีขีดจำกัดอะไรบ้าง?" qTh="Notion API rate limits">
+      <strong>ฟรีสำหรับ Internal Integration</strong> — ไม่มีค่าใช้จ่าย · Rate limit: 3 requests/วินาที · เราเรียกแค่ 1 ครั้งต่อ 30 นาที จึงไม่กระทบ · ข้อเดียวที่ต้องระวัง: Notion ไม่มี real-time webhook ต้อง poll เท่านั้น
+    </FAQItem>
+  </Section>
+);
+
+/* ── 14 Next Actions — ขยายต่อในอนาคต ── */
+const S_NextActions = () => (
+  <Section id="next-actions" eyebrow="15 · Next Actions" eyebrowKind="accent"
+    title="ขยายต่อในอนาคต — MS Teams Notification"
+    thai={<>Teams notification มีประโยชน์จริงถ้าสามารถ <strong>สรุปเนื้อหา</strong> ที่เปลี่ยนแปลงได้ — ไม่ใช่แค่บอกว่า "มีคนอัพเดท"</>}
+  >
+    <Callout kind="info" icon="ℹ">
+      <div>
+        <strong>ทำไม Teams notification ถึงไม่อยู่ใน flow หลัก?</strong><br/>
+        การแจ้งเตือนแบบ <em>"User A อัพเดทไฟล์"</em> ไม่มีประโยชน์เพียงพอ — ทีมจะไม่มอง ไม่อ่าน เพราะไม่รู้ว่า update นั้นสำคัญแค่ไหน<br/>
+        Teams notification มีคุณค่าเมื่อมันบอกได้ว่า <em>"มีหน้าไหนเปลี่ยน และ เปลี่ยนเรื่องอะไร"</em> — ซึ่งต้องการ content summarization
+      </div>
+    </Callout>
+    <div className="card" style={{marginBottom:20,borderLeft:"3px solid var(--amber)"}}>
+      <h4 style={{marginTop:0,color:"var(--amber)"}}>📋 Teams Notification Roadmap — 3 Scenarios</h4>
+      <div style={{display:"flex",flexDirection:"column",gap:12,marginTop:10}}>
+        {[
+          {
+            label:"Scenario 1 & 2",
+            title:"ทีมวางไฟล์ / แก้ .md ใน OneDrive",
+            trigger:"OneDrive file change event",
+            tool:"Power Automate (M365)",
+            cost:"ฟรีใน M365 E3/E5",
+            limit:"แจ้งได้แค่ว่า 'มีไฟล์ใหม่' — ไม่รู้เนื้อหา",
+            note:"ไม่ต้องใช้ GitHub Actions · ทำได้ทันทีผ่าน Power Automate connector OneDrive → Teams",
+            color:"#3C8C1E"
+          },
+          {
+            label:"Scenario 3",
+            title:"Notion อัพเดท",
+            trigger:"GitHub Actions poll (Section 02)",
+            tool:"GitHub Actions + Teams Webhook",
+            cost:"ฟรี (GitHub Actions + M365 webhook)",
+            limit:"แจ้งชื่อหน้า Notion ที่เปลี่ยน — ไม่รู้เนื้อหาการเปลี่ยนแปลง",
+            note:"ใส่ TEAMS_WEBHOOK_URL เป็น secret ใน GitHub + เพิ่ม curl ใน YAML (Section 02) — ทำได้ทันที",
+            color:"#D78A1E"
+          },
+          {
+            label:"Scenario 1, 2 & 3",
+            title:"Content Summary Notification (แนะนำที่สุด)",
+            trigger:"File change → Claude API → summarize → Teams",
+            tool:"Claude API (Anthropic) + Power Automate / GitHub Actions",
+            cost:"Claude API: ~$0.003/notification (Haiku model) — ขึ้นอยู่กับความยาวไฟล์",
+            limit:"ต้องมี Anthropic API key · ต้องตั้ง middleware (Azure Function / Lambda / Cloud Function)",
+            note:"ทีมได้รับแจ้งว่า 'BRD Section 3 อัพเดท: เพิ่ม SLA ใหม่สำหรับ DC items + แก้ Buyer LV1 routing' — มีคุณค่าจริง",
+            color:"#5BA900"
+          }
+        ].map(({label,title,trigger,tool,cost,limit,note,color})=>(
+          <div key={label} style={{padding:"14px 16px",background:"var(--bg)",border:"1px solid var(--border)",borderLeft:`3px solid ${color}`,borderRadius:"var(--radius)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+              <span style={{background:color,color:"#fff",borderRadius:6,padding:"2px 8px",fontSize:11,fontWeight:700,flexShrink:0}}>{label}</span>
+              <div style={{fontFamily:"var(--font-display)",fontWeight:600,fontSize:14,color:"var(--ink)"}}>{title}</div>
+            </div>
+            <div style={{display:"grid",gridTemplateColumns:"100px 1fr",gap:"4px 12px",fontSize:12,color:"var(--ink-2)",fontFamily:"var(--font-thai)"}}>
+              <span style={{color:"var(--muted)",fontWeight:600}}>Trigger</span><span>{trigger}</span>
+              <span style={{color:"var(--muted)",fontWeight:600}}>Tool</span><span>{tool}</span>
+              <span style={{color:"var(--muted)",fontWeight:600}}>ค่าใช้จ่าย</span><span>{cost}</span>
+              <span style={{color:"var(--muted)",fontWeight:600}}>ข้อจำกัด</span><span style={{color:"#c44"}}>{limit}</span>
+              <span style={{color:"var(--muted)",fontWeight:600}}>วิธีทำ</span><span style={{color:color,fontWeight:500}}>{note}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div className="card" style={{marginBottom:20}}>
+      <h4 style={{marginTop:0}}>🚀 ถ้าอยากทำ Scenario 3 Teams notification วันนี้</h4>
+      <p style={{fontSize:13,color:"var(--ink-2)",fontFamily:"var(--font-thai)",marginTop:0,marginBottom:14}}>
+        Scenario 3 (Notion polling) เพิ่ม Teams notification ได้ง่ายที่สุด — แค่ใส่ webhook URL เพิ่มใน GitHub Secret แล้วเพิ่ม curl command ใน YAML ที่มีอยู่แล้ว
+      </p>
+      <div className="steps" style={{marginTop:0}}>
+        <div className="step">
+          <div className="step-num">1</div>
+          <div className="step-body">
+            <h4>สร้าง MS Teams Incoming Webhook</h4>
+            <CodeBlock label="MS Teams">{`เปิด Teams → channel ที่ต้องการ → ··· → Connectors
+→ Incoming Webhook → Configure → ตั้งชื่อ "BigC IM Wiki"
+→ Copy URL (จะขึ้นต้นด้วย https://xxx.webhook.office.com/...)`}</CodeBlock>
+          </div>
+        </div>
+        <div className="step">
+          <div className="step-num">2</div>
+          <div className="step-body">
+            <h4>เพิ่ม GitHub Secret</h4>
+            <CodeBlock label="GitHub repo">{`Settings → Secrets and variables → Actions
+→ New repository secret
+→ Name: TEAMS_WEBHOOK_URL
+→ Value: [paste URL ที่ copy มา]`}</CodeBlock>
+          </div>
+        </div>
+        <div className="step">
+          <div className="step-num">3</div>
+          <div className="step-body">
+            <h4>YAML ที่มีอยู่ใน Section 02 ส่ง Teams อยู่แล้ว</h4>
+            <p style={{marginTop:4,fontSize:13}}>YAML ใน Section 02 มี <code className="inline">curl</code> ส่ง Teams อยู่แล้วในบรรทัดสุดท้าย — แค่ใส่ <code className="inline">TEAMS_WEBHOOK_URL</code> secret แล้ว push ใหม่ ก็จะส่งได้ทันที</p>
+            <Callout kind="warn" icon="⚠">
+              <div>แจ้งเตือนแบบนี้จะบอกแค่ <em>"N หน้า Notion อัพเดทแล้ว"</em> + ชื่อหน้า — ไม่มีเนื้อหาสรุป ถ้าต้องการเนื้อหา ต้องใช้ Claude API (Scenario Content Summary ข้างบน)</div>
+            </Callout>
+          </div>
+        </div>
+      </div>
+    </div>
+    <Callout kind="tip" icon="★">
+      <div>
+        <strong>คำแนะนำ:</strong> เริ่มจาก Scenario 3 Teams notification ก่อน (ฟรี ทำได้วันนี้) → ลองใช้จริงกับทีม → ถ้าพบว่า "รู้ว่ามีอัพเดทแต่ไม่รู้เนื้อหา" เป็นปัญหาจริง → ค่อย invest ใน Content Summary version ที่ใช้ Claude API
+      </div>
+    </Callout>
+
+    {/* ── SharePoint ── */}
+    <div className="card" style={{marginTop:24,marginBottom:20,borderLeft:"3px solid #0078D4"}}>
+      <h4 style={{marginTop:0,color:"#0078D4",display:"flex",alignItems:"center",gap:8}}>
+        <span>🏢</span> ถ้าได้รับการ Approve จาก IT Admin — ใช้ SharePoint แทน OneDrive Personal
+      </h4>
+      <p style={{fontSize:13,color:"var(--ink-2)",fontFamily:"var(--font-thai)",marginTop:0,marginBottom:14}}>
+        OneDrive Personal ทำงานได้ทันทีโดยไม่ต้องขอ permission · แต่ถ้าทีมได้รับ SharePoint site จาก IT Admin แล้ว สามารถย้าย vault มาที่ SharePoint เพื่อได้ประโยชน์เพิ่มเติม
+      </p>
+      <div className="grid grid-2" style={{marginBottom:14}}>
+        <div style={{padding:"12px 16px",background:"#EFF6FF",borderRadius:10,border:"1px solid #BFDBFE"}}>
+          <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:13,color:"#1D4ED8",marginBottom:8}}>✅ ข้อดีของ SharePoint</div>
+          <ul style={{margin:0,paddingLeft:16,fontSize:13,color:"#1F2937",lineHeight:1.8}}>
+            <li>Permission ระดับทีม — กำหนดได้ว่าใครเข้าถึงได้</li>
+            <li>Version history ทุกไฟล์ — ย้อนกลับได้ตลอด</li>
+            <li>ไม่ขึ้นกับ OneDrive ส่วนตัวของคนใดคนหนึ่ง</li>
+            <li>Audit log — IT Admin เห็นว่าใครแก้ไขอะไร</li>
+          </ul>
+        </div>
+        <div style={{padding:"12px 16px",background:"#FFF7ED",borderRadius:10,border:"1px solid #FED7AA"}}>
+          <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:13,color:"#C2410C",marginBottom:8}}>⚠️ สิ่งที่ต้องขอ IT Admin</div>
+          <ul style={{margin:0,paddingLeft:16,fontSize:13,color:"#1F2937",lineHeight:1.8}}>
+            <li>SharePoint Site สำหรับทีม S4</li>
+            <li>Document Library ที่ sync ลงเครื่องได้</li>
+            <li>Permission level: Contribute ขึ้นไป</li>
+            <li>ยืนยัน OneDrive Sync client ตั้งค่าได้</li>
+          </ul>
+        </div>
+      </div>
+      <div style={{padding:"12px 16px",background:"#F0FAE6",borderRadius:10,border:"1px solid #A8D88A"}}>
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:13,color:"var(--green)",marginBottom:6}}>🔄 วิธีย้าย vault มา SharePoint (หลังได้ approval)</div>
+        <div style={{fontSize:13,color:"#374151",lineHeight:1.8,fontFamily:"var(--font-thai)"}}>
+          1. SharePoint site → Documents → Sync (ปุ่มบน toolbar) → ให้ OneDrive sync ลงเครื่อง<br/>
+          2. ย้ายโฟลเดอร์ BigC-IM-Wiki ไปอยู่ใน Document Library ที่ sync แล้ว<br/>
+          3. คลิกขวา → <strong>Always keep on this device</strong> (เหมือนเดิมทุกอย่าง)<br/>
+          4. Obsidian และ Claude Code ใช้งานได้ปกติ — path เปลี่ยนแค่ตอน setup เริ่มต้น
+        </div>
+      </div>
+    </div>
+
+    {/* ── FireFile ── */}
+    <div className="card" style={{marginBottom:20,borderLeft:"3px solid #6366F1"}}>
+      <h4 style={{marginTop:0,color:"#6366F1",display:"flex",alignItems:"center",gap:8}}>
+        <span>🎙️</span> FireFile — บันทึก Meeting Note + Transcript อัตโนมัติ → SharePoint / OneDrive
+      </h4>
+      <p style={{fontSize:13,color:"var(--ink-2)",fontFamily:"var(--font-thai)",marginTop:0,marginBottom:14}}>
+        FireFile เชื่อมต่อกับ Microsoft Teams · บันทึก transcript + สรุป meeting หลังประชุมเสร็จ · แล้ว auto-save ลง SharePoint หรือ OneDrive โดยตรง → Claude ingest ต่อได้ทันทีโดยไม่ต้องทำอะไรเพิ่ม
+      </p>
+      <div style={{display:"flex",flexDirection:"column",gap:0,borderRadius:10,overflow:"hidden",border:"1px solid var(--border)",marginBottom:14}}>
+        {[
+          {step:"1",icon:"📹",label:"Teams Meeting",desc:"ทีมประชุมผ่าน Microsoft Teams ตามปกติ"},
+          {step:"2",icon:"🎙️",label:"FireFile บันทึก",desc:"FireFile จับ transcript + สรุปประเด็นหลักอัตโนมัติระหว่างประชุม"},
+          {step:"3",icon:"💾",label:"Auto-save → SharePoint / OneDrive",desc:"หลังประชุมเสร็จ ไฟล์ transcript + summary ถูก save ลง Document Library ที่กำหนดไว้"},
+          {step:"4",icon:"🤖",label:"Claude Ingest",desc:`claude "ingest ไฟล์ใหม่ใน raw/meetings/ เป็น wiki/summaries/" — เสร็จ`},
+        ].map((s,i,arr)=>(
+          <div key={i} style={{display:"flex",alignItems:"center",gap:14,padding:"12px 16px",background: i%2===0 ? "#FAFAFA":"#F3F4F6",borderBottom: i<arr.length-1?"1px solid var(--border)":"none"}}>
+            <span style={{width:28,height:28,borderRadius:"50%",background:"#6366F1",color:"#fff",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,flexShrink:0}}>{s.step}</span>
+            <span style={{fontSize:20,flexShrink:0}}>{s.icon}</span>
+            <div>
+              <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:13,color:"#1F2937"}}>{s.label}</div>
+              <div style={{fontSize:12,color:"#6B7280",fontFamily:"var(--font-thai)"}}>{s.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-2" style={{gap:12}}>
+        <Callout kind="tip" icon="💡">
+          <div><strong>โฟลเดอร์ที่แนะนำ:</strong> ให้ FireFile save ลง <code className="inline">BigC-IM-Wiki/raw/meetings/</code> โดยตรง — Claude จะ ingest ได้ทันทีโดยไม่ต้องย้ายไฟล์</div>
+        </Callout>
+        <Callout kind="info" icon="ℹ">
+          <div><strong>Setup:</strong> FireFile Admin Panel → Integration → Microsoft 365 → เลือก SharePoint site + Document Library → กำหนด path <code className="inline">raw/meetings/</code> → Save</div>
+        </Callout>
+      </div>
+    </div>
+  </Section>
+);
+
+/* ── 11 CLAUDE.md — Vault Scope & Context ── */
+const S11 = () => (
+  <Section id="claude-md" eyebrow="✦ · CLAUDE.md" eyebrowKind="green"
+    title="CLAUDE.md — กำหนด scope ให้ Claude ก่อนถาม"
+    subtitle={<>ไฟล์เดียวที่ทำให้ Claude Code <strong>รู้จักทีมและโปรเจกต์</strong> — ลด token · เพิ่มความแม่นยำ</>}
+    thai={<>วาง CLAUDE.md ไว้ที่ root ของ vault — Claude อ่านอัตโนมัติทุกครั้งที่เปิด session ใหม่</>}
+  >
+    <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:20,marginBottom:24}}>
+      <div className="card" style={{borderLeft:"3px solid var(--primary)"}}>
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,marginBottom:8}}>🎯 ทำไมต้องมี CLAUDE.md?</div>
+        <ul style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.7,color:"var(--ink-2)"}}>
+          <li>Claude ไม่รู้ชื่อทีม ชื่อโปรเจกต์ หรือ scope โดย default</li>
+          <li>ไม่มี CLAUDE.md → ต้องอธิบายซ้ำทุก session (เสีย token)</li>
+          <li>มี CLAUDE.md → Claude เข้าใจ context ทันทีตั้งแต่ prompt แรก</li>
+          <li>กำหนดได้ว่า Claude ควร <em>ทำ</em> หรือ <em>ไม่ทำ</em> อะไรใน vault นี้</li>
+        </ul>
+      </div>
+      <div className="card" style={{borderLeft:"3px solid var(--amber)"}}>
+        <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:15,marginBottom:8}}>📁 วางไฟล์ที่ไหน?</div>
+        <ul style={{margin:0,paddingLeft:18,fontSize:13,lineHeight:1.7,color:"var(--ink-2)"}}>
+          <li>Root ของ vault: <code className="inline">BigC-IM-Wiki/CLAUDE.md</code></li>
+          <li>Claude Code อ่านอัตโนมัติเมื่อ <code className="inline">cd</code> เข้า folder นั้น</li>
+          <li>ไม่ต้อง <code className="inline">--context</code> เพิ่มเติม — แค่ <code className="inline">claude</code> แล้วถามได้เลย</li>
+          <li>อัพเดทได้ตลอด — Claude อ่านใหม่ทุก session</li>
+        </ul>
+      </div>
+    </div>
+
+    {(()=>{
+      const claudeMdContent = `# CLAUDE.md — S4 Supplier Portal Wiki Schema
+
+You are the maintainer of a project knowledge wiki for the **S4 Supplier Portal IM (NPD)**,
+run by READY MS (consulting). Your job is to keep the wiki current, consistent, and
+well-organized as new sources arrive.
+
+## Architecture
+
+- \`raw/\` — original sources. IMMUTABLE. Read only. Never modify.
+  - \`raw/workshops/\` — workshop notes (filename: YYYY-MM-DD-ws<NN>-<topic>.md)
+  - \`raw/as-is/\` — as-is process documentation (PDFs, docs)
+  - \`raw/meetings/\` — meeting minutes (filename: YYYY-MM-DD-<who>.md)
+  - \`raw/assets/\` — images, screenshots
+  - \`raw/_archive/\` — files moved here instead of deleted. Never delete from vault.
+- \`wiki/\` — your output. You own these files. Humans read them.
+  - \`wiki/index.md\` — catalog of every page, one line each
+  - \`wiki/log.md\` — append-only timeline (## [YYYY-MM-DD] <op> | <title>)
+  - \`wiki/entities/\` — one page per person, team, system, module
+  - \`wiki/topics/\` — one page per business topic (NPD, approval flow, invoice, etc.)
+  - \`wiki/summaries/\` — one summary page per ingested source
+
+## Operations
+
+### INGEST (when user says "ingest <source>" or drops a file)
+1. If source file is outside raw/, copy it from its given path into the appropriate
+   raw/ subfolder first. Never skip this step.
+2. Read the source completely.
+3. Discuss 3-5 key takeaways with the user. Wait for confirmation.
+4. Write \`wiki/summaries/<source-slug>.md\` — a 200-400 word summary,
+   YAML frontmatter (date, source, tags), wikilinks to entities/topics.
+5. Update relevant \`wiki/entities/<entity>.md\` pages (create if new).
+6. Update relevant \`wiki/topics/<topic>.md\` pages (create if new).
+7. If new info contradicts an existing page, ADD a "Δ Contradiction" section
+   on the topic page citing both sources. Do not silently overwrite.
+8. Append entry to \`wiki/log.md\` (## [YYYY-MM-DD] ingest | <title>).
+9. Update \`wiki/index.md\` with the new pages.
+
+### QUERY (when user asks a question)
+1. Read \`wiki/index.md\` first to find relevant pages.
+2. Read those pages. Synthesize an answer.
+3. Always include \`[[wikilinks]]\` to the pages you used as citations.
+4. If the answer is novel and likely to be re-asked, offer to file it as
+   a new page in \`wiki/topics/\` or \`wiki/analyses/\`.
+
+### LINT (when user says "lint" or "health-check")
+Check the wiki for: orphan pages (no inbound links), stale claims,
+unflagged contradictions, missing cross-references, important concepts
+mentioned but lacking their own page. Report findings; do not auto-fix.
+
+## Conventions
+
+- All dates: YYYY-MM-DD.
+- Filenames: kebab-case, lowercase.
+- Wikilinks always: \`[[entity-name]]\` or \`[[topics/npd-approval]]\`.
+- YAML frontmatter on every wiki page:
+  \`\`\`yaml
+  ---
+  type: entity | topic | summary | analysis
+  tags: [s4, <relevant>]
+  updated: YYYY-MM-DD
+  sources: [list of raw/ paths]
+  ---
+  \`\`\`
+- Language: write in **English**. Quote Thai/local terms verbatim when
+  they appear in sources, in parentheses.
+- Tone: factual, concise. Use bullet points over prose where possible.
+
+## File ownership (DO NOT VIOLATE)
+
+- \`raw/**\` — human-owned, immutable. Never edit.
+- \`wiki/**\` — LLM-owned. Humans read only.
+- \`CLAUDE.md\` — co-owned. Discuss changes before editing.
+
+## When unsure
+
+Ask the user. Don't guess about the S4 domain. Don't fabricate stakeholders.
+If a source is ambiguous, surface the ambiguity in the summary.`;
+      const handleDownload = () => {
+        const blob = new Blob([claudeMdContent], {type:"text/markdown;charset=utf-8"});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "CLAUDE.md"; a.click();
+        URL.revokeObjectURL(url);
+      };
+      return (
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+          <button onClick={handleDownload} style={{display:"inline-flex",alignItems:"center",gap:8,padding:"10px 20px",background:"var(--primary)",color:"#fff",border:"none",borderRadius:10,fontFamily:"var(--font-body)",fontWeight:700,fontSize:14,cursor:"pointer",boxShadow:"var(--shadow-sm)"}}>
+            ⬇ Download CLAUDE.md
+          </button>
+          <span style={{fontSize:12,color:"var(--muted)"}}>วางไฟล์นี้ที่ root ของ S4-Wiki ก่อนรัน claude</span>
+        </div>
+      );
+    })()}
+
+    <CodeBlock label="CLAUDE.md · paste at S4-Wiki root">{`# CLAUDE.md — S4 Supplier Portal Wiki Schema
+
+You are the maintainer of a project knowledge wiki for the **S4 Supplier Portal IM (NPD)**,
+run by READY MS (consulting). Your job is to keep the wiki current, consistent, and
+well-organized as new sources arrive.
+
+## Architecture
+
+- \`raw/\` — original sources. IMMUTABLE. Read only. Never modify.
+  - \`raw/workshops/\` — workshop notes (filename: YYYY-MM-DD-ws<NN>-<topic>.md)
+  - \`raw/as-is/\` — as-is process documentation (PDFs, docs)
+  - \`raw/meetings/\` — meeting minutes (filename: YYYY-MM-DD-<who>.md)
+  - \`raw/assets/\` — images, screenshots
+  - \`raw/_archive/\` — files moved here instead of deleted. Never delete from vault.
+- \`wiki/\` — your output. You own these files. Humans read them.
+  - \`wiki/index.md\` — catalog of every page, one line each
+  - \`wiki/log.md\` — append-only timeline (## [YYYY-MM-DD] <op> | <title>)
+  - \`wiki/entities/\` — one page per person, team, system, module
+  - \`wiki/topics/\` — one page per business topic (NPD, approval flow, invoice, etc.)
+  - \`wiki/summaries/\` — one summary page per ingested source
+
+## Operations
+
+### INGEST (when user says "ingest <source>" or drops a file)
+1. If source file is outside raw/, copy it from its given path into the appropriate
+   raw/ subfolder first. Never skip this step.
+2. Read the source completely.
+3. Discuss 3-5 key takeaways with the user. Wait for confirmation.
+4. Write \`wiki/summaries/<source-slug>.md\` — a 200-400 word summary,
+   YAML frontmatter (date, source, tags), wikilinks to entities/topics.
+5. Update relevant \`wiki/entities/<entity>.md\` pages (create if new).
+6. Update relevant \`wiki/topics/<topic>.md\` pages (create if new).
+7. If new info contradicts an existing page, ADD a "Δ Contradiction" section
+   on the topic page citing both sources. Do not silently overwrite.
+8. Append entry to \`wiki/log.md\` (## [YYYY-MM-DD] ingest | <title>).
+9. Update \`wiki/index.md\` with the new pages.
+
+### QUERY (when user asks a question)
+1. Read \`wiki/index.md\` first to find relevant pages.
+2. Read those pages. Synthesize an answer.
+3. Always include \`[[wikilinks]]\` to the pages you used as citations.
+4. If the answer is novel and likely to be re-asked, offer to file it as
+   a new page in \`wiki/topics/\` or \`wiki/analyses/\`.
+
+### LINT (when user says "lint" or "health-check")
+Check the wiki for: orphan pages (no inbound links), stale claims,
+unflagged contradictions, missing cross-references, important concepts
+mentioned but lacking their own page. Report findings; do not auto-fix.
+
+## Conventions
+
+- All dates: YYYY-MM-DD.
+- Filenames: kebab-case, lowercase.
+- Wikilinks always: \`[[entity-name]]\` or \`[[topics/npd-approval]]\`.
+- YAML frontmatter on every wiki page:
+  \`\`\`yaml
+  ---
+  type: entity | topic | summary | analysis
+  tags: [s4, <relevant>]
+  updated: YYYY-MM-DD
+  sources: [list of raw/ paths]
+  ---
+  \`\`\`
+- Language: write in **English**. Quote Thai/local terms verbatim when
+  they appear in sources, in parentheses.
+- Tone: factual, concise. Use bullet points over prose where possible.
+
+## File ownership (DO NOT VIOLATE)
+
+- \`raw/**\` — human-owned, immutable. Never edit.
+- \`wiki/**\` — LLM-owned. Humans read only.
+- \`CLAUDE.md\` — co-owned. Discuss changes before editing.
+
+## When unsure
+
+Ask the user. Don't guess about the S4 domain. Don't fabricate stakeholders.
+If a source is ambiguous, surface the ambiguity in the summary.`}</CodeBlock>
+
+    <Callout kind="tip" icon="💡">
+      <div>
+        <strong>Token tip:</strong> ยิ่ง CLAUDE.md กระชับและตรงประเด็น → Claude ตอบแม่น + ใช้ token น้อยกว่า — แนะนำให้เก็บไว้ไม่เกิน 80 บรรทัด และ review ทุกครั้งที่มีเปลี่ยนแปลง scope หลักของโปรเจกต์
+        <div className="thai" style={{marginTop:6}}>ถ้า vault มีหลาย subfolder → สร้าง CLAUDE.md แยกในแต่ละ subfolder ได้ Claude จะอ่าน CLAUDE.md ที่ใกล้ที่สุดก่อนเสมอ</div>
+      </div>
+    </Callout>
+  </Section>
+);
+
+const Page = () => (
+  <App>
+    <S00/>
+    <S01/>
+    <S02/>
+    <S03/>
+    <S11/>
+    <S04/>
+    <S05/>
+    <S06/>
+    <S07/>
+    <S08/>
+    <S_Convert/>
+    <S_Operations/>
+    <S_Cheatsheet/>
+    <S_GitHub/>
+    <S09/>
+    <S_PowerAutomate/>
+    <S_NextActions/>
+    <div style={{marginTop:60,padding:"30px 0",borderTop:"1px dashed var(--border-strong)",textAlign:"center",color:"var(--muted)",fontSize:13}}>
+      <div style={{fontFamily:"var(--font-display)",fontWeight:700,fontSize:16,color:"var(--ink)",marginBottom:6}}>
+        BigC IM Wiki Sync Guide · v2.3
+      </div>
+      <div>Built with READY MS × BIG-C training portal pattern <span className="thai">· สร้างด้วย Claude Code</span></div>
+    </div>
+  </App>
+);
+
+ReactDOM.createRoot(document.getElementById("root")).render(<Page/>);
+</script>
+</body>
+</html>
